@@ -10,7 +10,7 @@ You can use npm or yarn to install this package:
 `yarn add tropipayjs`
 
 # How to use
-The Tropipay instance allows you to access all the method available in the API. This Object is meant to be used *only* in server side code. Do not use the Tropipay object on the client side (browser). This would expose your app credetials (the client secret of your account). You can create a endpoint at your backend using express and consume it in your frontend, or use SSR if your're using NextJS.
+The Tropipay instance, allows you to access all the method available in the API. This Object is meant to be used *only in server side*. Do not use the Tropipay object on the client side (browser). This would expose your app credentials (the client secret of your account). You can create an endpoint at your back-end using express and consume it in your front-end, or use SSR if you're using NextJS.
 
 ## Setting up your credentials
 In order to use the Tropipay API you need to signup in a live (production) or the test enviroment. Create an app and configure the client id an client secret for the app.
