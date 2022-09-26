@@ -41,8 +41,16 @@ const payload = {
     directPayment: true,
 };
 const est = () => __awaiter(void 0, void 0, void 0, function* () {
-    //await tpp.login()
-    const paylink = yield tpp.createPayLink(payload);
-    console.log(paylink.shortUrl);
+    //  //await tpp.login()
+    //  const paylink = await tpp.createPayLink(payload)
+    try {
+        const rates = yield tpp.createPayLink(payload);
+        tpp.countries;
+        console.log(rates);
+    }
+    catch (error) {
+        if (error instanceof Error)
+            console.error(error.message);
+    }
 });
 est();

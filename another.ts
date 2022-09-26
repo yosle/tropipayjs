@@ -1,7 +1,10 @@
 import Tropipay from '.'
+import { PaymentLink, PaymentLinkPayload } from './interfaces/paymentlink';
 
 const tpp = new Tropipay('5aca1638f7596bee9cb388e51d2ad58e',
 '4a0150d3cec2036b9f24ec53f52e7c19')
+
+
 const payload = {
     reference: "platano",
     concept: "Bicycle",
@@ -29,11 +32,19 @@ const payload = {
     directPayment: true,
 
   }
-
+  
  const est = async () =>{
-   //await tpp.login()
-   const paylink = await tpp.createPayLink(payload)
-     console.log(paylink.shortUrl)
+  //  //await tpp.login()
+  //  const paylink = await tpp.createPayLink(payload)
+  try {
+    const rates = await tpp.createPayLink(payload)
+    tpp.countries
+    console.log(rates)
+  } catch (error) {
+    if (error instanceof Error) console.error(error.message)
+  }
+ 
   } ;
+ 
 
   est();

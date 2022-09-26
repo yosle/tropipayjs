@@ -1,7 +1,7 @@
 {
   "name": "@yosle/tropipayjs",
-  "version": "0.1.0",
-  "description": " Javascript/Typescript SDK for Tropipay API",
+  "version": "0.1.1",
+  "description": " Javascript / Typescript SDK for Tropipay API",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,12 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "sdhjsd"
+    "url": "https://github.com/yosle/tropipayjs"
   },
   "keywords": [
-    "js",
-    "tropipay",
+    "Javascript",
+    "Typescript",
+    "Tropipay",
     "payments",
+    "gateway",
     "API"
   ],
   "author": "Yosleivy Baez Acosta <yosle007@gmail.com>",
