@@ -1,10 +1,11 @@
 TropipayJS - A typed SDK for Tropipay Payments API
 ===========
 
-TropiPay is an electronic wallet that allows you to execute the most common financial operations of the day to day. This is a SDK for Typescript and Javacript that helps you build integrations with the Tropipay platform in a easier way. Can save you a lot of time and effort implementing all the API features. You can use this library with your prefered framework like Express or the Nextjs.
+TropiPay is an electronic wallet that allows you to execute the most common financial operations of the day to day. This is a SDK for Typescript and Javacript that helps you build integrations with the Tropipay platform in a easier way. Can save you a lot of time and effort implementing all the API features. You can use this library with your prefered framework like Express or Nextjs.
 
 # Instalation
 You can use npm or yarn to install this package:
+
 `npm install tropipayjs` or
 `yarn add tropipayjs`
 
