@@ -1,20 +1,11 @@
-'use strict';
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-var axios = require('axios');
-
-function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-var axios__default = /*#__PURE__*/_interopDefaultLegacy(axios);
-
 /**
  * Tropipayjs is a wrapper for the Tropipay API. It was made in
  * typescript but you can use Javascript.
  * @author Yosleivy baez Acosta
  *
  */
-class Tropipay {
+import axios from "axios";
+export class Tropipay {
     client_id;
     client_secret;
     request;
@@ -25,7 +16,7 @@ class Tropipay {
         this.client_id = client_id;
         this.client_secret = client_secret;
         this.server_mode = server_mode;
-        this.request = axios__default["default"].create({
+        this.request = axios.create({
             baseURL: this.server_mode === 'Production'
                 ? 'https://www.tropipay.com'
                 : 'https://tropipay-dev.herokuapp.com',
@@ -54,7 +45,7 @@ class Tropipay {
             return data;
         }
         catch (error) {
-            if (axios__default["default"].isAxiosError(error)) {
+            if (axios.isAxiosError(error)) {
                 // 👇️ error: AxiosError<any, any>
                 throw new Error("Conection error: " + error.message);
             }
@@ -193,6 +184,4 @@ class Tropipay {
         }
     }
 }
-
-exports.Tropipay = Tropipay;
 //# sourceMappingURL=index.js.map
