@@ -1,51 +1,13 @@
-import { Axios } from 'axios';
-
-interface PaymentLinkPayload {
-    reference: string;
-    concept: string;
-    favorite: boolean;
-    amount: number;
-    currency: string;
-    description: string;
-    singleUse: boolean;
-    reasonId: number;
-    expirationDays: number;
-    lang: string;
-    urlSuccess: string;
-    urlFailed: string;
-    urlNotification: string;
-    serviceDate: string;
-    client: {
-        name: string;
-        lastName: string;
-        address: string;
-        phone: string;
-        email: string;
-        countryId: number;
-        termsAndConditions: boolean;
-    };
-    directPayment: boolean;
-    paymentMethods?: string[];
-}
-interface PaymentLink extends PaymentLinkPayload {
-    expirationDate: string;
-    hasClient: boolean;
-    updatedAt: string;
-    createdAt: string;
-    qrImage: string;
-    shortUrl: string;
-    paymentUrl: string;
-}
-
 /**
  * Tropipayjs is a wrapper for the Tropipay API. It was made in
  * typescript but you can use Javascript.
  * @author Yosleivy baez Acosta
  *
  */
-
+import { Axios } from "axios";
+import { PaymentLink, PaymentLinkPayload } from './interfaces/paymentlink';
 declare type ServerMode = 'Development' | 'Production';
-declare class Tropipay {
+export declare class Tropipay {
     readonly client_id: string;
     readonly client_secret: string;
     request: Axios;
@@ -94,5 +56,4 @@ declare class Tropipay {
         currencyFrom: string;
     }): Promise<any>;
 }
-
-export { Tropipay };
+export {};

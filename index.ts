@@ -12,7 +12,7 @@ import { PaymentLink, PaymentLinkPayload } from './interfaces/paymentlink'
 type ServerMode = 'Development' | 'Production'
 
 
-class Tropipay {
+export class Tropipay {
     readonly client_id: string;
     readonly client_secret: string;
     public request: Axios;
@@ -209,6 +209,5 @@ class Tropipay {
 }
 
 
-export default Tropipay
 
 
