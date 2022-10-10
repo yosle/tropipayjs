@@ -38,8 +38,8 @@ interface PaymentLink extends PaymentLinkPayload {
 }
 
 /**
- * Tropipayjs is a wrapper for the Tropipay API. It was made in
- * typescript but you can use Javascript.
+ * Tropipayjs is a Typescript/Javascript library for the Tropipay API. CommonJs and
+ * ES6 modules are supported.
  * @author Yosleivy baez Acosta
  *
  */
@@ -48,16 +48,16 @@ declare type ServerMode = 'Development' | 'Production';
 declare class Tropipay {
     readonly client_id: string;
     readonly client_secret: string;
-    request: Axios;
-    access_token: string | undefined;
-    refresh_token: string | undefined;
-    server_mode: ServerMode;
+    protected request: Axios;
+    protected access_token: string | undefined;
+    protected refresh_token: string | undefined;
+    protected server_mode: ServerMode;
     constructor(client_id: string, client_secret: string, server_mode?: ServerMode);
     login(): Promise<LoginResponse>;
     /**
-     * Create a paymentLink width the specifued payload
-     * @param payload Object of PaymentLinkPayload type with paylink payload
-     * @returns Promise<PaymentLink> or Error
+     * Create a paymentLink with the specified options.
+     * @param payload PaymentLinkPayload Object.
+     * @returns Promise<PaymentLink> or throws an Exception.
      * @see https://tpp.stoplight.io/docs/tropipay-api-doc/b3A6ODgyNTM3OQ-create-a-new-pay-link-charge
      */
     createPayLink(payload: PaymentLinkPayload): Promise<PaymentLink>;
@@ -69,19 +69,28 @@ declare class Tropipay {
     getDepositAccounts(): Promise<AccountDeposits[] | Error>;
     /**
      * Get the list of all supported countries by Tropipay.
-     * @returns Array of Countries
-     * @see
+     * @returns Array of Countries Data
+     * @see https://tpp.stoplight.io/docs/tropipay-api-doc/bfac21259e2ff-getting-users-countries-list
      */
-    countries(): Promise<Country[] | Error>;
+    countries(): Promise<Country[]>;
     /**
-     * Get list of all the favorites accounts.
+     * Get the list of all detination countries supported by Tropipay.
+     * obtaining the list of valid countries to send funds to. Useful
+     * when adding new beneficiaries to some user.
+     *
+     * @returns Array of Country Objects
+     * @see https://tpp.stoplight.io/docs/tropipay-api-doc/3cfe5504f0524-getting-list-of-beneficiary-countries
+     */
+    destinations(): Promise<Country[]>;
+    /**
+     * Get list of all the favorites accounts. This endpoint is not documented
+     * in the official Tropipay documentation.
      * @returns
-     * @see
      */
     favorites(): Promise<any>;
     /**
-     * List all movements in current account. You can optionaly specify
-     *  offset and limit params for pagination.
+     * List all account movements. You can optionaly specify
+     * offset and limit params for pagination.
      * @returns
      */
     movements(offset?: number, limit?: number): Promise<any>;
