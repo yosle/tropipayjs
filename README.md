@@ -1,10 +1,10 @@
 TropipayJS -Typescript/Javascript SDK for Tropipay Payments API
 ===========
 
-TropiPay is an electronic wallet that allows you to execute the most common financial operations of the day to day. This is a SDK for Typescript and Javacript that helps you build integrations with the Tropipay platform in a easier way. Can save you a lot of time and effort implementing all the API features. You can use this library with CommonJS system (like node + express) or ES6 module system (NextJS).
+TropiPay is an electronic wallet that allows you to execute the most common financial operations of the day to day. This is an SDK for Typescript and Javacript that helps you build integrations with the Tropipay platform in an easier way. Can save you a lot of time and effort implementing all the API features. You can use this library with CommonJS system (like node + express) or ES6 module system (NextJS).
 
 ## Project status
-This library is still under development so using it in the live(real account) isn't recommended yet.
+This library is still under development so using it in the live (real account) isn't recommended yet.
 
 # Table of Contents
 * [Getting started](#getting-started)
@@ -21,7 +21,9 @@ or
 `yarn add yosle.tropipayjs`
 
 ## Setting up your app credentials
-In order to use the Tropipay API you'll need a client ID and a client secret. Signup with your [Tropipay](www.tropipay.com) the  account go to App Menu->Applications and credentials. You'll be asked to enter confirmation code (use 123456 in the test enviroment). _Make sure you test everything in the [test enviroment](https://tropipay-dev.herokuapp.com) first before using your real account._ Create an app and configure the client id an client secret for the app.
+![alt](/docs/images/app-credentials-menu.png)
+![alt](/docs/images/confirmation-code-screen.png)
+In order to use the Tropipay API you'll need a client ID and a client secret. Sign up with your [Tropipay](www.tropipay.com) account, go to the App Menu->Applications and credentials. You'll be asked to enter a confirmation code (use 123456 in the test enviroment). _Make sure you test everything in the [test enviroment](https://tropipay-dev.herokuapp.com) first before using your real account._ Create an app and configure the client id an client secret for the app.
 
 ## How to use
 The Tropipay instance, allows you to access all the method available in the API. This Object is meant to be used *only in server side*. Do not use the Tropipay object on the client side (browser). This would expose your app credentials (the client secret of your account). You can create an endpoint at your back-end using express and consume it in your front-end, or use SSR if you're using NextJS.
