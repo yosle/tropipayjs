@@ -9,8 +9,8 @@ function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'defau
 var axios__default = /*#__PURE__*/_interopDefaultLegacy(axios);
 
 /**
- * Tropipayjs is a wrapper for the Tropipay API. It was made in
- * typescript but you can use Javascript.
+ * Tropipayjs is a Typescript/Javascript library for the Tropipay API. CommonJs and
+ * ES6 modules are supported.
  * @author Yosleivy baez Acosta
  *
  */
@@ -62,9 +62,9 @@ class Tropipay {
         }
     }
     /**
-     * Create a paymentLink width the specifued payload
-     * @param payload Object of PaymentLinkPayload type with paylink payload
-     * @returns Promise<PaymentLink> or Error
+     * Create a paymentLink with the specified options.
+     * @param payload PaymentLinkPayload Object.
+     * @returns Promise<PaymentLink> or throws an Exception.
      * @see https://tpp.stoplight.io/docs/tropipay-api-doc/b3A6ODgyNTM3OQ-create-a-new-pay-link-charge
      */
     async createPayLink(payload) {
@@ -82,7 +82,7 @@ class Tropipay {
             return paylink.data;
         }
         catch (error) {
-            throw new Error(`Error tryng to get the access token`);
+            throw new Error(`Could not obtain the access tokemn with the given credentials.`);
         }
     }
     /**
@@ -104,15 +104,12 @@ class Tropipay {
     }
     /**
      * Get the list of all supported countries by Tropipay.
-     * @returns Array of Countries
-     * @see
+     * @returns Array of Countries Data
+     * @see https://tpp.stoplight.io/docs/tropipay-api-doc/bfac21259e2ff-getting-users-countries-list
      */
     async countries() {
-        if (!this.access_token) {
-            await this.login();
-        }
         try {
-            const countries = await this.request.get('/api/countries');
+            const countries = await this.request.get('/api/v2/countries');
             return countries.data;
         }
         catch (error) {
@@ -120,25 +117,43 @@ class Tropipay {
         }
     }
     /**
-     * Get list of all the favorites accounts.
+     * Get the list of all detination countries supported by Tropipay.
+     * obtaining the list of valid countries to send funds to. Useful
+     * when adding new beneficiaries to some user.
+     *
+     * @returns Array of Country Objects
+     * @see https://tpp.stoplight.io/docs/tropipay-api-doc/3cfe5504f0524-getting-list-of-beneficiary-countries
+     */
+    async destinations() {
+        try {
+            const countries = await this.request.get('/api/v2/countries/destinations');
+            return countries.data;
+        }
+        catch (error) {
+            throw new Error(`Could not retrieve the destination countries list`);
+        }
+    }
+    /**
+     * Get list of all the favorites accounts. This endpoint is not documented
+     * in the official Tropipay documentation.
      * @returns
-     * @see
      */
     async favorites() {
         if (!this.access_token) {
             await this.login();
         }
         try {
-            const favorites = await this.request.get('/api/v2/paymentcards/favorites');
-            return favorites.data;
+            const favoritesList = await this.request.get('/api/v2/paymentcards/favorites');
+            console.log(favoritesList);
+            return favoritesList.data;
         }
         catch (error) {
-            throw new Error(`Could not retrieve favorites list`);
+            throw new Error(`Could not retrieve favorites list ${error}`);
         }
     }
     /**
-     * List all movements in current account. You can optionaly specify
-     *  offset and limit params for pagination.
+     * List all account movements. You can optionaly specify
+     * offset and limit params for pagination.
      * @returns
      */
     async movements(offset = 0, limit = 10) {
