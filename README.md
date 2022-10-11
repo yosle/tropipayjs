@@ -62,7 +62,7 @@ Please make sure to update tests as appropriate.
 
 You can also make a small [donation to the author](https://tppay.me/l94qaa3h).
 ## License
-[MIT](https://choosealicense.com/licenses/mit/)
+[MIT License](https://choosealicense.com/licenses/mit/)
 
 
 
