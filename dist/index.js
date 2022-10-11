@@ -1,37 +1,37 @@
 /**
  * Tropipayjs is a Typescript/Javascript library for the Tropipay API. CommonJs and
  * ES6 modules are supported.
- * @author Yosleivy baez Acosta
+ * @author Yosleivy Baez Acosta
  *
  */
 import axios from "axios";
 export class Tropipay {
-    client_id;
-    client_secret;
+    clientId;
+    clientSecret;
     request;
-    access_token;
-    refresh_token;
-    server_mode;
+    accessToken;
+    refreshToken;
+    serverMode;
     constructor(client_id, client_secret, server_mode = 'Development') {
-        this.client_id = client_id;
-        this.client_secret = client_secret;
-        this.server_mode = server_mode;
+        this.clientId = client_id;
+        this.clientSecret = client_secret;
+        this.serverMode = server_mode;
         this.request = axios.create({
-            baseURL: this.server_mode === 'Production'
+            baseURL: this.serverMode === 'Production'
                 ? 'https://www.tropipay.com'
                 : 'https://tropipay-dev.herokuapp.com',
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                Authorization: `Bearer ${this.access_token}`,
+                Authorization: `Bearer ${this.accessToken}`,
             }
         });
     }
     async login() {
         try {
             const { data } = await this.request.post('/api/v2/access/token', {
-                client_id: this.client_id,
-                client_secret: this.client_secret,
+                client_id: this.clientId,
+                client_secret: this.clientSecret,
                 grant_type: "client_credentials",
                 scope: "ALLOW_GET_PROFILE_DATA ALLOW_PAYMENT_IN ALLOW_EXTERNAL_CHARGE KYC3_FULL_ALLOW ALLOW_PAYMENT_OUT ALLOW_MARKET_PURCHASES ALLOW_GET_BALANCE ALLOW_GET_MOVEMENT_LIST ALLOW_GET_CREDENTIAL "
             }, {
@@ -40,8 +40,8 @@ export class Tropipay {
             //     Accept: 'application/json',
             // }
             });
-            this.access_token = data.access_token;
-            this.refresh_token = data.refresh_token;
+            this.accessToken = data.access_token;
+            this.refreshToken = data.refresh_token;
             return data;
         }
         catch (error) {
@@ -59,14 +59,14 @@ export class Tropipay {
      * @see https://tpp.stoplight.io/docs/tropipay-api-doc/b3A6ODgyNTM3OQ-create-a-new-pay-link-charge
      */
     async createPayLink(payload) {
-        if (!this.access_token) {
+        if (!this.accessToken) {
             await this.login();
         }
         try {
             const paylink = await this.request.post('/api/v2/paymentcards', payload, {
                 headers: {
                     // 'Content-Type': 'application/json',
-                    Authorization: `Bearer ${this.access_token}`,
+                    Authorization: `Bearer ${this.accessToken}`,
                     // Accept: 'application/json'
                 }
             });
@@ -82,7 +82,7 @@ export class Tropipay {
      * @see https://tpp.stoplight.io/docs/tropipay-api-doc/b3A6OTgyOTQ1Mg-get-deposit-accounts-list
      */
     async getDepositAccounts() {
-        if (!this.access_token) {
+        if (!this.accessToken) {
             await this.login();
         }
         try {
@@ -109,7 +109,7 @@ export class Tropipay {
     }
     /**
      * Get the list of all detination countries supported by Tropipay.
-     * obtaining the list of valid countries to send funds to. Useful
+     * Obtaining the list of valid countries to send funds to. Useful
      * when adding new beneficiaries to some user.
      *
      * @returns Array of Country Objects
@@ -130,7 +130,7 @@ export class Tropipay {
      * @returns
      */
     async favorites() {
-        if (!this.access_token) {
+        if (!this.accessToken) {
             await this.login();
         }
         try {
@@ -148,7 +148,7 @@ export class Tropipay {
      * @returns
      */
     async movements(offset = 0, limit = 10) {
-        if (!this.access_token) {
+        if (!this.accessToken) {
             await this.login();
         }
         try {
@@ -156,7 +156,7 @@ export class Tropipay {
                 headers: {
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
-                    Authorization: `Bearer ${this.access_token}`,
+                    Authorization: `Bearer ${this.accessToken}`,
                 } });
             return movements.data;
         }
@@ -169,7 +169,7 @@ export class Tropipay {
      * @returns
      */
     async profile() {
-        if (!this.access_token) {
+        if (!this.accessToken) {
             await this.login();
         }
         try {
@@ -182,7 +182,7 @@ export class Tropipay {
     }
     async getRates(payload = { currencyFrom: "EUR" }) {
         console.log(payload);
-        if (!this.access_token) {
+        if (!this.accessToken) {
             await this.login();
         }
         try {
@@ -190,7 +190,7 @@ export class Tropipay {
                 headers: {
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
-                    Authorization: `Bearer ${this.access_token}`,
+                    Authorization: `Bearer ${this.accessToken}`,
                 } });
             return rates.data;
         }

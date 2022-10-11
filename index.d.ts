@@ -40,18 +40,18 @@ interface PaymentLink extends PaymentLinkPayload {
 /**
  * Tropipayjs is a Typescript/Javascript library for the Tropipay API. CommonJs and
  * ES6 modules are supported.
- * @author Yosleivy baez Acosta
+ * @author Yosleivy Baez Acosta
  *
  */
 
 declare type ServerMode = 'Development' | 'Production';
 declare class Tropipay {
-    readonly client_id: string;
-    readonly client_secret: string;
+    readonly clientId: string;
+    readonly clientSecret: string;
     protected request: Axios;
-    protected access_token: string | undefined;
-    protected refresh_token: string | undefined;
-    protected server_mode: ServerMode;
+    protected accessToken: string | undefined;
+    protected refreshToken: string | undefined;
+    protected serverMode: ServerMode;
     constructor(client_id: string, client_secret: string, server_mode?: ServerMode);
     login(): Promise<LoginResponse>;
     /**
@@ -75,7 +75,7 @@ declare class Tropipay {
     countries(): Promise<Country[]>;
     /**
      * Get the list of all detination countries supported by Tropipay.
-     * obtaining the list of valid countries to send funds to. Useful
+     * Obtaining the list of valid countries to send funds to. Useful
      * when adding new beneficiaries to some user.
      *
      * @returns Array of Country Objects
