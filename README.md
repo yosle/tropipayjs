@@ -20,9 +20,11 @@ This library is still under development so using it in the live (real account) i
 # Getting started
 You can use npm or yarn to install this package:
 
-`npm install @yosle/tropipayjs` 
+```npm install @yosle/tropipayjs``` 
+
 or
-`yarn add yosle.tropipayjs`
+
+```yarn add @yosle/tropipayjs```
 
 ## Setting up your app credentials
 ![alt](/docs/images/app-credentials-menu.png)
@@ -58,6 +60,7 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 Please make sure to update tests as appropriate.
 
+You can also make a small [donation to the author](https://tppay.me/l94qaa3h).
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 
