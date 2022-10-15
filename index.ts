@@ -6,7 +6,7 @@
  */
 
 import axios, { Axios } from "axios";
-import { PaymentLink, PaymentLinkPayload } from './interfaces/paymentlink'
+import { PaymentLink, PaymentLinkPayload } from './src/interfaces/paymentlink'
 
 
 type ServerMode = 'Development' | 'Production'
