@@ -1,22 +1,29 @@
 TropipayJS - Typescript/Javascript SDK for Tropipay Payments API
 ===========
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white) 
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 ![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white)
-![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![RollupJS](https://img.shields.io/badge/RollupJS-ef3335?style=for-the-badge&logo=rollup.js&logoColor=white)
 
 TropiPay is an electronic wallet that allows you to execute the most common financial operations of the day to day. This is SDK for Typescript and Javacript that helps you build integrations with the Tropipay platform in an easier way. Can save you a lot of time and effort implementing all the API features. You can use this library with CommonJS system (node + express) or ES6 module system (NextJS).
 
-## About the project
-This library is a community effort still under development so use caution if you're planing to use it in production. Tropipay may make some changes on the API Specification in the future. Use the [test environment](https://tropipay-dev.herokuapp.com) to make sure everything is working as expected.
 
 # Table of Contents
-* [Getting started](#getting-started)
-* [Setting up your credentials](#setting-up-your-app-credentials)
-* [Documentation](#documentation)
-* [Examples](#examples)
-* [Contribute and Help](#contributing-and-help)
-
+- [TropipayJS - Typescript/Javascript SDK for Tropipay Payments API](#tropipayjs---typescriptjavascript-sdk-for-tropipay-payments-api)
+- [Table of Contents](#table-of-contents)
+  - [About the project](#about-the-project)
+- [Getting started](#getting-started)
+  - [Setting up your app credentials](#setting-up-your-app-credentials)
+  - [Usage](#usage)
+    - [CommonJS](#commonjs)
+    - [ES6](#es6)
+    - [Initialize the Tropipay class](#initialize-the-tropipay-class)
+    - [Generating a Payment Link](#generating-a-payment-link)
+- [Contributing](#contributing)
+- [License](#license)
+## About the project
+This library is a community effort still under development so use caution if you're planing to use it in production. Tropipay may make some changes on the API Specification in the future. Use the [test environment](https://tropipay-dev.herokuapp.com) to make sure everything is working as expected.
 # Getting started
 You can use npm or yarn to install this package:
 
@@ -80,17 +87,28 @@ const payload = await tpp.createPayLink({
         },
         directPayment: "true"
     })
+    
+// Use inside an async function
 const paylink = await tpp.createPayLink(payload)
 ```
 
 For more examples, please refer to the [Documentation](https://github.com/yosle/tropipayjs/blob/master/docs/)
 
 # Contributing
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement". Don't forget to give the project a star! Thanks again!
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+   
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change. 
 
 You can also make a small [donation to the author](https://tppay.me/l94qaa3h) of the library.
-## License
-[MIT License](https://choosealicense.com/licenses/mit/)
+# License
+Distributed under the MIT License. See `LICENSE.txt` for more information.
+
 
 
 
