@@ -90,6 +90,7 @@ const payload = await tpp.createPayLink({
     
 // Use inside an async function
 const paylink = await tpp.createPayLink(payload)
+console.log(paylink.shortUrl)
 ```
 
 For more examples, please refer to the [Documentation](https://github.com/yosle/tropipayjs/blob/master/docs/)
