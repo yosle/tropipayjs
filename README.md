@@ -52,9 +52,19 @@ const { Tropipay } = require('@yosle/tropipayjs')
 import { Tropipay } from '@yosle/tropipayjs'
 ```
 ### Initialize the Tropipay class
+You can instantiate the Tropipay class passing the client Id ,client secret and optionally the serverMode parameter, if no serverMode is provided, `Development` will be used as default. Make sure you use the [test enviroment](https://tropipay-dev.herokuapp.com) credentials when serverMode is on `Development`.
+
 ```javascript
+// test environment server
 const tpp = new Tropipay("yourclientidhere",
     "yourclientsecrethere")
+```
+
+To use your live credentials (real account) you must explicity set serverMode to `Production`.
+
+```javascript
+const tpp = new Tropipay("yourclientidhere",
+    "yourclientsecrethere",'Production')
 ```
 ### Generating a Payment Link
 ```javascript
