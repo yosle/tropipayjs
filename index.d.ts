@@ -99,9 +99,15 @@ declare class Tropipay {
      * @returns
      */
     profile(): Promise<any>;
-    rates(payload?: {
-        currencyFrom: string;
-    }): Promise<any>;
+    /**
+     * Obtain current Tropipay conversion rate. For example USD to EUR
+     * targetCurrency must be 'EUR'
+     * @param originCurrency Target currency code supported by Tropipay.
+     * @param targetCurrency Must be 'EUR'? (not documented by Tropipay)
+     * @returns Conversion rate (number)
+     * @see https://tpp.stoplight.io/docs/tropipay-api-doc/85163f6f28b23-get-rate
+     */
+    rates(originCurrency: string, targetCurrency?: string): Promise<number | Error>;
 }
 
 export { Tropipay };
