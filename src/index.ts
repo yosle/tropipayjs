@@ -1,6 +1,6 @@
 /**
- * Tropipayjs is a Typescript/Javascript library for the Tropipay API. CommonJs and 
- * ES6 modules are supported.
+ * Tropipayjs is a Typescript/Javascript library for the Tropipay API.
+ * 
  * @author Yosleivy Baez Acosta
  * 
  */
@@ -48,7 +48,7 @@ export class Tropipay {
                 client_id: this.clientId,
                 client_secret: this.clientSecret,
                 grant_type: "client_credentials",
-                scope: "ALLOW_GET_PROFILE_DATA ALLOW_PAYMENT_IN ALLOW_EXTERNAL_CHARGE KYC3_FULL_ALLOW ALLOW_PAYMENT_OUT ALLOW_MARKET_PURCHASES ALLOW_GET_BALANCE ALLOW_GET_MOVEMENT_LIST ALLOW_GET_CREDENTIAL "
+                scope: "ALLOW_GET_PROFILE_DATA ALLOW_PAYMENT_IN ALLOW_EXTERNAL_CHARGE KYC3_FULL_ALLOW ALLOW_PAYMENT_OUT ALLOW_MARKET_PURCHASES ALLOW_GET_BALANCE ALLOW_GET_MOVEMENT_LIST ALLOW_GET_CREDENTIAL"
             }, {
                 // headers: {
                 //     'Content-Type': 'application/json',
@@ -61,9 +61,8 @@ export class Tropipay {
             return data
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                // 👇️ error: AxiosError<any, any>
                 throw new Error("Conection error: " + error.message);
-            }
+                }
             throw new Error("Could not obtain the access token from credentials ");
 
         }
@@ -89,7 +88,7 @@ export class Tropipay {
             })
             return paylink.data as PaymentLink
         } catch (error) {
-            throw new Error(`Could not obtain the access tokemn with the given credentials.`);
+            throw new Error(`Could not obtain the access token with the given credentials.`);
 
         }
     }
@@ -203,7 +202,7 @@ export class Tropipay {
         }
     }
 
-    async getRates(payload = {currencyFrom: "EUR"}) {
+    async rates(payload = {currencyFrom: "EUR"}) {
         console.log(payload)
         if (!this.accessToken) {
             await this.login()

@@ -38,8 +38,8 @@ interface PaymentLink extends PaymentLinkPayload {
 }
 
 /**
- * Tropipayjs is a Typescript/Javascript library for the Tropipay API. CommonJs and
- * ES6 modules are supported.
+ * Tropipayjs is a Typescript/Javascript library for the Tropipay API.
+ *
  * @author Yosleivy Baez Acosta
  *
  */
@@ -99,7 +99,7 @@ declare class Tropipay {
      * @returns
      */
     profile(): Promise<any>;
-    getRates(payload?: {
+    rates(payload?: {
         currencyFrom: string;
     }): Promise<any>;
 }
