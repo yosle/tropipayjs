@@ -55,9 +55,9 @@ class Tropipay {
         }
         catch (error) {
             if (axios__default["default"].isAxiosError(error)) {
-                throw new Error("Conection error: " + error.message);
+                throw new Error(`Could not obtain the access token from credentials  ${error}`);
             }
-            throw new Error("Could not obtain the access token from credentials ");
+            throw new Error(`Could not obtain the access token from credentials  ${error}`);
         }
     }
     /**
@@ -188,19 +188,30 @@ class Tropipay {
             throw new Error(`Could not retrieve movements list ${error}`);
         }
     }
-    async rates(payload = { currencyFrom: "EUR" }) {
-        console.log(payload);
+    /**
+     * Obtain current Tropipay conversion rate. For example USD to EUR
+     * targetCurrency must be 'EUR'
+     * @param originCurrency Target currency code supported by Tropipay.
+     * @param targetCurrency Must be 'EUR'? (not documented by Tropipay)
+     * @returns Conversion rate (number)
+     * @see https://tpp.stoplight.io/docs/tropipay-api-doc/85163f6f28b23-get-rate
+     */
+    async rates(originCurrency, targetCurrency = 'EUR') {
         if (!this.accessToken) {
             await this.login();
         }
         try {
-            const rates = await this.request.post('/api/v2/movements/get_rate', { payload,
+            const rates = await this.request.post('/api/v2/movements/get_rate', {
+                currencyFrom: originCurrency,
+                currencyTo: targetCurrency
+            }, {
                 headers: {
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
                     Authorization: `Bearer ${this.accessToken}`,
-                } });
-            return rates.data;
+                }
+            });
+            return rates.data.rate;
         }
         catch (error) {
             throw new Error(`Could not retrieve rates ${error}`);
