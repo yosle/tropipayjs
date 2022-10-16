@@ -38,7 +38,7 @@ or
 ![alt](https://github.com/yosle/tropipayjs/blob/master/docs/images/app-credentials-menu.png?raw=true)
 ![alt](https://github.com/yosle/tropipayjs/blob/master/docs/images/confirmation-code-screen.png?raw=true)
 
-In order to use the Tropipay API you'll need a client ID and a client secret. Sign up with your [Tropipay](www.tropipay.com) account, go to the App Menu->Applications and credentials. You'll be asked to enter a confirmation code (use 123456 in the test enviroment). _Make sure you test everything in the [test enviroment](https://tropipay-dev.herokuapp.com) first before using your real account._ Create an app and configure the client id an client secret for the app.
+In order to use the Tropipay API you'll need a client ID and a client secret. Sign up with your [Tropipay](www.tropipay.com) account, go to the App Menu->Applications and credentials. You'll be asked to enter a confirmation code (use 123456 in the test enviroment). _Make sure you test everything in the [test environment](https://tropipay-dev.herokuapp.com) first before using your real account._ Create an app and configure the client id an client secret for the app.
 
 ## Usage
 The Tropipay instance, allows you to access all the method available in the API. This Object is meant to be used *only in server side*. Do not use the Tropipay object on the client side (browser). This would expose your app credentials (the client secret of your account). You can create an endpoint at your back-end using express and consume it in your front-end, or use SSR if you're using NextJS.
@@ -52,7 +52,7 @@ const { Tropipay } = require('@yosle/tropipayjs')
 import { Tropipay } from '@yosle/tropipayjs'
 ```
 ### Initialize the Tropipay class
-You can instantiate the Tropipay class passing the client Id ,client secret and optionally the serverMode parameter, if no serverMode is provided, `Development` will be used as default. Make sure you use the [test enviroment](https://tropipay-dev.herokuapp.com) credentials when serverMode is on `Development`.
+You can instantiate the Tropipay class passing the client Id ,client secret and optionally the serverMode parameter, if no serverMode is provided, `Development` will be used as default. Make sure you use the [test environment](https://tropipay-dev.herokuapp.com) credentials when serverMode is on `Development`.
 
 ```javascript
 // test environment server
@@ -63,6 +63,7 @@ const tpp = new Tropipay("yourclientidhere",
 To use your live credentials (real account) you must explicity set serverMode to `Production`.
 
 ```javascript
+//real account credentials
 const tpp = new Tropipay("yourclientidhere",
     "yourclientsecrethere",'Production')
 ```
