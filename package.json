@@ -1,6 +1,6 @@
 {
   "name": "@yosle/tropipayjs",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Javascript / Typescript SDK for the Tropipay API",
   "main": "index.js",
   "scripts": {
