@@ -2,3 +2,5 @@
 *.map
 /dist
 testing.js
+*.npmrc
+*.lock
