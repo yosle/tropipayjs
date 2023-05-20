@@ -38,21 +38,49 @@ interface PaymentLink extends PaymentLinkPayload {
 }
 
 /**
+ *
+ */
+interface mediationPaymentCardConfig {
+    amount: number;
+    currency: "EUR" | "USD";
+    concept: string;
+    description: string;
+    reference: string;
+    singleUse: boolean;
+    lang: string;
+    productUrl?: string;
+    buyer: null | any;
+    seller: {
+        sellerId?: number;
+        type?: number;
+        email?: string;
+    };
+    feePercent?: number;
+    feeFixed?: number;
+    sendMail: boolean;
+}
+
+/**
  * Tropipayjs is a Typescript/Javascript library for the Tropipay API.
  *
  * @author Yosleivy Baez Acosta
  *
  */
 
-declare type ServerMode = 'Development' | 'Production';
+type ServerMode = 'Development' | 'Production';
+interface TropipayConfig {
+    clientId: string;
+    clientSecret: string;
+    serverMode?: ServerMode;
+}
 declare class Tropipay {
-    readonly clientId: string;
-    readonly clientSecret: string;
+    protected clientId: string;
+    protected clientSecret: string;
     protected request: Axios;
-    protected accessToken: string | undefined;
-    protected refreshToken: string | undefined;
+    protected static accessToken: string | undefined;
+    protected static refreshToken: string | undefined;
     protected serverMode: ServerMode;
-    constructor(client_id: string, client_secret: string, server_mode?: ServerMode);
+    constructor(config: TropipayConfig);
     login(): Promise<LoginResponse>;
     /**
      * Create a paymentLink with the specified options.
@@ -60,7 +88,7 @@ declare class Tropipay {
      * @returns Promise<PaymentLink> or throws an Exception.
      * @see https://tpp.stoplight.io/docs/tropipay-api-doc/b3A6ODgyNTM3OQ-create-a-new-pay-link-charge
      */
-    createPayLink(payload: PaymentLinkPayload): Promise<PaymentLink>;
+    createPaymentCard(payload: PaymentLinkPayload): Promise<PaymentLink>;
     /**
      * Get all deposits in this account.
      * @returns A Promise of an Array of AccountDeposits or throws an Exception
@@ -83,9 +111,8 @@ declare class Tropipay {
      */
     destinations(): Promise<Country[]>;
     /**
-     * Get list of all the favorites accounts. This endpoint is not documented
-     * in the official Tropipay documentation.
-     * @returns
+     * Get list of all the favorites payment links.
+     * @returns Array of account Object or throws an error
      */
     favorites(): Promise<any>;
     /**
@@ -108,6 +135,16 @@ declare class Tropipay {
      * @see https://tpp.stoplight.io/docs/tropipay-api-doc/85163f6f28b23-get-rate
      */
     rates(originCurrency: string, targetCurrency?: string): Promise<number | Error>;
+    /**
+     * (ONLY in Bussiness Accounts)
+     * An escrow payment link. This allows a payment to be made to persons
+     * belonging or not to the TropiPay platform with the particularity
+     * that the payment will be held in custody or retained until it is
+     * released with the approval of the payer.
+     * @see https://tpp.stoplight.io/docs/tropipay-api-doc/12a128ff971e4-creating-a-mediation-payment-card
+     * @param config Payload with the payment details
+     */
+    createMediationPaymentCard(config: mediationPaymentCardConfig): Promise<PaymentLink>;
 }
 
 export { Tropipay };

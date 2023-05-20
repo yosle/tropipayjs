@@ -18,13 +18,13 @@ class Tropipay {
     clientId;
     clientSecret;
     request;
-    accessToken;
-    refreshToken;
+    static accessToken;
+    static refreshToken;
     serverMode;
-    constructor(client_id, client_secret, server_mode = 'Development') {
-        this.clientId = client_id;
-        this.clientSecret = client_secret;
-        this.serverMode = server_mode;
+    constructor(config) {
+        this.clientId = config.clientId;
+        this.clientSecret = config.clientSecret;
+        this.serverMode = config.serverMode || 'Development';
         this.request = axios__default["default"].create({
             baseURL: this.serverMode === 'Production'
                 ? 'https://www.tropipay.com'
@@ -32,7 +32,7 @@ class Tropipay {
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                Authorization: `Bearer ${this.accessToken}`,
+                Authorization: `Bearer ${Tropipay.accessToken}`,
             }
         });
     }
@@ -44,13 +44,13 @@ class Tropipay {
                 grant_type: "client_credentials",
                 scope: "ALLOW_GET_PROFILE_DATA ALLOW_PAYMENT_IN ALLOW_EXTERNAL_CHARGE KYC3_FULL_ALLOW ALLOW_PAYMENT_OUT ALLOW_MARKET_PURCHASES ALLOW_GET_BALANCE ALLOW_GET_MOVEMENT_LIST ALLOW_GET_CREDENTIAL"
             }, {
-            // headers: {
-            //     'Content-Type': 'application/json',
-            //     Accept: 'application/json',
-            // }
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                }
             });
-            this.accessToken = data.access_token;
-            this.refreshToken = data.refresh_token;
+            Tropipay.accessToken = data.access_token;
+            Tropipay.refreshToken = data.refresh_token;
             return data;
         }
         catch (error) {
@@ -66,16 +66,16 @@ class Tropipay {
      * @returns Promise<PaymentLink> or throws an Exception.
      * @see https://tpp.stoplight.io/docs/tropipay-api-doc/b3A6ODgyNTM3OQ-create-a-new-pay-link-charge
      */
-    async createPayLink(payload) {
-        if (!this.accessToken) {
+    async createPaymentCard(payload) {
+        if (!Tropipay.accessToken) {
             await this.login();
         }
         try {
             const paylink = await this.request.post('/api/v2/paymentcards', payload, {
                 headers: {
-                    // 'Content-Type': 'application/json',
-                    Authorization: `Bearer ${this.accessToken}`,
-                    // Accept: 'application/json'
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: 'application/json'
                 }
             });
             return paylink.data;
@@ -90,11 +90,17 @@ class Tropipay {
      * @see https://tpp.stoplight.io/docs/tropipay-api-doc/b3A6OTgyOTQ1Mg-get-deposit-accounts-list
      */
     async getDepositAccounts() {
-        if (!this.accessToken) {
+        if (!Tropipay.accessToken) {
             await this.login();
         }
         try {
-            const deposits = await this.request.get('/api/v2/deposit_accounts', {});
+            const deposits = await this.request.get('/api/v2/deposit_accounts', {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: 'application/json'
+                }
+            });
             return deposits.data;
         }
         catch (error) {
@@ -112,7 +118,7 @@ class Tropipay {
             return countries.data;
         }
         catch (error) {
-            throw new Error(`Could not retrieve the countries list`);
+            throw new Error(`TropipayJS Error - Could not retrieve the countries list`);
         }
     }
     /**
@@ -133,18 +139,22 @@ class Tropipay {
         }
     }
     /**
-     * Get list of all the favorites accounts. This endpoint is not documented
-     * in the official Tropipay documentation.
-     * @returns
+     * Get list of all the favorites payment links.
+     * @returns Array of account Object or throws an error
      */
     async favorites() {
-        if (!this.accessToken) {
+        if (!Tropipay.accessToken) {
             await this.login();
         }
         try {
-            const favoritesList = await this.request.get('/api/v2/paymentcards/favorites');
-            console.log(favoritesList);
-            return favoritesList.data;
+            const favoritesList = await this.request.get('/api/v2/paymentcards/favorites', {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: 'application/json'
+                }
+            });
+            return favoritesList?.data?.rows;
         }
         catch (error) {
             throw new Error(`Could not retrieve favorites list ${error}`);
@@ -156,20 +166,21 @@ class Tropipay {
      * @returns
      */
     async movements(offset = 0, limit = 10) {
-        if (!this.accessToken) {
+        if (!Tropipay.accessToken)
             await this.login();
-        }
         try {
-            const movements = await this.request.get('/api/v2/movements', { params: { limit: limit, offset: offset },
+            const movements = await this.request.get('/api/v2/movements', {
+                params: { limit: limit, offset: offset },
                 headers: {
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
-                    Authorization: `Bearer ${this.accessToken}`,
-                } });
+                    Authorization: `Bearer ${Tropipay.accessToken}`
+                }
+            });
             return movements.data;
         }
         catch (error) {
-            throw new Error(`Could not retrieve movements list`);
+            throw new Error(`Could not retrieve movements list ${error}`);
         }
     }
     /**
@@ -177,9 +188,8 @@ class Tropipay {
      * @returns
      */
     async profile() {
-        if (!this.accessToken) {
+        if (!Tropipay.accessToken)
             await this.login();
-        }
         try {
             const profile = await this.request.get('/api/users/profile');
             return profile.data;
@@ -197,7 +207,7 @@ class Tropipay {
      * @see https://tpp.stoplight.io/docs/tropipay-api-doc/85163f6f28b23-get-rate
      */
     async rates(originCurrency, targetCurrency = 'EUR') {
-        if (!this.accessToken) {
+        if (!Tropipay.accessToken) {
             await this.login();
         }
         try {
@@ -208,13 +218,39 @@ class Tropipay {
                 headers: {
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
-                    Authorization: `Bearer ${this.accessToken}`,
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
                 }
             });
             return rates.data.rate;
         }
         catch (error) {
             throw new Error(`Could not retrieve rates ${error}`);
+        }
+    }
+    /**
+     * (ONLY in Bussiness Accounts)
+     * An escrow payment link. This allows a payment to be made to persons
+     * belonging or not to the TropiPay platform with the particularity
+     * that the payment will be held in custody or retained until it is
+     * released with the approval of the payer.
+     * @see https://tpp.stoplight.io/docs/tropipay-api-doc/12a128ff971e4-creating-a-mediation-payment-card
+     * @param config Payload with the payment details
+     */
+    async createMediationPaymentCard(config) {
+        if (!Tropipay.accessToken)
+            await this.login();
+        try {
+            const mediation = await this.request.post('/api/v2/paymentcards/mediation', config, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: 'application/json'
+                }
+            });
+            return mediation.data;
+        }
+        catch (error) {
+            throw new Error(`Could not generate mediation paymentCard ${error}`);
         }
     }
 }

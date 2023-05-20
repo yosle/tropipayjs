@@ -1,1 +1,1 @@
-export declare type TropipayCountry = {};
+export type TropipayCountry = {};

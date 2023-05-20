@@ -22,8 +22,13 @@ TropiPay is an electronic wallet that allows you to execute the most common fina
     - [Generating a Payment Link](#generating-a-payment-link)
 - [Contributing](#contributing)
 - [License](#license)
+
 ## About the project
-This library is a community effort still under development so use caution if you're planing to use it in production. Tropipay may make some changes on the API Specification in the future. Use the [test environment](https://tropipay-dev.herokuapp.com) to make sure everything is working as expected.
+This library is a community effort. Tropipay may make some changes on the API specification. Use the [test environment](https://tropipay-dev.herokuapp.com) to make sure everything is working as expected.
+
+**Note:** This library is provided as-is and serves as a client for the Tropipay API. While every effort has been made to ensure the accuracy and reliability of the library, Tropipay is solely responsible for maintaining and updating the API documentation. 
+
+The library is intended to simplify the integration process with Tropipay's services, but it is essential to consult the official documentation to ensure that you are using the API correctly and taking into account any recent changes or updates made by Tropipay.
 # Getting started
 You can use npm or yarn to install this package:
 
