@@ -60,24 +60,32 @@ import { Tropipay } from '@yosle/tropipayjs'
 You can instantiate the Tropipay class passing the client Id ,client secret and optionally the serverMode parameter, if no serverMode is provided, `Development` will be used as default. Make sure you use the [test environment](https://tropipay-dev.herokuapp.com) credentials when serverMode is on `Development`.
 
 ```javascript
-// test environment server
-const tpp = new Tropipay("yourclientidhere",
-    "yourclientsecrethere")
+// test environment server tropipay-dev.herokuapp.com
+const config = {    
+    clientId: process.env.TROPIPAY_CLIENT_ID,
+    clientSecret: process.env.TROPIPAY_CLIENT_SECRET
+    serverMode: 'Development' // it will be used as default if omited
+}
+const tpp = new Tropipay(config)
 ```
 
 To use your live credentials (real account) you must explicity set serverMode to `Production`.
 
 ```javascript
 //real account credentials
-const tpp = new Tropipay("yourclientidhere",
-    "yourclientsecrethere",'Production')
+const config = {    
+    clientId: process.env.TROPIPAY_CLIENT_ID,
+    clientSecret: process.env.TROPIPAY_CLIENT_SECRET,
+    serverMode: 'Production' //live account
+}
+const tpp = new Tropipay(config)
 ```
 ### Generating a Payment Link
 ```javascript
 /*
 * Example Payload
 */
-const payload = await tpp.createPayLink({
+const payload = {
         reference: "my-paylink-1",
         concept: "Bicycle",
         favorite: "true",
@@ -102,11 +110,10 @@ const payload = await tpp.createPayLink({
             termsAndConditions: "true"
         },
         directPayment: "true"
-    })
-    
+    }
 // Use inside an async function
-const paylink = await tpp.createPayLink(payload)
-console.log(paylink.shortUrl)
+const paylink = await tpp.createPaymentCard(payload);
+console.log(paylink.shortUrl);
 ```
 
 For more examples, please refer to the [Documentation](https://github.com/yosle/tropipayjs/blob/master/docs/)
