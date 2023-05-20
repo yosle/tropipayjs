@@ -4,3 +4,4 @@
 testing.js
 *.npmrc
 *.lock
+__test.js
