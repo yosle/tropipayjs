@@ -122,6 +122,29 @@ class Tropipay {
         }
     }
     /**
+     * Get user balance
+     * @returns balance object
+     */
+    async getBalance() {
+        if (!Tropipay.accessToken) {
+            await this.login();
+        }
+        try {
+            const balance = await this.request.get('/api/v2/users/balance', {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: 'application/json'
+                }
+            });
+            return balance.data;
+        }
+        catch (error) {
+            console.log("el error es ", error);
+            throw new Error(`TropipayJS Error - Could not retrieve the user's balance`);
+        }
+    }
+    /**
      * Get the list of all detination countries supported by Tropipay.
      * Obtaining the list of valid countries to send funds to. Useful
      * when adding new beneficiaries to some user.
