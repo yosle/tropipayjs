@@ -73,6 +73,11 @@ interface TropipayConfig {
     clientSecret: string;
     serverMode?: ServerMode;
 }
+type AccountBalance = {
+    balance: number;
+    pendingIn: number;
+    pendingOut: number;
+};
 declare class Tropipay {
     protected clientId: string;
     protected clientSecret: string;
@@ -101,6 +106,11 @@ declare class Tropipay {
      * @see https://tpp.stoplight.io/docs/tropipay-api-doc/bfac21259e2ff-getting-users-countries-list
      */
     countries(): Promise<Country[]>;
+    /**
+     * Get user balance
+     * @returns balance object
+     */
+    getBalance(): Promise<AccountBalance>;
     /**
      * Get the list of all detination countries supported by Tropipay.
      * Obtaining the list of valid countries to send funds to. Useful
