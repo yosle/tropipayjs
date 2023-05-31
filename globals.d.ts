@@ -11,20 +11,20 @@ type LoginError = {
 }
 
 type Country = {
-        id: number,
-        name: string,
-        sepaZone: boolean,
-        state: number,
-        slug: string,
-        slugn: number,
-        callingCode: number,
-        isDestination: boolean,
-        isRisky: boolean,
-        currentCurrency: string | null,
-        createdAt: string,
-        updatedAt: string,
-        isFavorite: boolean,
-        position: any
+    id: number,
+    name: string,
+    sepaZone: boolean,
+    state: number,
+    slug: string,
+    slugn: number,
+    callingCode: number,
+    isDestination: boolean,
+    isRisky: boolean,
+    currentCurrency: string | null,
+    createdAt: string,
+    updatedAt: string,
+    isFavorite: boolean,
+    position: any
 
 }
 
@@ -69,6 +69,7 @@ type Deposit = {
 }
 
 type AccountDeposits = {
-   count: number,
-   rows:  Deposit[]
+    count: number,
+    rows: Deposit[]
 }
+
