@@ -17,6 +17,12 @@ interface TropipayConfig {
     serverMode?: ServerMode;
 }
 
+type AccountBalance = {
+    balance: number,
+    pendingIn: number,
+    pendingOut: number
+}
+
 export class Tropipay {
     protected clientId: string;
     protected clientSecret: string;
@@ -126,6 +132,27 @@ export class Tropipay {
             return countries.data
         } catch (error) {
             throw new Error(`TropipayJS Error - Could not retrieve the countries list`);
+        }
+    }
+    /**
+     * Get user balance
+     * @returns balance Object { balance: number, pendingIn: number, pendingOut: number }
+     */
+    async getBalance(): Promise<AccountBalance> {
+        if (!Tropipay.accessToken) {
+            await this.login()
+        }
+        try {
+            const balance = await this.request.get('/api/v2/users/balance', {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: 'application/json'
+                }
+            });
+            return balance.data
+        } catch (error) {
+            throw new Error(`TropipayJS Error - Could not retrieve the user's balance`);
         }
     }
 
