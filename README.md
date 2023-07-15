@@ -1,5 +1,6 @@
 TropipayJS - Typescript/Javascript SDK for Tropipay Payments API
-=========== 
+===========
+
 ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white) 
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
@@ -10,6 +11,7 @@ TropiPay is an electronic wallet that allows you to execute the most common fina
 
 
 # Table of Contents
+
 - [TropipayJS - Typescript/Javascript SDK for Tropipay Payments API](#tropipayjs---typescriptjavascript-sdk-for-tropipay-payments-api)
 - [Table of Contents](#table-of-contents)
   - [About the project](#about-the-project)
@@ -24,12 +26,15 @@ TropiPay is an electronic wallet that allows you to execute the most common fina
 - [License](#license)
 
 ## About the project
+
 This library is a community effort. Tropipay may make some changes on the API specification. Use the [test environment](https://tropipay-dev.herokuapp.com) to make sure everything is working as expected.
 
 **Note:** This library is provided as-is and serves as a client for the Tropipay API. While every effort has been made to ensure the accuracy and reliability of the library, Tropipay is solely responsible for maintaining and updating the API documentation. 
 
 The library is intended to simplify the integration process with Tropipay's services, but it is essential to consult the official documentation to ensure that you are using the API correctly and taking into account any recent changes or updates made by Tropipay.
+
 # Getting started
+
 You can use npm or yarn to install this package:
 
 ```npm install @yosle/tropipayjs``` 
@@ -46,17 +51,23 @@ or
 In order to use the Tropipay API you'll need a client ID and a client secret. Sign up with your [Tropipay](www.tropipay.com) account, go to the App Menu->Applications and credentials. You'll be asked to enter a confirmation code (use 123456 in the test enviroment). _Make sure you test everything in the [test environment](https://tropipay-dev.herokuapp.com) first before using your real account._ Create an app and configure the client id an client secret for the app.
 
 ## Usage
+
 The Tropipay instance, allows you to access all the method available in the API. This Object is meant to be used *only in server side*. Do not use the Tropipay object on the client side (browser). This would expose your app credentials (the client secret of your account). You can create an endpoint at your back-end using express and consume it in your front-end, or use SSR if you're using NextJS.
 
 ### CommonJS 
+
 ```javascript
 const { Tropipay } = require('@yosle/tropipayjs')
 ```
+
 ### ES6 
+
 ```javascript
 import { Tropipay } from '@yosle/tropipayjs'
 ```
+
 ### Initialize the Tropipay class
+
 You can instantiate the Tropipay class passing the client Id ,client secret and optionally the serverMode parameter, if no serverMode is provided, `Development` will be used as default. Make sure you use the [test environment](https://tropipay-dev.herokuapp.com) credentials when serverMode is on `Development`.
 
 ```javascript
@@ -80,7 +91,9 @@ const config = {
 }
 const tpp = new Tropipay(config)
 ```
+
 ### Generating a Payment Link
+
 ```javascript
 /*
 * Example Payload
@@ -119,6 +132,7 @@ console.log(paylink.shortUrl);
 For more examples, please refer to the [Documentation](https://github.com/yosle/tropipayjs/blob/master/docs/)
 
 # Contributing
+
 If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement". Don't forget to give the project a star! Thanks again!
 
 1. Fork the Project
@@ -130,7 +144,9 @@ If you have a suggestion that would make this better, please fork the repo and c
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change. 
 
 You can also make a small [donation to the author](https://tppay.me/l94qaa3h) of the library.
+
 # License
+
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 
