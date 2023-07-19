@@ -67,7 +67,7 @@ interface mediationPaymentCardConfig {
  *
  */
 
-type ServerMode = 'Development' | 'Production';
+type ServerMode = "Development" | "Production";
 interface TropipayConfig {
     clientId: string;
     clientSecret: string;
@@ -78,9 +78,15 @@ type AccountBalance = {
     pendingIn: number;
     pendingOut: number;
 };
+type HookEventType = "transaction_completed" | "transaction_charged" | "transaction_guarded";
+type UserHook = {
+    event: HookEventType;
+    target: string;
+    value: string;
+};
 declare class Tropipay {
-    protected clientId: string;
-    protected clientSecret: string;
+    readonly clientId: string;
+    readonly clientSecret: string;
     protected request: Axios;
     protected static accessToken: string | undefined;
     protected static refreshToken: string | undefined;
@@ -108,7 +114,7 @@ declare class Tropipay {
     countries(): Promise<Country[]>;
     /**
      * Get user balance
-     * @returns balance object
+     * @returns balance Object { balance: number, pendingIn: number, pendingOut: number }
      */
     getBalance(): Promise<AccountBalance>;
     /**
@@ -155,6 +161,35 @@ declare class Tropipay {
      * @param config Payload with the payment details
      */
     createMediationPaymentCard(config: mediationPaymentCardConfig): Promise<PaymentLink>;
+    subscribeHook(eventType: HookEventType, target: string, value: string): Promise<void>;
+    /**
+     * Get hook the sucbcribed hook info by his eventType.
+     * If no eventType is passed it will return
+     * all subscribed hooks or empty Array if none hooks exist.
+     * @param eventType or no params for retrieving all hooks
+     * @returns
+     */
+    getSubscribedHook(eventType?: HookEventType): Promise<UserHook[]>;
+    updateSubscribedHook(eventType?: string): Promise<void>;
+    deleteSubscribedHook(eventType?: string): Promise<void>;
+}
+declare class ClientSideUtils {
+    constructor(tropipayInstance: Tropipay);
+}
+declare class ServerSideUtils {
+    private tropipay;
+    constructor(tropipayInstance: Tropipay);
+    /**
+     * Verifies Topipay's signature on webhooks body. Note: Sometimes, payload
+     * might be altered by middlewares, and that will affect the evaluation. Make sure you use this function on top of
+     * any middlewares if you are using expressjs or similars.
+     * @param payload Raw webhook body
+     * @returns true | false
+     */
+    static verifyHooksSignature(credentials: {
+        clientId: string;
+        clientSecret: string;
+    } | Tropipay, originalCurrencyAmount: string, payload: string): boolean;
 }
 
-export { Tropipay };
+export { ClientSideUtils, ServerSideUtils, Tropipay };
