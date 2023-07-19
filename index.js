@@ -24,30 +24,30 @@ class Tropipay {
     constructor(config) {
         this.clientId = config.clientId;
         this.clientSecret = config.clientSecret;
-        this.serverMode = config.serverMode || 'Development';
+        this.serverMode = config.serverMode || "Development";
         this.request = axios__default["default"].create({
-            baseURL: this.serverMode === 'Production'
-                ? 'https://www.tropipay.com'
-                : 'https://tropipay-dev.herokuapp.com',
+            baseURL: this.serverMode === "Production"
+                ? "https://www.tropipay.com"
+                : "https://tropipay-dev.herokuapp.com",
             headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
+                "Content-Type": "application/json",
+                Accept: "application/json",
                 Authorization: `Bearer ${Tropipay.accessToken}`,
-            }
+            },
         });
     }
     async login() {
         try {
-            const { data } = await this.request.post('/api/v2/access/token', {
+            const { data } = await this.request.post("/api/v2/access/token", {
                 client_id: this.clientId,
                 client_secret: this.clientSecret,
                 grant_type: "client_credentials",
-                scope: "ALLOW_GET_PROFILE_DATA ALLOW_PAYMENT_IN ALLOW_EXTERNAL_CHARGE KYC3_FULL_ALLOW ALLOW_PAYMENT_OUT ALLOW_MARKET_PURCHASES ALLOW_GET_BALANCE ALLOW_GET_MOVEMENT_LIST ALLOW_GET_CREDENTIAL"
+                scope: "ALLOW_GET_PROFILE_DATA ALLOW_PAYMENT_IN ALLOW_EXTERNAL_CHARGE KYC3_FULL_ALLOW ALLOW_PAYMENT_OUT ALLOW_MARKET_PURCHASES ALLOW_GET_BALANCE ALLOW_GET_MOVEMENT_LIST ALLOW_GET_CREDENTIAL",
             }, {
                 headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                }
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
             });
             Tropipay.accessToken = data.access_token;
             Tropipay.refreshToken = data.refresh_token;
@@ -71,12 +71,12 @@ class Tropipay {
             await this.login();
         }
         try {
-            const paylink = await this.request.post('/api/v2/paymentcards', payload, {
+            const paylink = await this.request.post("/api/v2/paymentcards", payload, {
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
-                    Accept: 'application/json'
-                }
+                    Accept: "application/json",
+                },
             });
             return paylink.data;
         }
@@ -94,12 +94,12 @@ class Tropipay {
             await this.login();
         }
         try {
-            const deposits = await this.request.get('/api/v2/deposit_accounts', {
+            const deposits = await this.request.get("/api/v2/deposit_accounts", {
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
-                    Accept: 'application/json'
-                }
+                    Accept: "application/json",
+                },
             });
             return deposits.data;
         }
@@ -114,33 +114,32 @@ class Tropipay {
      */
     async countries() {
         try {
-            const countries = await this.request.get('/api/v2/countries');
+            const countries = await this.request.get("/api/v2/countries");
             return countries.data;
         }
         catch (error) {
-            throw new Error(`TropipayJS Error - Could not retrieve the countries list`);
+            throw new Error(`Could not retrieve the countries list`);
         }
     }
     /**
      * Get user balance
-     * @returns balance object
+     * @returns balance Object { balance: number, pendingIn: number, pendingOut: number }
      */
     async getBalance() {
         if (!Tropipay.accessToken) {
             await this.login();
         }
         try {
-            const balance = await this.request.get('/api/v2/users/balance', {
+            const balance = await this.request.get("/api/v2/users/balance", {
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
-                    Accept: 'application/json'
-                }
+                    Accept: "application/json",
+                },
             });
             return balance.data;
         }
         catch (error) {
-            console.log("el error es ", error);
             throw new Error(`TropipayJS Error - Could not retrieve the user's balance`);
         }
     }
@@ -154,7 +153,7 @@ class Tropipay {
      */
     async destinations() {
         try {
-            const countries = await this.request.get('/api/v2/countries/destinations');
+            const countries = await this.request.get("/api/v2/countries/destinations");
             return countries.data;
         }
         catch (error) {
@@ -170,12 +169,12 @@ class Tropipay {
             await this.login();
         }
         try {
-            const favoritesList = await this.request.get('/api/v2/paymentcards/favorites', {
+            const favoritesList = await this.request.get("/api/v2/paymentcards/favorites", {
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
-                    Accept: 'application/json'
-                }
+                    Accept: "application/json",
+                },
             });
             return favoritesList?.data?.rows;
         }
@@ -192,13 +191,13 @@ class Tropipay {
         if (!Tropipay.accessToken)
             await this.login();
         try {
-            const movements = await this.request.get('/api/v2/movements', {
+            const movements = await this.request.get("/api/v2/movements", {
                 params: { limit: limit, offset: offset },
                 headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                    Authorization: `Bearer ${Tropipay.accessToken}`
-                }
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                },
             });
             return movements.data;
         }
@@ -214,7 +213,7 @@ class Tropipay {
         if (!Tropipay.accessToken)
             await this.login();
         try {
-            const profile = await this.request.get('/api/users/profile');
+            const profile = await this.request.get("/api/users/profile");
             return profile.data;
         }
         catch (error) {
@@ -229,20 +228,20 @@ class Tropipay {
      * @returns Conversion rate (number)
      * @see https://tpp.stoplight.io/docs/tropipay-api-doc/85163f6f28b23-get-rate
      */
-    async rates(originCurrency, targetCurrency = 'EUR') {
+    async rates(originCurrency, targetCurrency = "EUR") {
         if (!Tropipay.accessToken) {
             await this.login();
         }
         try {
-            const rates = await this.request.post('/api/v2/movements/get_rate', {
+            const rates = await this.request.post("/api/v2/movements/get_rate", {
                 currencyFrom: originCurrency,
-                currencyTo: targetCurrency
+                currencyTo: targetCurrency,
             }, {
                 headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
-                }
+                },
             });
             return rates.data.rate;
         }
@@ -263,12 +262,12 @@ class Tropipay {
         if (!Tropipay.accessToken)
             await this.login();
         try {
-            const mediation = await this.request.post('/api/v2/paymentcards/mediation', config, {
+            const mediation = await this.request.post("/api/v2/paymentcards/mediation", config, {
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
-                    Accept: 'application/json'
-                }
+                    Accept: "application/json",
+                },
             });
             return mediation.data;
         }
@@ -276,7 +275,59 @@ class Tropipay {
             throw new Error(`Could not generate mediation paymentCard ${error}`);
         }
     }
+    async subscribeHook(eventType, target, value) { }
+    /**
+     * Get hook the sucbcribed hook info by his eventType.
+     * If no eventType is passed it will return
+     * all subscribed hooks or empty Array if none hooks exist.
+     * @param eventType or no params for retrieving all hooks
+     * @returns
+     */
+    async getSubscribedHook(eventType) {
+        if (!Tropipay.accessToken)
+            await this.login();
+        try {
+            const hooks = await this.request.get(`/api/v2/hooks/${eventType || ""}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return hooks.data;
+        }
+        catch (error) {
+            throw new Error(`Could not get subscribed hooks ${error}`);
+        }
+    }
+    async updateSubscribedHook(eventType) { }
+    async deleteSubscribedHook(eventType) { }
+}
+class ClientSideUtils {
+    constructor(tropipayInstance) { }
+}
+class ServerSideUtils {
+    tropipay;
+    constructor(tropipayInstance) {
+        this.tropipay = tropipayInstance;
+    }
+    /**
+     * Verifies Topipay's signature on webhooks body. Note: Sometimes, payload
+     * might be altered by middlewares, and that will affect the evaluation. Make sure you use this function on top of
+     * any middlewares if you are using expressjs or similars.
+     * @param payload Raw webhook body
+     * @returns true | false
+     */
+    static verifyHooksSignature(credentials, originalCurrencyAmount, payload) {
+        const crypto = require("crypto");
+        const sha256 = crypto.createHmac("sha256", credentials.clientSecret);
+        const digest = sha256.update(payload).digest();
+        const hex = Buffer.from(payload, "hex");
+        return crypto.timingSafeEqual(digest, hex);
+    }
 }
 
+exports.ClientSideUtils = ClientSideUtils;
+exports.ServerSideUtils = ServerSideUtils;
 exports.Tropipay = Tropipay;
 //# sourceMappingURL=index.js.map
