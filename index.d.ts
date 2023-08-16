@@ -79,11 +79,15 @@ type AccountBalance = {
     pendingOut: number;
 };
 type HookEventType = "transaction_completed" | "transaction_charged" | "transaction_guarded";
-type UserHook = {
+interface UserHook {
     event: HookEventType;
     target: string;
     value: string;
-};
+}
+interface UserHookSubscribed extends UserHook {
+    createdAt: string;
+    updatedAt: string;
+}
 declare class Tropipay {
     readonly clientId: string;
     readonly clientSecret: string;
@@ -169,7 +173,7 @@ declare class Tropipay {
      * @param eventType or no params for retrieving all hooks
      * @returns
      */
-    getSubscribedHook(eventType?: HookEventType): Promise<UserHook[]>;
+    getSubscribedHook(eventType?: HookEventType): Promise<UserHookSubscribed[]>;
     updateSubscribedHook(eventType?: string): Promise<void>;
     deleteSubscribedHook(eventType?: string): Promise<void>;
 }
@@ -180,16 +184,17 @@ declare class ServerSideUtils {
     private tropipay;
     constructor(tropipayInstance: Tropipay);
     /**
-     * Verifies Topipay's signature on webhooks body. Note: Sometimes, payload
-     * might be altered by middlewares, and that will affect the evaluation. Make sure you use this function on top of
-     * any middlewares if you are using expressjs or similars.
-     * @param payload Raw webhook body
-     * @returns true | false
+     * Verify Topipay's signature on webhooks.
+     * @param credentials Credential object or Tropipay instance
+     * @param {String} originalCurrencyAmount
+     * @param bankOrderCode
+     * @param signature
+     * @returns {Boolean}
      */
-    static verifyHooksSignature(credentials: {
+    static verifySignature(credentials: {
         clientId: string;
         clientSecret: string;
-    } | Tropipay, originalCurrencyAmount: string, payload: string): boolean;
+    } | Tropipay, originalCurrencyAmount: string, bankOrderCode: string, signature: string): boolean;
 }
 
 export { ClientSideUtils, ServerSideUtils, Tropipay };

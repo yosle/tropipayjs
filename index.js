@@ -3,10 +3,30 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var axios = require('axios');
+var crypto = require('crypto');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
+function _interopNamespace(e) {
+    if (e && e.__esModule) return e;
+    var n = Object.create(null);
+    if (e) {
+        Object.keys(e).forEach(function (k) {
+            if (k !== 'default') {
+                var d = Object.getOwnPropertyDescriptor(e, k);
+                Object.defineProperty(n, k, d.get ? d : {
+                    enumerable: true,
+                    get: function () { return e[k]; }
+                });
+            }
+        });
+    }
+    n["default"] = e;
+    return Object.freeze(n);
+}
+
 var axios__default = /*#__PURE__*/_interopDefaultLegacy(axios);
+var crypto__namespace = /*#__PURE__*/_interopNamespace(crypto);
 
 /**
  * Tropipayjs is a Typescript/Javascript library for the Tropipay API.
@@ -300,8 +320,12 @@ class Tropipay {
             throw new Error(`Could not get subscribed hooks ${error}`);
         }
     }
-    async updateSubscribedHook(eventType) { }
-    async deleteSubscribedHook(eventType) { }
+    async updateSubscribedHook(eventType) {
+        //TODO
+    }
+    async deleteSubscribedHook(eventType) {
+        //TODO
+    }
 }
 class ClientSideUtils {
     constructor(tropipayInstance) { }
@@ -312,18 +336,25 @@ class ServerSideUtils {
         this.tropipay = tropipayInstance;
     }
     /**
-     * Verifies Topipay's signature on webhooks body. Note: Sometimes, payload
-     * might be altered by middlewares, and that will affect the evaluation. Make sure you use this function on top of
-     * any middlewares if you are using expressjs or similars.
-     * @param payload Raw webhook body
-     * @returns true | false
+     * Verify Topipay's signature on webhooks.
+     * @param credentials Credential object or Tropipay instance
+     * @param {String} originalCurrencyAmount
+     * @param bankOrderCode
+     * @param signature
+     * @returns {Boolean}
      */
-    static verifyHooksSignature(credentials, originalCurrencyAmount, payload) {
-        const crypto = require("crypto");
-        const sha256 = crypto.createHmac("sha256", credentials.clientSecret);
-        const digest = sha256.update(payload).digest();
-        const hex = Buffer.from(payload, "hex");
-        return crypto.timingSafeEqual(digest, hex);
+    static verifySignature(credentials, originalCurrencyAmount, bankOrderCode, signature) {
+        const localSignature = crypto__namespace
+            .createHash("sha256")
+            .update(bankOrderCode +
+            credentials.clientId +
+            crypto__namespace
+                .createHash("sha1")
+                .update(credentials.clientSecret)
+                .digest("hex") +
+            originalCurrencyAmount)
+            .digest("hex");
+        return localSignature === signature;
     }
 }
 
