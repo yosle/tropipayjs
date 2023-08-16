@@ -1,5 +1,41 @@
 import { Axios } from 'axios';
 
+type ServerMode$1 = "Development" | "Production";
+
+type AccountBalance = {
+    balance: number;
+    pendingIn: number;
+    pendingOut: number;
+};
+interface TropipayConfig {
+    clientId: string;
+    clientSecret: string;
+    serverMode?: ServerMode$1;
+}
+type TropipayCredentials = {
+    clientId: string;
+    clientSecret: string;
+};
+type HookEventType = "transaction_completed" | "transaction_charged" | "transaction_guarded";
+type HookTargetType = "web" | "email";
+interface UserHook {
+    event: HookEventType;
+    target: string;
+    value: string;
+}
+interface UserHook {
+    event: HookEventType;
+    target: string;
+    value: string;
+}
+interface UserHookSubscribed extends UserHook {
+    createdAt: string;
+    updatedAt: string;
+}
+interface UserHookSubscribed extends UserHook {
+    createdAt: string;
+    updatedAt: string;
+}
 interface PaymentLinkPayload {
     reference: string;
     concept: string;
@@ -36,10 +72,6 @@ interface PaymentLink extends PaymentLinkPayload {
     shortUrl: string;
     paymentUrl: string;
 }
-
-/**
- *
- */
 interface mediationPaymentCardConfig {
     amount: number;
     currency: "EUR" | "USD";
@@ -59,6 +91,91 @@ interface mediationPaymentCardConfig {
     feeFixed?: number;
     sendMail: boolean;
 }
+type LoginResponse = {
+    access_token: string;
+    refresh_token: string;
+    token_type: "Bearer";
+    expires_in: number;
+    scope: string;
+};
+type LoginError = {
+    error: string;
+};
+type Country = {
+    id: number;
+    name: string;
+    sepaZone: boolean;
+    state: number;
+    slug: string;
+    slugn: number;
+    callingCode: number;
+    isDestination: boolean;
+    isRisky: boolean;
+    currentCurrency: string | null;
+    createdAt: string;
+    updatedAt: string;
+    isFavorite: boolean;
+    position: any;
+};
+type Deposit = {
+    id: number;
+    accountNumber: string;
+    alias: string;
+    swift: string;
+    type: number;
+    country: number | null;
+    firstName: string;
+    default: null;
+    state: number;
+    userId: string;
+    countryDestinationId: number;
+    lastName: string;
+    documentNumber: number;
+    userRelationTypeId: number;
+    city: string;
+    postalCode: string;
+    address: string;
+    phone: string;
+    checked: boolean;
+    province: string;
+    beneficiaryType: number;
+    relatedUserId: null | string;
+    currency: string;
+    correspondent?: any;
+    location: any;
+    office: any;
+    officeValue: any;
+    paymentType: number;
+    paymentEntityBeneficiaryId: number;
+    paymentEntityAccountId: number;
+    verified: any;
+    paymentEntityInfo: any;
+    documentTypeId: any;
+    documentExpirationDate: Date;
+    createdAt: Date;
+    updatedAt: Date;
+    countryDestination: Country;
+};
+type AccountDeposits = {
+    count: number;
+    rows: Deposit[];
+};
+
+declare class TropipayHooks {
+    private tropipay;
+    constructor(tropipayInstance: Tropipay);
+    static subscribeHook(eventType: HookEventType, target: string, value: string): Promise<void>;
+    /**
+     * Get hook the sucbcribed hook info by his eventType.
+     * If no eventType is passed it will return
+     * all subscribed hooks or empty Array if none hooks exist.
+     * @param eventType or no params for retrieving all hooks
+     * @returns
+     */
+    getSubscribedHook(eventType?: HookEventType): Promise<UserHookSubscribed[]>;
+    updateSubscribedHook(eventType?: string): Promise<void>;
+    deleteSubscribedHook(eventType?: string): Promise<void>;
+}
 
 /**
  * Tropipayjs is a Typescript/Javascript library for the Tropipay API.
@@ -68,33 +185,15 @@ interface mediationPaymentCardConfig {
  */
 
 type ServerMode = "Development" | "Production";
-interface TropipayConfig {
-    clientId: string;
-    clientSecret: string;
-    serverMode?: ServerMode;
-}
-type AccountBalance = {
-    balance: number;
-    pendingIn: number;
-    pendingOut: number;
-};
-type HookEventType = "transaction_completed" | "transaction_charged" | "transaction_guarded";
-interface UserHook {
-    event: HookEventType;
-    target: string;
-    value: string;
-}
-interface UserHookSubscribed extends UserHook {
-    createdAt: string;
-    updatedAt: string;
-}
+
 declare class Tropipay {
     readonly clientId: string;
     readonly clientSecret: string;
-    protected request: Axios;
-    protected static accessToken: string | undefined;
-    protected static refreshToken: string | undefined;
-    protected serverMode: ServerMode;
+    request: Axios;
+    static accessToken: string | undefined;
+    static refreshToken: string | undefined;
+    serverMode: ServerMode;
+    hooks: TropipayHooks;
     constructor(config: TropipayConfig);
     login(): Promise<LoginResponse>;
     /**
@@ -165,21 +264,11 @@ declare class Tropipay {
      * @param config Payload with the payment details
      */
     createMediationPaymentCard(config: mediationPaymentCardConfig): Promise<PaymentLink>;
-    subscribeHook(eventType: HookEventType, target: string, value: string): Promise<void>;
-    /**
-     * Get hook the sucbcribed hook info by his eventType.
-     * If no eventType is passed it will return
-     * all subscribed hooks or empty Array if none hooks exist.
-     * @param eventType or no params for retrieving all hooks
-     * @returns
-     */
-    getSubscribedHook(eventType?: HookEventType): Promise<UserHookSubscribed[]>;
-    updateSubscribedHook(eventType?: string): Promise<void>;
-    deleteSubscribedHook(eventType?: string): Promise<void>;
 }
 declare class ClientSideUtils {
     constructor(tropipayInstance: Tropipay);
 }
+
 declare class ServerSideUtils {
     private tropipay;
     constructor(tropipayInstance: Tropipay);
@@ -197,4 +286,6 @@ declare class ServerSideUtils {
     } | Tropipay, originalCurrencyAmount: string, bankOrderCode: string, signature: string): boolean;
 }
 
-export { ClientSideUtils, ServerSideUtils, Tropipay };
+declare const SERVER_MODE: ServerMode$1;
+
+export { AccountBalance, AccountDeposits, ClientSideUtils, Country, Deposit, HookEventType, HookTargetType, LoginError, LoginResponse, PaymentLink, PaymentLinkPayload, SERVER_MODE, ServerMode$1 as ServerMode, ServerSideUtils, Tropipay, TropipayConfig, TropipayCredentials, TropipayHooks, UserHook, UserHookSubscribed, mediationPaymentCardConfig };

@@ -28,6 +28,48 @@ function _interopNamespace(e) {
 var axios__default = /*#__PURE__*/_interopDefaultLegacy(axios);
 var crypto__namespace = /*#__PURE__*/_interopNamespace(crypto);
 
+class TropipayHooks {
+    tropipay;
+    // ... hook-related functionality ...
+    constructor(tropipayInstance) {
+        this.tropipay = tropipayInstance;
+    }
+    static async subscribeHook(eventType, target, value) { }
+    /**
+     * Get hook the sucbcribed hook info by his eventType.
+     * If no eventType is passed it will return
+     * all subscribed hooks or empty Array if none hooks exist.
+     * @param eventType or no params for retrieving all hooks
+     * @returns
+     */
+    async getSubscribedHook(eventType) {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const hooks = await this.tropipay.request.get(`/api/v2/hooks/${eventType || ""}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return hooks.data;
+        }
+        catch (error) {
+            throw new Error(`Could not get subscribed hooks ${error}`);
+        }
+    }
+    async updateSubscribedHook(eventType) {
+        //TODO
+        throw new Error("Not implementet yet");
+    }
+    async deleteSubscribedHook(eventType) {
+        //TODO
+        throw new Error("Not implementet yet");
+    }
+}
+
 /**
  * Tropipayjs is a Typescript/Javascript library for the Tropipay API.
  *
@@ -41,6 +83,7 @@ class Tropipay {
     static accessToken;
     static refreshToken;
     serverMode;
+    hooks;
     constructor(config) {
         this.clientId = config.clientId;
         this.clientSecret = config.clientSecret;
@@ -55,6 +98,7 @@ class Tropipay {
                 Authorization: `Bearer ${Tropipay.accessToken}`,
             },
         });
+        this.hooks = new TropipayHooks(this);
     }
     async login() {
         try {
@@ -295,41 +339,11 @@ class Tropipay {
             throw new Error(`Could not generate mediation paymentCard ${error}`);
         }
     }
-    async subscribeHook(eventType, target, value) { }
-    /**
-     * Get hook the sucbcribed hook info by his eventType.
-     * If no eventType is passed it will return
-     * all subscribed hooks or empty Array if none hooks exist.
-     * @param eventType or no params for retrieving all hooks
-     * @returns
-     */
-    async getSubscribedHook(eventType) {
-        if (!Tropipay.accessToken)
-            await this.login();
-        try {
-            const hooks = await this.request.get(`/api/v2/hooks/${eventType || ""}`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${Tropipay.accessToken}`,
-                    Accept: "application/json",
-                },
-            });
-            return hooks.data;
-        }
-        catch (error) {
-            throw new Error(`Could not get subscribed hooks ${error}`);
-        }
-    }
-    async updateSubscribedHook(eventType) {
-        //TODO
-    }
-    async deleteSubscribedHook(eventType) {
-        //TODO
-    }
 }
 class ClientSideUtils {
     constructor(tropipayInstance) { }
 }
+
 class ServerSideUtils {
     tropipay;
     constructor(tropipayInstance) {
@@ -358,7 +372,11 @@ class ServerSideUtils {
     }
 }
 
+const SERVER_MODE = "Development"; // Move the constant here
+
 exports.ClientSideUtils = ClientSideUtils;
+exports.SERVER_MODE = SERVER_MODE;
 exports.ServerSideUtils = ServerSideUtils;
 exports.Tropipay = Tropipay;
+exports.TropipayHooks = TropipayHooks;
 //# sourceMappingURL=index.js.map
