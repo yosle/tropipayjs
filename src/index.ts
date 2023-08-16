@@ -8,7 +8,7 @@
 import axios, { Axios } from "axios";
 import { PaymentLink, PaymentLinkPayload } from "./interfaces/paymentlink";
 import { mediationPaymentCardConfig } from "./interfaces/mediation";
-
+import * as crypto from "crypto";
 type ServerMode = "Development" | "Production";
 
 interface TropipayConfig {
@@ -381,21 +381,36 @@ export class ServerSideUtils {
   }
 
   /**
-   * Verifies Topipay's signature on webhooks body. Note: Sometimes, payload
-   * might be altered by middlewares, and that will affect the evaluation. Make sure you use this function on top of
-   * any middlewares if you are using expressjs or similars.
-   * @param payload Raw webhook body
-   * @returns true | false
+   * Verify Topipay's signature on webhooks.
+   * @param credentials Credential object or Tropipay instance
+   * @param {String} originalCurrencyAmount
+   * @param bankOrderCode
+   * @param signature
+   * @returns {Boolean}
    */
-  public static verifyHooksSignature(
-    credentials: { clientId: string; clientSecret: string } | Tropipay,
+  public static verifySignature(
+    credentials:
+      | {
+          clientId: string;
+          clientSecret: string;
+        }
+      | Tropipay,
     originalCurrencyAmount: string,
-    payload: string
+    bankOrderCode: string,
+    signature: string
   ): boolean {
-    const crypto = require("crypto");
-    const sha256 = crypto.createHmac("sha256", credentials.clientSecret);
-    const digest = sha256.update(payload).digest();
-    const hex = Buffer.from(payload, "hex");
-    return crypto.timingSafeEqual(digest, hex);
+    const localSignature = crypto
+      .createHash("sha256")
+      .update(
+        bankOrderCode +
+          credentials.clientId +
+          crypto
+            .createHash("sha1")
+            .update(credentials.clientSecret)
+            .digest("hex") +
+          originalCurrencyAmount
+      )
+      .digest("hex");
+    return localSignature === signature;
   }
 }
