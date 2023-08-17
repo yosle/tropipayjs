@@ -34,7 +34,44 @@ class TropipayHooks {
     constructor(tropipayInstance) {
         this.tropipay = tropipayInstance;
     }
-    static async subscribeHook(eventType, target, value) { }
+    /**
+     * Subscribe a new hook
+     * @param event String that represents the name of the event,
+     * you must select from the list of available events, otherwise
+     * it will not produce an error but it will not be executed.
+     * For get full list of available events see endpoint
+     * GET /api/v2/hook/events.
+     * @param target String representing the type of event supported.
+     * It is currently available: 'web' (allows to receive information in a url),
+     * 'email' (allows to receive information in an email address).
+     * @param value if the selected 'target' is email the value would be an
+     *  email address, likewise if the selected 'target' is 'web' the expected
+     *  value corresponds to a url that receives information through the
+     * HTTP POST method.
+     * @returns
+     */
+    async subscribe({ eventType, target, value, }) {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const hooks = await this.tropipay.request.post(`/api/v2/hooks`, {
+                event: eventType,
+                target: target,
+                value: value,
+            }, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return hooks.data;
+        }
+        catch (error) {
+            throw new Error(`Could not get subscribe new hook`);
+        }
+    }
     /**
      * Get the sucbcribed hook info by his event type.
      * If no event type is passed, it will return
@@ -42,7 +79,7 @@ class TropipayHooks {
      * @param eventType or no params for retrieving all hooks
      * @returns All subscribed hooks or empty Array if none exist.
      */
-    async getSubscribedHook(eventType) {
+    async list(eventType) {
         if (!Tropipay.accessToken) {
             await this.tropipay.login();
         }
@@ -57,16 +94,67 @@ class TropipayHooks {
             return hooks.data;
         }
         catch (error) {
-            throw new Error(`Could not get subscribed hooks ${error}`);
+            throw new Error(`Could not get subscribed hooks`);
         }
     }
-    async updateSubscribedHook(eventType) {
-        //TODO
-        throw new Error("Not implementet yet");
+    async update(eventType, target, value) {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const hooks = await this.tropipay.request.put(`/api/v2/hooks`, {
+                event: eventType,
+                target: target,
+                value: value,
+            }, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return hooks.data;
+        }
+        catch (error) {
+            throw new Error(`Could not update subscribed hooks`);
+        }
     }
-    async deleteSubscribedHook(eventType) {
-        //TODO
-        throw new Error("Not implementet yet");
+    async delete(eventType, target) {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const hooks = await this.tropipay.request.delete(`/api/v2/hooks/${eventType}/${target}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return hooks.data;
+        }
+        catch (error) {
+            console.trace(error);
+            throw new Error(`Could not delete subscribed hooks`);
+        }
+    }
+    async events() {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const hooks = await this.tropipay.request.get(`/api/v2/hooks/events`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return hooks.data;
+        }
+        catch (error) {
+            throw new Error(`Could not get events list for hooks ${error}`);
+        }
     }
 }
 
@@ -145,7 +233,7 @@ class Tropipay {
             return paylink.data;
         }
         catch (error) {
-            throw new Error(`Could not obtain the access token with the given credentials.`);
+            throw new Error(`TropipayJS - Error creating the Payment Card.`);
         }
     }
     /**
@@ -270,8 +358,8 @@ class Tropipay {
         }
     }
     /**
-     * Return profile data for this account.
-     * @returns
+     * Return profile data for current Tropipay account.
+     * @returns account object
      */
     async profile() {
         if (!Tropipay.accessToken)
@@ -336,7 +424,7 @@ class Tropipay {
             return mediation.data;
         }
         catch (error) {
-            throw new Error(`Could not generate mediation paymentCard ${error}`);
+            throw new Error(`Could not create mediation payment card`);
         }
     }
 }

@@ -63,8 +63,8 @@ export declare class Tropipay {
      */
     movements(offset?: number, limit?: number): Promise<any>;
     /**
-     * Return profile data for this account.
-     * @returns
+     * Return profile data for current Tropipay account.
+     * @returns account object
      */
     profile(): Promise<any>;
     /**
