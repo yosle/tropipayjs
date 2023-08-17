@@ -231,8 +231,8 @@ export class Tropipay {
   }
 
   /**
-   * Return profile data for this account.
-   * @returns
+   * Return profile data for current Tropipay account.
+   * @returns account object
    */
   async profile() {
     if (!Tropipay.accessToken) await this.login();
@@ -307,7 +307,7 @@ export class Tropipay {
       );
       return mediation.data as PaymentLink;
     } catch (error) {
-      throw new Error(`Could not generate mediation paymentCard ${error}`);
+      throw new Error(`Could not create mediation payment card`);
     }
   }
 }
