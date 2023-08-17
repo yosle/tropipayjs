@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunktropipay_docs=self.webpackChunktropipay_docs||[]).push([[2205],{8638:o=>{o.exports=JSON.parse('{"permalink":"/tropipayjs/blog","page":1,"postsPerPage":10,"totalPages":1,"totalCount":4,"blogDescription":"Blog","blogTitle":"Blog"}')}}]);
