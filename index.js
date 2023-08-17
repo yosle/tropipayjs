@@ -36,11 +36,11 @@ class TropipayHooks {
     }
     static async subscribeHook(eventType, target, value) { }
     /**
-     * Get hook the sucbcribed hook info by his eventType.
-     * If no eventType is passed it will return
-     * all subscribed hooks or empty Array if none hooks exist.
+     * Get the sucbcribed hook info by his event type.
+     * If no event type is passed, it will return
+     * all subscribed hooks or empty Array if none exist.
      * @param eventType or no params for retrieving all hooks
-     * @returns
+     * @returns All subscribed hooks or empty Array if none exist.
      */
     async getSubscribedHook(eventType) {
         if (!Tropipay.accessToken) {
