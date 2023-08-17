@@ -99,9 +99,7 @@ export class Tropipay {
       });
       return paylink.data as PaymentLink;
     } catch (error) {
-      throw new Error(
-        `Could not obtain the access token with the given credentials.`
-      );
+      throw new Error(`TropipayJS - Error creating the Payment Card.`);
     }
   }
 
