@@ -87,6 +87,9 @@ export class TropipayHooks {
     target: "web" | "email",
     value: string
   ) {
+    if (!Tropipay.accessToken) {
+      await this.tropipay.login();
+    }
     try {
       const hooks = await this.tropipay.request.put(
         `/api/v2/hooks`,
@@ -108,8 +111,43 @@ export class TropipayHooks {
       throw new Error(`Could not update subscribed hooks`);
     }
   }
-  async deleteSubscribedHook(eventType?: string) {
-    //TODO
-    throw new Error("Not implementet yet");
+  async delete(eventType: HookEventType, target: string) {
+    if (!Tropipay.accessToken) {
+      await this.tropipay.login();
+    }
+    try {
+      const hooks = await this.tropipay.request.delete(
+        `/api/v2/hooks/${eventType}/${target}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Tropipay.accessToken}`,
+            Accept: "application/json",
+          },
+        }
+      );
+      return hooks.data;
+    } catch (error) {
+      console.trace(error);
+      throw new Error(`Could not delete subscribed hooks`);
+    }
+  }
+
+  async events() {
+    if (!Tropipay.accessToken) {
+      await this.tropipay.login();
+    }
+    try {
+      const hooks = await this.tropipay.request.get(`/api/v2/hooks/events`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${Tropipay.accessToken}`,
+          Accept: "application/json",
+        },
+      });
+      return hooks.data;
+    } catch (error) {
+      throw new Error(`Could not get events list for hooks ${error}`);
+    }
   }
 }
