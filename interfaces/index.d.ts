@@ -13,7 +13,7 @@ export type TropipayCredentials = {
     clientId: string;
     clientSecret: string;
 };
-export type HookEventType = "transaction_completed" | "transaction_charged" | "transaction_guarded";
+export type HookEventType = "transaction_completed" | "transaction_charged" | "transaction_guarded" | "user_signup" | "user_kyc" | "payment_in_state_change" | "payment_out_state_change" | "beneficiary_added" | "beneficiary_updated" | "beneficiary_deleted" | "transaction_new" | "transaction_preauthorized" | "transaction_pendingin" | "transaction_processing" | "transaction_error" | "transaction_bloqued" | "transaction_guarded_send" | "transaction_guarded_mediation" | "user_after_update" | "user_after_create" | "userDetail_after_create" | "userDetail_after_update" | "tpv_callback_ok" | "fraud_state_on_change";
 export type HookTargetType = "web" | "email";
 export interface UserHook {
     event: HookEventType;
