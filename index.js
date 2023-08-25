@@ -436,6 +436,78 @@ class ServerSideUtils {
     }
 }
 
+class PaymentCard {
+    tropipay;
+    constructor(tropipayInstance) {
+        this.tropipay = tropipayInstance;
+    }
+    /**
+     * Create a paymentLink with the specified options.
+     * @param payload PaymentLinkPayload Object.
+     * @returns Promise<PaymentLink> or throws an Exception.
+     * @see https://tpp.stoplight.io/docs/tropipay-api-doc/b3A6ODgyNTM3OQ-create-a-new-pay-link-charge
+     */
+    async create(payload) {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const paylink = await this.tropipay.request.post("/api/v2/paymentcards", payload, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return paylink.data;
+        }
+        catch (error) {
+            throw new Error(`TropipayJS - Error creating the Payment Card.`);
+        }
+    }
+    /**
+     * Shows a list of stored paymentcards created by user.
+     * This list includes active and closed paylinks
+     * @returns Array of paymentlinks
+     */
+    async list() {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const paymentcards = await this.tropipay.request.get(`/api/v2/paymentcards`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return paymentcards.data;
+        }
+        catch (error) {
+            throw new Error(`Could not retrieve PaymenCards list`);
+        }
+    }
+    async get(id) {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const paymentcard = await this.tropipay.request.get(`/api/v2/paymentcards/${id}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return paymentcard.data;
+        }
+        catch (error) {
+            throw new Error(`Could not retrieve PaymenCards`);
+        }
+    }
+}
+
 const SERVER_MODE = "Development"; // Move the constant here
 
 /**
@@ -454,6 +526,7 @@ if (typeof window !== "undefined") {
 }
 
 exports.ClientSideUtils = ClientSideUtils;
+exports.PaymentCard = PaymentCard;
 exports.SERVER_MODE = SERVER_MODE;
 exports.ServerSideUtils = ServerSideUtils;
 exports.Tropipay = Tropipay;

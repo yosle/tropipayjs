@@ -300,6 +300,25 @@ declare class ServerSideUtils {
     } | Tropipay, originalCurrencyAmount: string, bankOrderCode: string, signature: string): boolean;
 }
 
+declare class PaymentCard {
+    private tropipay;
+    constructor(tropipayInstance: Tropipay);
+    /**
+     * Create a paymentLink with the specified options.
+     * @param payload PaymentLinkPayload Object.
+     * @returns Promise<PaymentLink> or throws an Exception.
+     * @see https://tpp.stoplight.io/docs/tropipay-api-doc/b3A6ODgyNTM3OQ-create-a-new-pay-link-charge
+     */
+    create(payload: PaymentLinkPayload): Promise<PaymentLink>;
+    /**
+     * Shows a list of stored paymentcards created by user.
+     * This list includes active and closed paylinks
+     * @returns Array of paymentlinks
+     */
+    list(): Promise<any>;
+    get(id: string): Promise<any>;
+}
+
 declare const SERVER_MODE: ServerMode$1;
 
-export { AccountBalance, AccountDeposits, ClientSideUtils, Country, Deposit, HookEventType, HookTargetType, LoginError, LoginResponse, PaymentLink, PaymentLinkPayload, SERVER_MODE, ServerMode$1 as ServerMode, ServerSideUtils, Tropipay, TropipayConfig, TropipayCredentials, TropipayHooks, UserHook, UserHookSubscribed, mediationPaymentCardConfig };
+export { AccountBalance, AccountDeposits, ClientSideUtils, Country, Deposit, HookEventType, HookTargetType, LoginError, LoginResponse, PaymentCard, PaymentLink, PaymentLinkPayload, SERVER_MODE, ServerMode$1 as ServerMode, ServerSideUtils, Tropipay, TropipayConfig, TropipayCredentials, TropipayHooks, UserHook, UserHookSubscribed, mediationPaymentCardConfig };
