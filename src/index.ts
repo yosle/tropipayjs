@@ -10,6 +10,12 @@
  * @license MIT
  */
 
+if (typeof window !== "undefined") {
+  console.warn(
+    "DANGER This library should not be used client side, your credentials could be exposed"
+  );
+}
+
 export { Tropipay } from "./api/TropipayAPI";
 export { ClientSideUtils } from "./api/TropipayAPI";
 export { ServerSideUtils } from "./utils/TropipayUtils";
