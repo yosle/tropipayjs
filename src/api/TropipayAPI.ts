@@ -19,6 +19,7 @@ import {
 type ServerMode = "Development" | "Production";
 import { TropipayHooks } from "../hooks/TropipayHooks";
 import { PaymentCard } from "../paymentcard/PaymentCard";
+import { DepositAccounts } from "../depositAccount/depositAccounts";
 export class Tropipay {
   readonly clientId: string;
   readonly clientSecret: string;
@@ -27,7 +28,8 @@ export class Tropipay {
   public static refreshToken: string | undefined;
   public serverMode: ServerMode;
   public hooks: TropipayHooks;
-  public paymentcards: PaymentCard;
+  public paymentCards: PaymentCard;
+  public depositAccounts: DepositAccounts;
 
   constructor(config: TropipayConfig) {
     this.clientId = config.clientId;
@@ -45,7 +47,8 @@ export class Tropipay {
       },
     });
     this.hooks = new TropipayHooks(this);
-    this.paymentcards = new PaymentCard(this);
+    this.paymentCards = new PaymentCard(this);
+    this.depositAccounts = new DepositAccounts(this);
   }
 
   public async login() {

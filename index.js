@@ -230,6 +230,128 @@ class PaymentCard {
     }
 }
 
+class DepositAccounts {
+    tropipay;
+    constructor(tropipayInstance) {
+        this.tropipay = tropipayInstance;
+    }
+    /**
+     * List od all beneficiaries of this account
+     * @returns Array of DepositAccounts
+     */
+    async list() {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const deposit = await this.tropipay.request.get(`/api/v2/deposit_accounts`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return deposit.data;
+        }
+        catch (error) {
+            throw new Error(`Could not retrieve PaymenCards list`);
+        }
+    }
+    /**
+     * Adds a new beneficiary to the user account.
+     * @param payload
+     * @returns
+     */
+    async create(depositAccountObj) {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const deposit = await this.tropipay.request.post("/api/v2/deposit_accounts", depositAccountObj, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return deposit.data;
+        }
+        catch (error) {
+            throw new Error(`TropipayJS - Error creating the Deposit Accounts.`);
+        }
+    }
+    /**
+     * This returns details of a specific
+     * Deposit Account (beneficiary) specified by its ID
+     * @param id
+     * @returns
+     */
+    async get(id) {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const deposit = await this.tropipay.request.get(`/api/v2/deposit_accounts/${id}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return deposit.data;
+        }
+        catch (error) {
+            throw new Error(`Could not retrieve deposit account`);
+        }
+    }
+    /**
+     * Updates certain beneficiary data.
+     * @param depositAccountObj
+     * @returns
+     */
+    async update(depositAccountObj) {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const deposit = await this.tropipay.request.put(`/api/v2/deposit_accounts/`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return deposit.data;
+        }
+        catch (error) {
+            throw new Error(`Could not retrieve deposit account`);
+        }
+    }
+    /**
+     * (UNTESTED) Deletes the beneficiary indicated by id
+     * @param id
+     * @returns
+     */
+    async delete(id) {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const deposit = await this.tropipay.request.delete(`/api/v2/deposit_accounts/${id}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return deposit.data;
+        }
+        catch (error) {
+            throw new Error(`Could not retrieve deposit account`);
+        }
+    }
+}
+
 /**
  * Tropipayjs is a Typescript/Javascript library for the Tropipay API.
  *
@@ -244,7 +366,8 @@ class Tropipay {
     static refreshToken;
     serverMode;
     hooks;
-    paymentcards;
+    paymentCards;
+    depositAccounts;
     constructor(config) {
         this.clientId = config.clientId;
         this.clientSecret = config.clientSecret;
@@ -260,7 +383,8 @@ class Tropipay {
             },
         });
         this.hooks = new TropipayHooks(this);
-        this.paymentcards = new PaymentCard(this);
+        this.paymentCards = new PaymentCard(this);
+        this.depositAccounts = new DepositAccounts(this);
     }
     async login() {
         try {
@@ -528,6 +652,7 @@ if (typeof window !== "undefined") {
 }
 
 exports.ClientSideUtils = ClientSideUtils;
+exports.DepositAccounts = DepositAccounts;
 exports.PaymentCard = PaymentCard;
 exports.SERVER_MODE = SERVER_MODE;
 exports.ServerSideUtils = ServerSideUtils;

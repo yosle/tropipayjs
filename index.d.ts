@@ -217,6 +217,68 @@ declare class PaymentCard {
     get(id: string): Promise<any>;
 }
 
+interface DepositAccountConfig {
+    searchValue?: string;
+    alias: string;
+    userRelationTypeId: number;
+    beneficiaryType: BeneficiaryType;
+    searchBy?: number;
+    accountNumber?: string;
+    swift?: string;
+    type?: number;
+    firstName?: string;
+    lastName?: string;
+    secondLastName?: string;
+    countryDestinationId?: number;
+    city?: string;
+    postalCode?: number;
+    address?: string;
+    documentNumber?: string;
+    phone?: string;
+    province?: string;
+    paymentType?: string;
+    documentTypeId?: number;
+    documentExpirationDate: string;
+}
+type INTERNAL = 1;
+type EXTERNAL = 2;
+type BeneficiaryType = INTERNAL | EXTERNAL;
+
+declare class DepositAccounts {
+    private tropipay;
+    constructor(tropipayInstance: Tropipay);
+    /**
+     * List od all beneficiaries of this account
+     * @returns Array of DepositAccounts
+     */
+    list(): Promise<any>;
+    /**
+     * Adds a new beneficiary to the user account.
+     * @param payload
+     * @returns
+     */
+    create(depositAccountObj: DepositAccountConfig): Promise<any>;
+    /**
+     * This returns details of a specific
+     * Deposit Account (beneficiary) specified by its ID
+     * @param id
+     * @returns
+     */
+    get(id: string): Promise<any>;
+    /**
+     * Updates certain beneficiary data.
+     * @param depositAccountObj
+     * @returns
+     */
+    update(depositAccountObj: Partial<DepositAccountConfig>): Promise<any>;
+    /**
+     * (UNTESTED) Deletes the beneficiary indicated by id
+     * @param id
+     * @returns
+     */
+    delete(id: number): Promise<any>;
+}
+
 /**
  * Tropipayjs is a Typescript/Javascript library for the Tropipay API.
  *
@@ -234,7 +296,8 @@ declare class Tropipay {
     static refreshToken: string | undefined;
     serverMode: ServerMode;
     hooks: TropipayHooks;
-    paymentcards: PaymentCard;
+    paymentCards: PaymentCard;
+    depositAccounts: DepositAccounts;
     constructor(config: TropipayConfig);
     login(): Promise<LoginResponse>;
     /**
@@ -322,4 +385,4 @@ declare class ServerSideUtils {
 
 declare const SERVER_MODE: ServerMode$1;
 
-export { AccountBalance, AccountDeposits, ClientSideUtils, Country, Deposit, HookEventType, HookTargetType, LoginError, LoginResponse, PaymentCard, PaymentLink, PaymentLinkPayload, SERVER_MODE, ServerMode$1 as ServerMode, ServerSideUtils, Tropipay, TropipayConfig, TropipayCredentials, TropipayHooks, UserHook, UserHookSubscribed, mediationPaymentCardConfig };
+export { AccountBalance, AccountDeposits, ClientSideUtils, Country, Deposit, DepositAccounts, HookEventType, HookTargetType, LoginError, LoginResponse, PaymentCard, PaymentLink, PaymentLinkPayload, SERVER_MODE, ServerMode$1 as ServerMode, ServerSideUtils, Tropipay, TropipayConfig, TropipayCredentials, TropipayHooks, UserHook, UserHookSubscribed, mediationPaymentCardConfig };

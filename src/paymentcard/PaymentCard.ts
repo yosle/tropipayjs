@@ -3,7 +3,6 @@ import { PaymentLink } from "../interfaces";
 import { PaymentLinkPayload } from "../interfaces";
 export class PaymentCard {
   private tropipay: Tropipay;
-
   constructor(tropipayInstance: Tropipay) {
     this.tropipay = tropipayInstance;
   }
