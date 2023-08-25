@@ -8,6 +8,7 @@ import { Axios } from "axios";
 import { TropipayConfig, AccountBalance, Country, PaymentLink, mediationPaymentCardConfig, LoginResponse, AccountDeposits } from "../interfaces";
 type ServerMode = "Development" | "Production";
 import { TropipayHooks } from "../hooks/TropipayHooks";
+import { PaymentCard } from "../paymentcard/PaymentCard";
 export declare class Tropipay {
     readonly clientId: string;
     readonly clientSecret: string;
@@ -16,6 +17,7 @@ export declare class Tropipay {
     static refreshToken: string | undefined;
     serverMode: ServerMode;
     hooks: TropipayHooks;
+    paymentcards: PaymentCard;
     constructor(config: TropipayConfig);
     login(): Promise<LoginResponse>;
     /**

@@ -198,6 +198,25 @@ declare class TropipayHooks {
     events(): Promise<any>;
 }
 
+declare class PaymentCard {
+    private tropipay;
+    constructor(tropipayInstance: Tropipay);
+    /**
+     * Create a paymentLink with the specified options.
+     * @param payload PaymentLinkPayload Object.
+     * @returns Promise<PaymentLink> or throws an Exception.
+     * @see https://tpp.stoplight.io/docs/tropipay-api-doc/b3A6ODgyNTM3OQ-create-a-new-pay-link-charge
+     */
+    create(payload: PaymentLinkPayload): Promise<PaymentLink>;
+    /**
+     * Shows a list of stored paymentcards created by user.
+     * This list includes active and closed paylinks
+     * @returns Array of paymentlinks
+     */
+    list(): Promise<any>;
+    get(id: string): Promise<any>;
+}
+
 /**
  * Tropipayjs is a Typescript/Javascript library for the Tropipay API.
  *
@@ -215,6 +234,7 @@ declare class Tropipay {
     static refreshToken: string | undefined;
     serverMode: ServerMode;
     hooks: TropipayHooks;
+    paymentcards: PaymentCard;
     constructor(config: TropipayConfig);
     login(): Promise<LoginResponse>;
     /**
@@ -298,25 +318,6 @@ declare class ServerSideUtils {
         clientId: string;
         clientSecret: string;
     } | Tropipay, originalCurrencyAmount: string, bankOrderCode: string, signature: string): boolean;
-}
-
-declare class PaymentCard {
-    private tropipay;
-    constructor(tropipayInstance: Tropipay);
-    /**
-     * Create a paymentLink with the specified options.
-     * @param payload PaymentLinkPayload Object.
-     * @returns Promise<PaymentLink> or throws an Exception.
-     * @see https://tpp.stoplight.io/docs/tropipay-api-doc/b3A6ODgyNTM3OQ-create-a-new-pay-link-charge
-     */
-    create(payload: PaymentLinkPayload): Promise<PaymentLink>;
-    /**
-     * Shows a list of stored paymentcards created by user.
-     * This list includes active and closed paylinks
-     * @returns Array of paymentlinks
-     */
-    list(): Promise<any>;
-    get(id: string): Promise<any>;
 }
 
 declare const SERVER_MODE: ServerMode$1;
