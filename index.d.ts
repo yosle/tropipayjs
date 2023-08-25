@@ -218,13 +218,6 @@ declare class Tropipay {
     constructor(config: TropipayConfig);
     login(): Promise<LoginResponse>;
     /**
-     * Create a paymentLink with the specified options.
-     * @param payload PaymentLinkPayload Object.
-     * @returns Promise<PaymentLink> or throws an Exception.
-     * @see https://tpp.stoplight.io/docs/tropipay-api-doc/b3A6ODgyNTM3OQ-create-a-new-pay-link-charge
-     */
-    createPaymentCard(payload: PaymentLinkPayload): Promise<PaymentLink>;
-    /**
      * Get all deposits in this account.
      * @returns A Promise of an Array of AccountDeposits or throws an Exception
      * @see https://tpp.stoplight.io/docs/tropipay-api-doc/b3A6OTgyOTQ1Mg-get-deposit-accounts-list

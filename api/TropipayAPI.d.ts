@@ -5,7 +5,7 @@
  *
  */
 import { Axios } from "axios";
-import { TropipayConfig, AccountBalance, Country, PaymentLinkPayload, PaymentLink, mediationPaymentCardConfig, LoginResponse, AccountDeposits } from "../interfaces";
+import { TropipayConfig, AccountBalance, Country, PaymentLink, mediationPaymentCardConfig, LoginResponse, AccountDeposits } from "../interfaces";
 type ServerMode = "Development" | "Production";
 import { TropipayHooks } from "../hooks/TropipayHooks";
 export declare class Tropipay {
@@ -18,13 +18,6 @@ export declare class Tropipay {
     hooks: TropipayHooks;
     constructor(config: TropipayConfig);
     login(): Promise<LoginResponse>;
-    /**
-     * Create a paymentLink with the specified options.
-     * @param payload PaymentLinkPayload Object.
-     * @returns Promise<PaymentLink> or throws an Exception.
-     * @see https://tpp.stoplight.io/docs/tropipay-api-doc/b3A6ODgyNTM3OQ-create-a-new-pay-link-charge
-     */
-    createPaymentCard(payload: PaymentLinkPayload): Promise<PaymentLink>;
     /**
      * Get all deposits in this account.
      * @returns A Promise of an Array of AccountDeposits or throws an Exception
