@@ -449,10 +449,7 @@ class Tropipay {
             return data;
         }
         catch (error) {
-            if (axios__default["default"].isAxiosError(error)) {
-                throw new Error(`Could not obtain the access token from credentials  ${error}`);
-            }
-            throw new Error(`Could not obtain the access token from credentials  ${error}`);
+            throw handleExceptions(error);
         }
     }
     /**
@@ -475,7 +472,7 @@ class Tropipay {
             return deposits.data;
         }
         catch (error) {
-            throw new Error(`Could not retrieve the account deposits ${error}`);
+            throw handleExceptions(error);
         }
     }
     /**
@@ -489,7 +486,7 @@ class Tropipay {
             return countries.data;
         }
         catch (error) {
-            throw new Error(`Could not retrieve the countries list`);
+            throw handleExceptions(error);
         }
     }
     /**
@@ -511,7 +508,7 @@ class Tropipay {
             return balance.data;
         }
         catch (error) {
-            throw new Error(`TropipayJS Error - Could not retrieve the user's balance`);
+            throw handleExceptions(error);
         }
     }
     /**
@@ -550,7 +547,7 @@ class Tropipay {
             return favoritesList?.data?.rows;
         }
         catch (error) {
-            throw new Error(`Could not retrieve favorites list ${error}`);
+            throw handleExceptions(error);
         }
     }
     /**
@@ -573,7 +570,7 @@ class Tropipay {
             return movements.data;
         }
         catch (error) {
-            throw new Error(`Could not retrieve movements list ${error}`);
+            throw handleExceptions(error);
         }
     }
     /**
@@ -588,7 +585,7 @@ class Tropipay {
             return profile.data;
         }
         catch (error) {
-            throw new Error(`Could not retrieve movements list ${error}`);
+            throw handleExceptions(error);
         }
     }
     /**
@@ -617,7 +614,7 @@ class Tropipay {
             return rates.data.rate;
         }
         catch (error) {
-            throw new Error(`Could not retrieve rates ${error}`);
+            throw handleExceptions(error);
         }
     }
     /**
@@ -643,12 +640,14 @@ class Tropipay {
             return mediation.data;
         }
         catch (error) {
-            throw new Error(`Could not create mediation payment card`);
+            throw handleExceptions(error);
         }
     }
 }
 class ClientSideUtils {
-    constructor(tropipayInstance) { }
+    constructor(tropipayInstance) {
+        throw Error(`Not implemented yet`);
+    }
 }
 
 class ServerSideUtils {
