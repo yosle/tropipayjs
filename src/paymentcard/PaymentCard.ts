@@ -1,6 +1,7 @@
 import { Tropipay } from "../api/TropipayAPI";
 import { PaymentLink } from "../interfaces";
 import { PaymentLinkPayload } from "../interfaces";
+import { handleExceptions } from "../utils/errors";
 export class PaymentCard {
   private tropipay: Tropipay;
   constructor(tropipayInstance: Tropipay) {
@@ -31,7 +32,7 @@ export class PaymentCard {
       );
       return paylink.data as PaymentLink;
     } catch (error) {
-      throw new Error(`TropipayJS - Error creating the Payment Card.`);
+      throw handleExceptions(error as unknown as any);
     }
   }
   /**
@@ -77,7 +78,7 @@ export class PaymentCard {
       );
       return paymentcard.data;
     } catch (error) {
-      throw new Error(`Could not retrieve PaymenCards`);
+      throw handleExceptions(error as unknown as any);
     }
   }
 }
