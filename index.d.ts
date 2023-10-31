@@ -225,7 +225,7 @@ interface DepositAccountConfig {
     searchBy?: number;
     accountNumber?: string;
     swift?: string;
-    type?: number;
+    type: DepositAccountType;
     firstName?: string;
     lastName?: string;
     secondLastName?: string;
@@ -243,6 +243,7 @@ interface DepositAccountConfig {
 type INTERNAL = 1;
 type EXTERNAL = 2;
 type BeneficiaryType = INTERNAL | EXTERNAL;
+type DepositAccountType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 9 | 10 | 11;
 
 declare class DepositAccounts {
     private tropipay;

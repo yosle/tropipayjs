@@ -230,6 +230,51 @@ class PaymentCard {
     }
 }
 
+function handleExceptions(error) {
+    if (error instanceof axios.AxiosError) {
+        if (error.response) {
+            const axiosResponse = error.response;
+            const errorMessage = axiosResponse.data?.error?.message || "An error occurred";
+            switch (axiosResponse.status) {
+                case 401:
+                    return new TropipayJSException(errorMessage, axiosResponse.status, axiosResponse.data.error);
+                case 403:
+                    return new TropipayJSException(errorMessage, axiosResponse.status, axiosResponse.data.error);
+                case 404:
+                    return new TropipayJSException(errorMessage, axiosResponse.status, axiosResponse.data.error);
+                // case 429:
+                //   return new TooManyRequestsException(errorMessage);
+                default:
+                    return new TropipayJSException(errorMessage, axiosResponse.status, axiosResponse.data.error);
+            }
+        }
+        else if (error.request) {
+            // Axios request was made but no response received (e.g., network error)
+            return new TropipayJSException("Request failed: No response received", 500, null);
+        }
+        else {
+            // Something else went wrong
+            return new TropipayJSException("An error occurred", 500, null);
+        }
+    }
+    else {
+        return new TropipayJSException(`jsbfvbsfvbf`, 500, null);
+    }
+}
+class TropipayJSException extends Error {
+    code; // Status code
+    error;
+    message;
+    constructor(message, code, data) {
+        super(message);
+        // Set the prototype explicitly.
+        Object.setPrototypeOf(this, TropipayJSException.prototype);
+        this.code = code;
+        this.error = data;
+        this.message = message;
+    }
+}
+
 class DepositAccounts {
     tropipay;
     constructor(tropipayInstance) {
@@ -254,7 +299,7 @@ class DepositAccounts {
             return deposit.data;
         }
         catch (error) {
-            throw new Error(`Could not retrieve PaymenCards list`);
+            return handleExceptions(error);
         }
     }
     /**
@@ -277,7 +322,7 @@ class DepositAccounts {
             return deposit.data;
         }
         catch (error) {
-            throw new Error(`TropipayJS - Error creating the Deposit Accounts.`);
+            return handleExceptions(error);
         }
     }
     /**
@@ -301,7 +346,7 @@ class DepositAccounts {
             return deposit.data;
         }
         catch (error) {
-            throw new Error(`Could not retrieve deposit account`);
+            return handleExceptions(error);
         }
     }
     /**
@@ -324,7 +369,7 @@ class DepositAccounts {
             return deposit.data;
         }
         catch (error) {
-            throw new Error(`Could not retrieve deposit account`);
+            return handleExceptions(error);
         }
     }
     /**
@@ -347,7 +392,7 @@ class DepositAccounts {
             return deposit.data;
         }
         catch (error) {
-            throw new Error(`Could not retrieve deposit account`);
+            return handleExceptions(error);
         }
     }
 }

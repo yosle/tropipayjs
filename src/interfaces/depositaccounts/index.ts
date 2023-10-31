@@ -6,7 +6,7 @@ export interface DepositAccountConfig {
   searchBy?: number;
   accountNumber?: string;
   swift?: string;
-  type?: number;
+  type: DepositAccountType;
   firstName?: string;
   lastName?: string;
   secondLastName?: string;
@@ -25,3 +25,46 @@ type INTERNAL = 1;
 type EXTERNAL = 2;
 
 export type BeneficiaryType = INTERNAL | EXTERNAL;
+
+export const DepositAccountTypesList = {
+  /**
+   * Banco Metropolitano (Cuba) Bank Account
+   */
+  BANMET_BANK_ACCOUNT: 0,
+  /**
+   * Banco Popular de Ahorro
+   */
+  BPA_BANK_ACCOUNT: 1,
+  /**
+   * Banco de Credito y Comercio (Cuba) Bank Account
+   */
+  BANDEC_BANK_ACCOUNT: 2,
+  /**
+   * Banco Metropilitano (Cuba) card
+   */
+  BANMET_CARD: 3,
+  /**
+   * Banco Popular de Ahorro (Cuba) card
+   */
+  BPA_CARD: 4,
+  /**
+   * Not available anymore
+   * @deprecated
+   */
+  AIS_CUC_CARD: 5,
+  /**
+   * Not available
+   * @deprecated
+   */
+  AIS_USD_CARD: 6,
+  /**
+   * For international bank accounts
+   */
+  OTHER: 7,
+  /**
+   * Banco de Credito y comercio card
+   */
+  BANDEC_CARD: 8,
+} as const;
+
+export type DepositAccountType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 9 | 10 | 11;

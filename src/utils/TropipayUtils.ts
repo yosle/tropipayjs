@@ -1,5 +1,8 @@
 import * as crypto from "crypto";
 import { Tropipay } from "../api/TropipayAPI";
+import { AxiosError, AxiosResponse } from "axios";
+
+
 export class ServerSideUtils {
   private tropipay: Tropipay;
   constructor(tropipayInstance: Tropipay) {

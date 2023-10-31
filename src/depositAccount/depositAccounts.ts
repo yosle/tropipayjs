@@ -1,6 +1,7 @@
+import { AxiosError } from "axios";
 import { Tropipay } from "../api/TropipayAPI";
 import { DepositAccountConfig } from "../interfaces/depositaccounts";
-
+import { handleExceptions } from "../utils/errors";
 export class DepositAccounts {
   private tropipay: Tropipay;
   constructor(tropipayInstance: Tropipay) {
@@ -28,7 +29,7 @@ export class DepositAccounts {
       );
       return deposit.data;
     } catch (error) {
-      throw new Error(`Could not retrieve PaymenCards list`);
+      return handleExceptions(error as unknown as any);
     }
   }
   /**
@@ -54,7 +55,7 @@ export class DepositAccounts {
       );
       return deposit.data;
     } catch (error) {
-      throw new Error(`TropipayJS - Error creating the Deposit Accounts.`);
+      return handleExceptions(error as unknown as any);
     }
   }
   /**
@@ -80,7 +81,7 @@ export class DepositAccounts {
       );
       return deposit.data;
     } catch (error) {
-      throw new Error(`Could not retrieve deposit account`);
+      return handleExceptions(error as unknown as any);
     }
   }
 
@@ -106,7 +107,7 @@ export class DepositAccounts {
       );
       return deposit.data;
     } catch (error) {
-      throw new Error(`Could not retrieve deposit account`);
+      return handleExceptions(error as unknown as any);
     }
   }
 
@@ -132,7 +133,7 @@ export class DepositAccounts {
       );
       return deposit.data;
     } catch (error) {
-      throw new Error(`Could not retrieve deposit account`);
+      return handleExceptions(error as unknown as any);
     }
   }
 }
