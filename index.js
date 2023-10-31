@@ -28,136 +28,6 @@ function _interopNamespace(e) {
 var axios__default = /*#__PURE__*/_interopDefaultLegacy(axios);
 var crypto__namespace = /*#__PURE__*/_interopNamespace(crypto);
 
-class TropipayHooks {
-    tropipay;
-    // ... hook-related functionality ...
-    constructor(tropipayInstance) {
-        this.tropipay = tropipayInstance;
-    }
-    /**
-     * Subscribe a new hook
-     * @param event String that represents the name of the event,
-     * you must select from the list of available events, otherwise
-     * it will not produce an error but it will not be executed.
-     * For get full list of available events see endpoint
-     * GET /api/v2/hook/events.
-     * @param target String representing the type of event supported.
-     * It is currently available: 'web' (allows to receive information in a url),
-     * 'email' (allows to receive information in an email address).
-     * @param value if the selected 'target' is email the value would be an
-     *  email address, likewise if the selected 'target' is 'web' the expected
-     *  value corresponds to a url that receives information through the
-     * HTTP POST method.
-     * @returns
-     */
-    async subscribe({ eventType, target, value, }) {
-        if (!Tropipay.accessToken) {
-            await this.tropipay.login();
-        }
-        try {
-            const hooks = await this.tropipay.request.post(`/api/v2/hooks`, {
-                event: eventType,
-                target: target,
-                value: value,
-            }, {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${Tropipay.accessToken}`,
-                    Accept: "application/json",
-                },
-            });
-            return hooks.data;
-        }
-        catch (error) {
-            throw new Error(`Could not get subscribe new hook`);
-        }
-    }
-    /**
-     * Get the sucbcribed hook info by his event type.
-     * If no event type is passed, it will return
-     * all subscribed hooks or empty Array if none exist.
-     * @param eventType or no params for retrieving all hooks
-     * @returns All subscribed hooks or empty Array if none exist.
-     */
-    async list(eventType) {
-        if (!Tropipay.accessToken) {
-            await this.tropipay.login();
-        }
-        try {
-            const hooks = await this.tropipay.request.get(`/api/v2/hooks/${eventType || ""}`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${Tropipay.accessToken}`,
-                    Accept: "application/json",
-                },
-            });
-            return hooks.data;
-        }
-        catch (error) {
-            throw new Error(`Could not get subscribed hooks`);
-        }
-    }
-    async update(eventType, target, value) {
-        if (!Tropipay.accessToken) {
-            await this.tropipay.login();
-        }
-        try {
-            const hooks = await this.tropipay.request.put(`/api/v2/hooks`, {
-                event: eventType,
-                target: target,
-                value: value,
-            }, {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${Tropipay.accessToken}`,
-                    Accept: "application/json",
-                },
-            });
-            return hooks.data;
-        }
-        catch (error) {
-            throw new Error(`Could not update subscribed hooks`);
-        }
-    }
-    async delete(eventType, target) {
-        if (!Tropipay.accessToken) {
-            await this.tropipay.login();
-        }
-        try {
-            const hooks = await this.tropipay.request.delete(`/api/v2/hooks/${eventType}/${target}`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${Tropipay.accessToken}`,
-                    Accept: "application/json",
-                },
-            });
-            return hooks.data;
-        }
-        catch (error) {
-            console.trace(error);
-            throw new Error(`Could not delete subscribed hooks`);
-        }
-    }
-    async events() {
-        if (!Tropipay.accessToken) {
-            await this.tropipay.login();
-        }
-        try {
-            const hooks = await this.tropipay.request.get(`/api/v2/hooks/events`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${Tropipay.accessToken}`,
-                    Accept: "application/json",
-                },
-            });
-            return hooks.data;
-        }
-        catch (error) {
-            throw new Error(`Could not get events list for hooks ${error}`);
-        }
-    }
-}
-
 function handleExceptions(error) {
     if (error instanceof axios.AxiosError) {
         if (error.response) {
@@ -200,6 +70,136 @@ class TropipayJSException extends Error {
         this.code = code;
         this.error = data;
         this.message = message;
+    }
+}
+
+class TropipayHooks {
+    tropipay;
+    // ... hook-related functionality ...
+    constructor(tropipayInstance) {
+        this.tropipay = tropipayInstance;
+    }
+    /**
+     * Subscribe a new hook
+     * @param event String that represents the name of the event,
+     * you must select from the list of available events, otherwise
+     * it will not produce an error but it will not be executed.
+     * For get full list of available events see endpoint
+     * GET /api/v2/hook/events.
+     * @param target String representing the type of event supported.
+     * It is currently available: 'web' (allows to receive information in a url),
+     * 'email' (allows to receive information in an email address).
+     * @param value if the selected 'target' is email the value would be an
+     *  email address, likewise if the selected 'target' is 'web' the expected
+     *  value corresponds to a url that receives information through the
+     * HTTP POST method.
+     * @returns
+     */
+    async subscribe({ eventType, target, value, }) {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const hooks = await this.tropipay.request.post(`/api/v2/hooks`, {
+                event: eventType,
+                target: target,
+                value: value,
+            }, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return hooks.data;
+        }
+        catch (error) {
+            throw handleExceptions(error);
+        }
+    }
+    /**
+     * Get the sucbcribed hook info by his event type.
+     * If no event type is passed, it will return
+     * all subscribed hooks or empty Array if none exist.
+     * @param eventType or no params for retrieving all hooks
+     * @returns All subscribed hooks or empty Array if none exist.
+     */
+    async list(eventType) {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const hooks = await this.tropipay.request.get(`/api/v2/hooks/${eventType || ""}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return hooks.data;
+        }
+        catch (error) {
+            throw handleExceptions(error);
+        }
+    }
+    async update(eventType, target, value) {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const hooks = await this.tropipay.request.put(`/api/v2/hooks`, {
+                event: eventType,
+                target: target,
+                value: value,
+            }, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return hooks.data;
+        }
+        catch (error) {
+            throw handleExceptions(error);
+        }
+    }
+    async delete(eventType, target) {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const hooks = await this.tropipay.request.delete(`/api/v2/hooks/${eventType}/${target}`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return hooks.data;
+        }
+        catch (error) {
+            console.trace(error);
+            throw handleExceptions(error);
+        }
+    }
+    async events() {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const hooks = await this.tropipay.request.get(`/api/v2/hooks/events`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return hooks.data;
+        }
+        catch (error) {
+            throw handleExceptions(error);
+        }
     }
 }
 

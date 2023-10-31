@@ -1,5 +1,6 @@
 import { HookEventType, UserHookSubscribed } from "../interfaces";
 import { Tropipay } from "../api/TropipayAPI";
+import { handleExceptions } from "../utils/errors";
 export class TropipayHooks {
   private tropipay: Tropipay;
   // ... hook-related functionality ...
@@ -52,7 +53,7 @@ export class TropipayHooks {
       );
       return hooks.data;
     } catch (error) {
-      throw new Error(`Could not get subscribe new hook`);
+      throw handleExceptions(error as unknown as any);
     }
   }
   /**
@@ -79,7 +80,7 @@ export class TropipayHooks {
       );
       return hooks.data;
     } catch (error) {
-      throw new Error(`Could not get subscribed hooks`);
+      throw handleExceptions(error as unknown as any);
     }
   }
   public async update(
@@ -108,7 +109,7 @@ export class TropipayHooks {
       );
       return hooks.data;
     } catch (error) {
-      throw new Error(`Could not update subscribed hooks`);
+      throw handleExceptions(error as unknown as any);
     }
   }
   async delete(eventType: HookEventType, target: string) {
@@ -129,7 +130,7 @@ export class TropipayHooks {
       return hooks.data;
     } catch (error) {
       console.trace(error);
-      throw new Error(`Could not delete subscribed hooks`);
+      throw handleExceptions(error as unknown as any);
     }
   }
 
@@ -147,7 +148,7 @@ export class TropipayHooks {
       });
       return hooks.data;
     } catch (error) {
-      throw new Error(`Could not get events list for hooks ${error}`);
+      throw handleExceptions(error as unknown as any);
     }
   }
 }
