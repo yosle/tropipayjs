@@ -20,6 +20,7 @@ type ServerMode = "Development" | "Production";
 import { TropipayHooks } from "../hooks/TropipayHooks";
 import { PaymentCard } from "../paymentcard/PaymentCard";
 import { DepositAccounts } from "../depositAccount/depositAccounts";
+import { handleExceptions } from "../utils/errors";
 export class Tropipay {
   readonly clientId: string;
   readonly clientSecret: string;
@@ -74,14 +75,7 @@ export class Tropipay {
       Tropipay.refreshToken = data.refresh_token;
       return data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(
-          `Could not obtain the access token from credentials  ${error}`
-        );
-      }
-      throw new Error(
-        `Could not obtain the access token from credentials  ${error}`
-      );
+      throw handleExceptions(error as any);
     }
   }
 
@@ -104,7 +98,7 @@ export class Tropipay {
       });
       return deposits.data;
     } catch (error) {
-      throw new Error(`Could not retrieve the account deposits ${error}`);
+      throw handleExceptions(error as any);
     }
   }
 
@@ -118,7 +112,7 @@ export class Tropipay {
       const countries = await this.request.get("/api/v2/countries");
       return countries.data;
     } catch (error) {
-      throw new Error(`Could not retrieve the countries list`);
+      throw handleExceptions(error as any);
     }
   }
   /**
@@ -139,9 +133,7 @@ export class Tropipay {
       });
       return balance.data;
     } catch (error) {
-      throw new Error(
-        `TropipayJS Error - Could not retrieve the user's balance`
-      );
+      throw handleExceptions(error as any);
     }
   }
 
@@ -185,7 +177,7 @@ export class Tropipay {
       );
       return favoritesList?.data?.rows;
     } catch (error) {
-      throw new Error(`Could not retrieve favorites list ${error}`);
+      throw handleExceptions(error as any);
     }
   }
 
@@ -208,7 +200,7 @@ export class Tropipay {
       });
       return movements.data;
     } catch (error) {
-      throw new Error(`Could not retrieve movements list ${error}`);
+      throw handleExceptions(error as any);
     }
   }
 
@@ -222,7 +214,7 @@ export class Tropipay {
       const profile = await this.request.get("/api/users/profile");
       return profile.data;
     } catch (error) {
-      throw new Error(`Could not retrieve movements list ${error}`);
+      throw handleExceptions(error as any);
     }
   }
 
@@ -258,7 +250,7 @@ export class Tropipay {
       );
       return rates.data.rate;
     } catch (error) {
-      throw new Error(`Could not retrieve rates ${error}`);
+      throw handleExceptions(error as any);
     }
   }
 
@@ -289,11 +281,13 @@ export class Tropipay {
       );
       return mediation.data as PaymentLink;
     } catch (error) {
-      throw new Error(`Could not create mediation payment card`);
+      throw handleExceptions(error as any);
     }
   }
 }
 
 export class ClientSideUtils {
-  constructor(tropipayInstance: Tropipay) {}
+  constructor(tropipayInstance: Tropipay) {
+    throw Error(`Not implemented yet`);
+  }
 }
