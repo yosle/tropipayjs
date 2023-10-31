@@ -668,10 +668,7 @@ class ServerSideUtils {
             .createHash("sha256")
             .update(bankOrderCode +
             credentials.clientId +
-            crypto__namespace
-                .createHash("sha1")
-                .update(credentials.clientSecret)
-                .digest("hex") +
+            credentials.clientSecret +
             originalCurrencyAmount)
             .digest("hex");
         return localSignature === signature;

@@ -2,7 +2,6 @@ import * as crypto from "crypto";
 import { Tropipay } from "../api/TropipayAPI";
 import { AxiosError, AxiosResponse } from "axios";
 
-
 export class ServerSideUtils {
   private tropipay: Tropipay;
   constructor(tropipayInstance: Tropipay) {
@@ -33,10 +32,7 @@ export class ServerSideUtils {
       .update(
         bankOrderCode +
           credentials.clientId +
-          crypto
-            .createHash("sha1")
-            .update(credentials.clientSecret)
-            .digest("hex") +
+          credentials.clientSecret +
           originalCurrencyAmount
       )
       .digest("hex");
