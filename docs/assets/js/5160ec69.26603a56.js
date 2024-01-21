@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunktropipay_docs=self.webpackChunktropipay_docs||[]).push([[2631],{7392:a=>{a.exports=JSON.parse('{"label":"hola","permalink":"/tropipayjs/blog/tags/hola","allTagsPath":"/tropipayjs/blog/tags","count":1}')}}]);
