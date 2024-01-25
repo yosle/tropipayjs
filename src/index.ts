@@ -13,10 +13,8 @@
 import { DepositAccounts } from "./depositAccount/depositAccounts";
 
 if (typeof window !== "undefined") {
-  console.warn(
-    `⚠️ **Warning:** The Tropipay SDK should only be instantiated server-side for security reasons. 
-    Using it client-side may lead to unexpected behavior and security vulnerabilities. YOUR CREDENTIALS COULD BE EXPOSED. Check 
-    https://yosle.github.io/tropipayjs-docs/guides/installation/ for more details.`
+  console.error(
+    `⚠️ **Warning:** The Tropipay SDK should only be instantiated server-side for security reasons. Using it client-side may lead to unexpected behavior and security vulnerabilities. YOUR CREDENTIALS COULD BE EXPOSED. Check https://yosle.github.io/tropipayjs-docs/guides/installation/ for more details.`
   );
 }
 
