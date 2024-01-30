@@ -693,7 +693,10 @@ class ServerSideUtils {
      * @return {Promise<string>} the base64 representation of the file
      */
     static async getBase64FromFileUrl(url) {
-        const response = await axios__default["default"].get(url, { responseType: "arraybuffer" });
+        const response = await axios__default["default"].get(url, {
+            responseType: "arraybuffer",
+            maxRedirects: 5,
+        });
         return Buffer.from(response.data, "binary").toString("base64");
     }
     /**
