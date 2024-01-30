@@ -82,7 +82,7 @@ export function handleExceptions(
   }
 }
 
-class TropipayJSException extends Error {
+export class TropipayJSException extends Error {
   code: number; // Status code
   error: unknown;
   message: string;

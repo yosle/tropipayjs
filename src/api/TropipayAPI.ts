@@ -80,29 +80,6 @@ export class Tropipay {
   }
 
   /**
-   * Get all deposits in this account.
-   * @returns A Promise of an Array of AccountDeposits or throws an Exception
-   * @see https://tpp.stoplight.io/docs/tropipay-api-doc/b3A6OTgyOTQ1Mg-get-deposit-accounts-list
-   */
-  async getDepositAccounts(): Promise<AccountDeposits[] | Error> {
-    if (!Tropipay.accessToken) {
-      await this.login();
-    }
-    try {
-      const deposits = await this.request.get("/api/v2/deposit_accounts", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Tropipay.accessToken}`,
-          Accept: "application/json",
-        },
-      });
-      return deposits.data;
-    } catch (error) {
-      throw handleExceptions(error as any);
-    }
-  }
-
-  /**
    * Get the list of all supported countries by Tropipay.
    * @returns Array of Countries Data
    * @see https://tpp.stoplight.io/docs/tropipay-api-doc/bfac21259e2ff-getting-users-countries-list

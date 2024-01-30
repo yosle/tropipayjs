@@ -8,10 +8,9 @@ export interface ErrorDetail {
     meta: unknown;
 }
 export declare function handleExceptions(error: AxiosError | Error): TropipayJSException;
-declare class TropipayJSException extends Error {
+export declare class TropipayJSException extends Error {
     code: number;
     error: unknown;
     message: string;
     constructor(message: string, code: number, data: unknown);
 }
-export {};

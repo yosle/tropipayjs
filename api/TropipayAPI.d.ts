@@ -5,7 +5,7 @@
  *
  */
 import { Axios } from "axios";
-import { TropipayConfig, AccountBalance, Country, PaymentLink, mediationPaymentCardConfig, LoginResponse, AccountDeposits } from "../interfaces";
+import { TropipayConfig, AccountBalance, Country, PaymentLink, mediationPaymentCardConfig, LoginResponse } from "../interfaces";
 type ServerMode = "Development" | "Production";
 import { TropipayHooks } from "../hooks/TropipayHooks";
 import { PaymentCard } from "../paymentcard/PaymentCard";
@@ -22,12 +22,6 @@ export declare class Tropipay {
     depositAccounts: DepositAccounts;
     constructor(config: TropipayConfig);
     login(): Promise<LoginResponse>;
-    /**
-     * Get all deposits in this account.
-     * @returns A Promise of an Array of AccountDeposits or throws an Exception
-     * @see https://tpp.stoplight.io/docs/tropipay-api-doc/b3A6OTgyOTQ1Mg-get-deposit-accounts-list
-     */
-    getDepositAccounts(): Promise<AccountDeposits[] | Error>;
     /**
      * Get the list of all supported countries by Tropipay.
      * @returns Array of Countries Data

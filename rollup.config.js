@@ -9,7 +9,7 @@ const config = [
       format: "cjs",
       sourcemap: true,
     },
-    external: ["axios", "crypto"],
+    external: ["axios", "crypto", "fs/promises"],
     plugins: [typescript()],
   },
   {

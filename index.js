@@ -4,6 +4,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var axios = require('axios');
 var crypto = require('crypto');
+var fs = require('fs/promises');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -27,6 +28,7 @@ function _interopNamespace(e) {
 
 var axios__default = /*#__PURE__*/_interopDefaultLegacy(axios);
 var crypto__namespace = /*#__PURE__*/_interopNamespace(crypto);
+var fs__default = /*#__PURE__*/_interopDefaultLegacy(fs);
 
 function handleExceptions(error) {
     if (error instanceof axios.AxiosError) {
@@ -453,29 +455,6 @@ class Tropipay {
         }
     }
     /**
-     * Get all deposits in this account.
-     * @returns A Promise of an Array of AccountDeposits or throws an Exception
-     * @see https://tpp.stoplight.io/docs/tropipay-api-doc/b3A6OTgyOTQ1Mg-get-deposit-accounts-list
-     */
-    async getDepositAccounts() {
-        if (!Tropipay.accessToken) {
-            await this.login();
-        }
-        try {
-            const deposits = await this.request.get("/api/v2/deposit_accounts", {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${Tropipay.accessToken}`,
-                    Accept: "application/json",
-                },
-            });
-            return deposits.data;
-        }
-        catch (error) {
-            throw handleExceptions(error);
-        }
-    }
-    /**
      * Get the list of all supported countries by Tropipay.
      * @returns Array of Countries Data
      * @see https://tpp.stoplight.io/docs/tropipay-api-doc/bfac21259e2ff-getting-users-countries-list
@@ -650,6 +629,8 @@ class ClientSideUtils {
     }
 }
 
+const MAX_IMAGE_SIZE_MB = 1;
+
 class ServerSideUtils {
     tropipay;
     constructor(tropipayInstance) {
@@ -673,6 +654,76 @@ class ServerSideUtils {
             .digest("hex");
         return localSignature === signature;
     }
+    /**
+     * Checks if the provided base64 string represents a square image.
+     *
+     * @param {string} base64String - The base64 string of the image
+     * @return {Promise<boolean>} A Promise that resolves to a boolean indicating whether the image is square
+     */
+    static async isBase64ImageSquare(base64String) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                // Check if the image has a 1:1 aspect ratio
+                const isSquare = img.width === img.height;
+                resolve(isSquare);
+            };
+            img.onerror = (error) => {
+                reject(error);
+            };
+            img.src = base64String;
+        });
+    }
+    /**
+     * Takes a local file path and returns a base64 representation of the file content.
+     *
+     * @param {string} filepath - the path of the file to be converted to base64
+     * @return {Promise<string>} a Promise that resolves to the base64 representation of the file content
+     */
+    static async fileToBase64(filepath) {
+        const contents = await fs__default["default"].readFile(filepath);
+        let base64content = contents.toString("base64");
+        const ext = filepath.split(".").pop();
+        return `data:image/${ext};base64,` + base64content;
+    }
+    /**
+     * Get the base64 representation of a remote file from the given URL.
+     *
+     * @param {string} url - the URL of the file
+     * @return {Promise<string>} the base64 representation of the file
+     */
+    static async getBase64FromFileUrl(url) {
+        const response = await axios__default["default"].get(url, { responseType: "arraybuffer" });
+        return Buffer.from(response.data, "binary").toString("base64");
+    }
+    /**
+     * Check if the base64 string represents a valid image and has a valid size
+     *
+     * @param {string} base64Image - the base64 image to be validated
+     * @return {Promise<string>} the valid base64 image
+     */
+    static isValidImage(base64Image) {
+        // Check if the base64 string represents a valid image and has a valid size
+        try {
+            const isBase64Image = base64Image.startsWith("data:image/");
+            if (!isBase64Image) {
+                console.error("Not a valid base64 image");
+                throw new Error("Not a valid base64 image");
+            }
+            // TODO: use constants intead of magic numbers here
+            const isSizeLessThan2MB = base64Image.length * 0.75 <= MAX_IMAGE_SIZE_MB * 1024 * 1024;
+            if (!isSizeLessThan2MB) {
+                console.error(`The image should be less than 2mb`);
+                throw new Error(`The image should be less than 2mb`);
+            }
+            // all is fine
+            return true;
+        }
+        catch (error) {
+            console.error("Error checking base64 image:", error);
+            throw new Error(`Error checking base64 image`);
+        }
+    }
 }
 
 const SERVER_MODE = "Development"; // Move the constant here
@@ -689,11 +740,14 @@ const SERVER_MODE = "Development"; // Move the constant here
  * @license MIT
  */
 if (typeof window !== "undefined") {
-    console.error(`⚠️ **Warning:** The Tropipay SDK should only be instantiated server-side for security reasons. Using it client-side may lead to unexpected behavior and security vulnerabilities. YOUR CREDENTIALS COULD BE EXPOSED. Check https://yosle.github.io/tropipayjs-docs/guides/installation/ for more details.`);
+    const err_msg = `⚠️ **Warning:** The Tropipay SDK should only be instantiated server-side for security reasons. Using it client-side may lead to unexpected behavior and security vulnerabilities. YOUR CREDENTIALS COULD BE EXPOSED. Check https://yosle.github.io/tropipayjs-docs/guides/installation/ for more details.`;
+    console.error(err_msg);
+    throw new Error(err_msg);
 }
 
 exports.ClientSideUtils = ClientSideUtils;
 exports.DepositAccounts = DepositAccounts;
+exports.MAX_IMAGE_SIZE_MB = MAX_IMAGE_SIZE_MB;
 exports.PaymentCard = PaymentCard;
 exports.SERVER_MODE = SERVER_MODE;
 exports.ServerSideUtils = ServerSideUtils;

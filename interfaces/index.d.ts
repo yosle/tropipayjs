@@ -59,6 +59,7 @@ export interface PaymentLinkPayload {
     };
     directPayment: boolean;
     paymentMethods?: string[];
+    imageBase?: string;
 }
 export interface PaymentLink extends PaymentLinkPayload {
     expirationDate: string;

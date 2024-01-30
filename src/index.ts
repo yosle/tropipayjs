@@ -10,12 +10,10 @@
  * @license MIT
  */
 
-import { DepositAccounts } from "./depositAccount/depositAccounts";
-
 if (typeof window !== "undefined") {
-  console.error(
-    `⚠️ **Warning:** The Tropipay SDK should only be instantiated server-side for security reasons. Using it client-side may lead to unexpected behavior and security vulnerabilities. YOUR CREDENTIALS COULD BE EXPOSED. Check https://yosle.github.io/tropipayjs-docs/guides/installation/ for more details.`
-  );
+  const err_msg = `⚠️ **Warning:** The Tropipay SDK should only be instantiated server-side for security reasons. Using it client-side may lead to unexpected behavior and security vulnerabilities. YOUR CREDENTIALS COULD BE EXPOSED. Check https://yosle.github.io/tropipayjs-docs/guides/installation/ for more details.`;
+  console.error(err_msg);
+  throw new Error(err_msg);
 }
 
 export { Tropipay } from "./api/TropipayAPI";

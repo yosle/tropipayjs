@@ -1,6 +1,7 @@
 import { Axios } from 'axios';
 
 type ServerMode$1 = "Development" | "Production";
+declare const MAX_IMAGE_SIZE_MB = 1;
 
 type AccountBalance = {
     balance: number;
@@ -62,6 +63,7 @@ interface PaymentLinkPayload {
     };
     directPayment: boolean;
     paymentMethods?: string[];
+    imageBase?: string;
 }
 interface PaymentLink extends PaymentLinkPayload {
     expirationDate: string;
@@ -302,12 +304,6 @@ declare class Tropipay {
     constructor(config: TropipayConfig);
     login(): Promise<LoginResponse>;
     /**
-     * Get all deposits in this account.
-     * @returns A Promise of an Array of AccountDeposits or throws an Exception
-     * @see https://tpp.stoplight.io/docs/tropipay-api-doc/b3A6OTgyOTQ1Mg-get-deposit-accounts-list
-     */
-    getDepositAccounts(): Promise<AccountDeposits[] | Error>;
-    /**
      * Get the list of all supported countries by Tropipay.
      * @returns Array of Countries Data
      * @see https://tpp.stoplight.io/docs/tropipay-api-doc/bfac21259e2ff-getting-users-countries-list
@@ -382,8 +378,36 @@ declare class ServerSideUtils {
         clientId: string;
         clientSecret: string;
     } | Tropipay, originalCurrencyAmount: string, bankOrderCode: string, signature: string): boolean;
+    /**
+     * Checks if the provided base64 string represents a square image.
+     *
+     * @param {string} base64String - The base64 string of the image
+     * @return {Promise<boolean>} A Promise that resolves to a boolean indicating whether the image is square
+     */
+    static isBase64ImageSquare(base64String: string): Promise<boolean>;
+    /**
+     * Takes a local file path and returns a base64 representation of the file content.
+     *
+     * @param {string} filepath - the path of the file to be converted to base64
+     * @return {Promise<string>} a Promise that resolves to the base64 representation of the file content
+     */
+    static fileToBase64(filepath: string): Promise<string>;
+    /**
+     * Get the base64 representation of a remote file from the given URL.
+     *
+     * @param {string} url - the URL of the file
+     * @return {Promise<string>} the base64 representation of the file
+     */
+    static getBase64FromFileUrl(url: string): Promise<string>;
+    /**
+     * Check if the base64 string represents a valid image and has a valid size
+     *
+     * @param {string} base64Image - the base64 image to be validated
+     * @return {Promise<string>} the valid base64 image
+     */
+    static isValidImage(base64Image: string): boolean;
 }
 
 declare const SERVER_MODE: ServerMode$1;
 
-export { AccountBalance, AccountDeposits, ClientSideUtils, Country, Deposit, DepositAccounts, HookEventType, HookTargetType, LoginError, LoginResponse, PaymentCard, PaymentLink, PaymentLinkPayload, SERVER_MODE, ServerMode$1 as ServerMode, ServerSideUtils, Tropipay, TropipayConfig, TropipayCredentials, TropipayHooks, UserHook, UserHookSubscribed, mediationPaymentCardConfig };
+export { AccountBalance, AccountDeposits, ClientSideUtils, Country, Deposit, DepositAccounts, HookEventType, HookTargetType, LoginError, LoginResponse, MAX_IMAGE_SIZE_MB, PaymentCard, PaymentLink, PaymentLinkPayload, SERVER_MODE, ServerMode$1 as ServerMode, ServerSideUtils, Tropipay, TropipayConfig, TropipayCredentials, TropipayHooks, UserHook, UserHookSubscribed, mediationPaymentCardConfig };
