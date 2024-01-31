@@ -47,7 +47,7 @@ or
 
 ## Setting up your app credentials
 
-![alt](https://yosle.github.io/tropipayjs-docs/images/cred1.png)
+![alt](https://yosle.github.io/tropipayjs-docs/images/cred2.png)
 ![alt](https://yosle.github.io/tropipayjs-docs/images/cred3.png)
 
 In order to use the Tropipay API you'll need a client ID and a client secret. Sign up with your [Tropipay](www.tropipay.com) account, go to the App Menu->Applications and credentials. You'll be asked to enter a confirmation code (use 123456 in the test enviroment). _Make sure you test everything in the [test environment](https://tropipay-dev.herokuapp.com) first before using your real account._ Create an app and configure the client id an client secret for the app.
