@@ -4,7 +4,7 @@
   "description": "Javascript / Typescript SDK for the Tropipay API",
   "main": "index.js",
   "scripts": {
-    "test": "vitest",
+    "test": "vitest run",
     "_clear": "rimraf src/dist/*",
     "_tsc": "tsc",
     "_make-bundle": "rollup --config",
