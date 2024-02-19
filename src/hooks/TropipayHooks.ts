@@ -57,7 +57,7 @@ export class TropipayHooks {
     }
   }
   /**
-   * Get the sucbcribed hook info by his event type.
+   * Get the subscribed hook info by his event type.
    * If no event type is passed, it will return
    * all subscribed hooks or empty Array if none exist.
    * @param eventType or no params for retrieving all hooks
