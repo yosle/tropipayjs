@@ -33,13 +33,28 @@ export class Tropipay {
   public paymentCards: PaymentCard;
   public depositAccounts: DepositAccounts;
 
+  /**
+   * Initializes a new instance of the Tropipay class.
+   *
+   * @param {TropipayConfig} config - The configuration object.
+   */
+
   constructor(config: TropipayConfig) {
-    if (!config.scopes || config?.scopes?.length === 0) {
-      throw new TropipayJSException(
-        `You must pass at least one scope in Tropipay constructor`,
-        400,
-        null
-      );
+    // use all scopes if none is passed
+    if (!config?.scopes) {
+      this.scopes = [
+        "ALLOW_GET_PROFILE_DATA",
+        "ALLOW_PAYMENT_IN",
+        "ALLOW_EXTERNAL_CHARGE",
+        "KYC3_FULL_ALLOW",
+        "ALLOW_PAYMENT_OUT",
+        "ALLOW_MARKET_PURCHASES",
+        "ALLOW_GET_BALANCE",
+        "ALLOW_GET_MOVEMENT_LIST",
+        "ALLOW_GET_CREDENTIAL",
+      ];
+    } else {
+      this.scopes = config.scopes;
     }
 
     if (!config.clientId || !config.clientSecret) {
@@ -52,7 +67,6 @@ export class Tropipay {
 
     this.clientId = config.clientId;
     this.clientSecret = config.clientSecret;
-    this.scopes = config.scopes;
     this.serverMode = config.serverMode || "Development";
     this.request = axios.create({
       baseURL:

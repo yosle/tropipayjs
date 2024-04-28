@@ -9,7 +9,7 @@ export type AccountBalance = {
 export interface TropipayConfig {
   clientId: string;
   clientSecret: string;
-  scopes: string[];
+  scopes?: string[];
   serverMode?: ServerMode;
 }
 

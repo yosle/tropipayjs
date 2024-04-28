@@ -21,6 +21,11 @@ export declare class Tropipay {
     hooks: TropipayHooks;
     paymentCards: PaymentCard;
     depositAccounts: DepositAccounts;
+    /**
+     * Initializes a new instance of the Tropipay class.
+     *
+     * @param {TropipayConfig} config - The configuration object.
+     */
     constructor(config: TropipayConfig);
     login(): Promise<LoginResponse>;
     /**
