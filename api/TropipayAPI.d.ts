@@ -13,9 +13,10 @@ import { DepositAccounts } from "../depositAccount/depositAccounts";
 export declare class Tropipay {
     readonly clientId: string;
     readonly clientSecret: string;
+    readonly scopes: String[];
     request: Axios;
-    static accessToken: string | undefined;
-    static refreshToken: string | undefined;
+    static accessToken: string | null;
+    static refreshToken: string | null;
     serverMode: ServerMode;
     hooks: TropipayHooks;
     paymentCards: PaymentCard;

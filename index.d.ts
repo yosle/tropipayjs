@@ -11,6 +11,7 @@ type AccountBalance = {
 interface TropipayConfig {
     clientId: string;
     clientSecret: string;
+    scopes: string[];
     serverMode?: ServerMode$1;
 }
 type TropipayCredentials = {
@@ -188,7 +189,7 @@ declare class TropipayHooks {
         value: string;
     }): Promise<any>;
     /**
-     * Get the sucbcribed hook info by his event type.
+     * Get the subscribed hook info by his event type.
      * If no event type is passed, it will return
      * all subscribed hooks or empty Array if none exist.
      * @param eventType or no params for retrieving all hooks
@@ -294,9 +295,10 @@ type ServerMode = "Development" | "Production";
 declare class Tropipay {
     readonly clientId: string;
     readonly clientSecret: string;
+    readonly scopes: String[];
     request: Axios;
-    static accessToken: string | undefined;
-    static refreshToken: string | undefined;
+    static accessToken: string | null;
+    static refreshToken: string | null;
     serverMode: ServerMode;
     hooks: TropipayHooks;
     paymentCards: PaymentCard;

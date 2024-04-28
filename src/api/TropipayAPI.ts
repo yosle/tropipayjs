@@ -20,21 +20,39 @@ type ServerMode = "Development" | "Production";
 import { TropipayHooks } from "../hooks/TropipayHooks";
 import { PaymentCard } from "../paymentcard/PaymentCard";
 import { DepositAccounts } from "../depositAccount/depositAccounts";
-import { handleExceptions } from "../utils/errors";
+import { TropipayJSException, handleExceptions } from "../utils/errors";
 export class Tropipay {
   readonly clientId: string;
   readonly clientSecret: string;
+  readonly scopes: String[];
   public request: Axios;
-  public static accessToken: string | undefined;
-  public static refreshToken: string | undefined;
+  public static accessToken: string | null;
+  public static refreshToken: string | null;
   public serverMode: ServerMode;
   public hooks: TropipayHooks;
   public paymentCards: PaymentCard;
   public depositAccounts: DepositAccounts;
 
   constructor(config: TropipayConfig) {
+    if (!config.scopes || config?.scopes?.length === 0) {
+      throw new TropipayJSException(
+        `You must pass at least one scope in Tropipay constructor`,
+        400,
+        null
+      );
+    }
+
+    if (!config.clientId || !config.clientSecret) {
+      throw new TropipayJSException(
+        `You must pass clientId and clientSecret in Tropipay constructor`,
+        400,
+        null
+      );
+    }
+
     this.clientId = config.clientId;
     this.clientSecret = config.clientSecret;
+    this.scopes = config.scopes;
     this.serverMode = config.serverMode || "Development";
     this.request = axios.create({
       baseURL:
@@ -54,14 +72,33 @@ export class Tropipay {
 
   public async login() {
     try {
+      if (Tropipay.refreshToken) {
+        const { data } = await this.request.post<LoginResponse>(
+          "/api/v2/access/token",
+          {
+            client_id: this.clientId,
+            client_secret: this.clientSecret,
+            grant_type: "refresh_token",
+            refresh_token: Tropipay.refreshToken,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+          }
+        );
+        return data;
+      }
+
+      // normal credetials login
       const { data } = await this.request.post<LoginResponse>(
         "/api/v2/access/token",
         {
           client_id: this.clientId,
           client_secret: this.clientSecret,
           grant_type: "client_credentials",
-          scope:
-            "ALLOW_GET_PROFILE_DATA ALLOW_PAYMENT_IN ALLOW_EXTERNAL_CHARGE KYC3_FULL_ALLOW ALLOW_PAYMENT_OUT ALLOW_MARKET_PURCHASES ALLOW_GET_BALANCE ALLOW_GET_MOVEMENT_LIST ALLOW_GET_CREDENTIAL",
+          scope: this.scopes.join(" "), // "ALLOW_GET_PROFILE_DATA ALLOW_PAYMENT_IN ALLOW_EXTERNAL_CHARGE KYC3_FULL_ALLOW ALLOW_PAYMENT_OUT ALLOW_MARKET_PURCHASES ALLOW_GET_BALANCE ALLOW_GET_MOVEMENT_LIST ALLOW_GET_CREDENTIAL",
         },
         {
           headers: {
@@ -75,6 +112,8 @@ export class Tropipay {
       Tropipay.refreshToken = data.refresh_token;
       return data;
     } catch (error) {
+      Tropipay.accessToken = null;
+      Tropipay.refreshToken = null;
       throw handleExceptions(error as any);
     }
   }

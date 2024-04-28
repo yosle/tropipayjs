@@ -57,8 +57,12 @@ export function handleExceptions(
             axiosResponse.status,
             axiosResponse.data.error
           );
-        // case 429:
-        //   return new TooManyRequestsException(errorMessage);
+        case 429:
+          return new TropipayJSException(
+            `${errorMessage} Too many request or rate limited`,
+            axiosResponse.status,
+            axiosResponse.data.error
+          );
         default:
           return new TropipayJSException(
             errorMessage,
@@ -78,7 +82,7 @@ export function handleExceptions(
       return new TropipayJSException("An error occurred", 500, null);
     }
   } else {
-    return new TropipayJSException(`jsbfvbsfvbf`, 500, null);
+    return new TropipayJSException("An Unknown error occurred", 500, null);
   }
 }
 

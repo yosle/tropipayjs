@@ -42,8 +42,8 @@ function handleExceptions(error) {
                     return new TropipayJSException(errorMessage, axiosResponse.status, axiosResponse.data.error);
                 case 404:
                     return new TropipayJSException(errorMessage, axiosResponse.status, axiosResponse.data.error);
-                // case 429:
-                //   return new TooManyRequestsException(errorMessage);
+                case 429:
+                    return new TropipayJSException(`${errorMessage} Too many request or rate limited`, axiosResponse.status, axiosResponse.data.error);
                 default:
                     return new TropipayJSException(errorMessage, axiosResponse.status, axiosResponse.data.error);
             }
@@ -58,7 +58,7 @@ function handleExceptions(error) {
         }
     }
     else {
-        return new TropipayJSException(`jsbfvbsfvbf`, 500, null);
+        return new TropipayJSException("An Unknown error occurred", 500, null);
     }
 }
 class TropipayJSException extends Error {
@@ -120,7 +120,7 @@ class TropipayHooks {
         }
     }
     /**
-     * Get the sucbcribed hook info by his event type.
+     * Get the subscribed hook info by his event type.
      * If no event type is passed, it will return
      * all subscribed hooks or empty Array if none exist.
      * @param eventType or no params for retrieving all hooks
@@ -408,6 +408,7 @@ class DepositAccounts {
 class Tropipay {
     clientId;
     clientSecret;
+    scopes;
     request;
     static accessToken;
     static refreshToken;
@@ -416,8 +417,15 @@ class Tropipay {
     paymentCards;
     depositAccounts;
     constructor(config) {
+        if (!config.scopes || config?.scopes?.length === 0) {
+            throw new TropipayJSException(`You must pass at least one scope in Tropipay constructor`, 400, null);
+        }
+        if (!config.clientId || !config.clientSecret) {
+            throw new TropipayJSException(`You must pass clientId and clientSecret in Tropipay constructor`, 400, null);
+        }
         this.clientId = config.clientId;
         this.clientSecret = config.clientSecret;
+        this.scopes = config.scopes;
         this.serverMode = config.serverMode || "Development";
         this.request = axios__default["default"].create({
             baseURL: this.serverMode === "Production"
@@ -435,11 +443,26 @@ class Tropipay {
     }
     async login() {
         try {
+            if (Tropipay.refreshToken) {
+                const { data } = await this.request.post("/api/v2/access/token", {
+                    client_id: this.clientId,
+                    client_secret: this.clientSecret,
+                    grant_type: "refresh_token",
+                    refresh_token: Tropipay.refreshToken,
+                }, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Accept: "application/json",
+                    },
+                });
+                return data;
+            }
+            // normal credetials login
             const { data } = await this.request.post("/api/v2/access/token", {
                 client_id: this.clientId,
                 client_secret: this.clientSecret,
                 grant_type: "client_credentials",
-                scope: "ALLOW_GET_PROFILE_DATA ALLOW_PAYMENT_IN ALLOW_EXTERNAL_CHARGE KYC3_FULL_ALLOW ALLOW_PAYMENT_OUT ALLOW_MARKET_PURCHASES ALLOW_GET_BALANCE ALLOW_GET_MOVEMENT_LIST ALLOW_GET_CREDENTIAL",
+                scope: this.scopes.join(" "), // "ALLOW_GET_PROFILE_DATA ALLOW_PAYMENT_IN ALLOW_EXTERNAL_CHARGE KYC3_FULL_ALLOW ALLOW_PAYMENT_OUT ALLOW_MARKET_PURCHASES ALLOW_GET_BALANCE ALLOW_GET_MOVEMENT_LIST ALLOW_GET_CREDENTIAL",
             }, {
                 headers: {
                     "Content-Type": "application/json",
@@ -451,6 +474,8 @@ class Tropipay {
             return data;
         }
         catch (error) {
+            Tropipay.accessToken = null;
+            Tropipay.refreshToken = null;
             throw handleExceptions(error);
         }
     }
