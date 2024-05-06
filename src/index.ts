@@ -19,9 +19,10 @@ if (typeof window !== "undefined") {
 export { Tropipay } from "./api/TropipayAPI";
 export { ClientSideUtils } from "./api/TropipayAPI";
 export { ServerSideUtils } from "./utils/TropipayUtils";
-export { TropipayHooks } from "./hooks/TropipayHooks";
-export { PaymentCard } from "./paymentcard/PaymentCard";
-export { DepositAccounts } from "./depositAccount/depositAccounts";
+export * from "./hooks/TropipayHooks";
+export * from "./paymentcard/PaymentCard";
+export * from "./mediationPaymentCard/MediationPaymentCard";
+export * from "./depositAccount/depositAccounts";
 export * from "./interfaces/index";
 export { SERVER_MODE } from "./config/TropipayConfig";
 export * from "./constants/TropipayConstants";

@@ -277,6 +277,40 @@ class PaymentCard {
     }
 }
 
+class MediationPaymentCard {
+    tropipay;
+    constructor(tropipayInstance) {
+        this.tropipay = tropipayInstance;
+    }
+    /**
+     * (ONLY FOR BUSINESS ACCOUNTS) Create a mediation paymentcard (an escrow payment link) with the specified options.
+     * This allows a payment to be made to persons belonging or not to the TropiPay platform with the
+     * particularity that the payment will be held in custody or retained until it is released with
+     * the approval of the payer.
+     * @param payload PaymentLinkPayload Object.
+     * @returns Promise<PaymentLink> or throws an Exception.
+     * @see https://tpp.stoplight.io/docs/tropipay-api-doc/12a128ff971e4-creating-a-mediation-payment-card
+     */
+    async create(payload) {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const paylink = await this.tropipay.request.post("/api/v2/paymentcards/mediation", payload, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return paylink.data;
+        }
+        catch (error) {
+            throw handleExceptions(error);
+        }
+    }
+}
+
 class DepositAccounts {
     tropipay;
     constructor(tropipayInstance) {
@@ -416,6 +450,7 @@ class Tropipay {
     hooks;
     paymentCards;
     depositAccounts;
+    mediationPaymentCard;
     /**
      * Initializes a new instance of the Tropipay class.
      *
@@ -457,6 +492,7 @@ class Tropipay {
         });
         this.hooks = new TropipayHooks(this);
         this.paymentCards = new PaymentCard(this);
+        this.mediationPaymentCard = new MediationPaymentCard(this);
         this.depositAccounts = new DepositAccounts(this);
     }
     async login() {
@@ -792,11 +828,8 @@ if (typeof window !== "undefined") {
 }
 
 exports.ClientSideUtils = ClientSideUtils;
-exports.DepositAccounts = DepositAccounts;
 exports.MAX_IMAGE_SIZE_MB = MAX_IMAGE_SIZE_MB;
-exports.PaymentCard = PaymentCard;
 exports.SERVER_MODE = SERVER_MODE;
 exports.ServerSideUtils = ServerSideUtils;
 exports.Tropipay = Tropipay;
-exports.TropipayHooks = TropipayHooks;
 //# sourceMappingURL=index.js.map

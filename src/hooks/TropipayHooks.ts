@@ -1,7 +1,7 @@
 import { HookEventType, UserHookSubscribed } from "../interfaces";
 import { Tropipay } from "../api/TropipayAPI";
 import { handleExceptions } from "../utils/errors";
-export class TropipayHooks {
+export default class TropipayHooks {
   private tropipay: Tropipay;
   // ... hook-related functionality ...
   constructor(tropipayInstance: Tropipay) {

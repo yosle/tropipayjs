@@ -12,14 +12,15 @@ import {
   Country,
   PaymentLinkPayload,
   PaymentLink,
-  mediationPaymentCardConfig,
+  MediationPaymentCardConfig,
   LoginResponse,
   AccountDeposits,
 } from "../interfaces";
 type ServerMode = "Development" | "Production";
-import { TropipayHooks } from "../hooks/TropipayHooks";
-import { PaymentCard } from "../paymentcard/PaymentCard";
-import { DepositAccounts } from "../depositAccount/depositAccounts";
+import TropipayHooks from "../hooks/TropipayHooks";
+import PaymentCard from "../paymentcard/PaymentCard";
+import MediationPaymentCard from "../mediationPaymentCard/MediationPaymentCard";
+import DepositAccounts from "../depositAccount/depositAccounts";
 import { TropipayJSException, handleExceptions } from "../utils/errors";
 export class Tropipay {
   readonly clientId: string;
@@ -32,6 +33,7 @@ export class Tropipay {
   public hooks: TropipayHooks;
   public paymentCards: PaymentCard;
   public depositAccounts: DepositAccounts;
+  public mediationPaymentCard: MediationPaymentCard;
 
   /**
    * Initializes a new instance of the Tropipay class.
@@ -81,6 +83,8 @@ export class Tropipay {
     });
     this.hooks = new TropipayHooks(this);
     this.paymentCards = new PaymentCard(this);
+    this.mediationPaymentCard = new MediationPaymentCard(this);
+
     this.depositAccounts = new DepositAccounts(this);
   }
 
@@ -294,7 +298,7 @@ export class Tropipay {
    * @param config Payload with the payment details
    */
   async createMediationPaymentCard(
-    config: mediationPaymentCardConfig
+    config: MediationPaymentCardConfig
   ): Promise<PaymentLink> {
     if (!Tropipay.accessToken) await this.login();
     try {

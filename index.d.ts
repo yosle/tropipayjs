@@ -75,7 +75,7 @@ interface PaymentLink extends PaymentLinkPayload {
     shortUrl: string;
     paymentUrl: string;
 }
-interface mediationPaymentCardConfig {
+interface MediationPaymentCardConfig {
     amount: number;
     currency: "EUR" | "USD";
     concept: string;
@@ -220,6 +220,21 @@ declare class PaymentCard {
     get(id: string): Promise<any>;
 }
 
+declare class MediationPaymentCard {
+    private tropipay;
+    constructor(tropipayInstance: Tropipay);
+    /**
+     * (ONLY FOR BUSINESS ACCOUNTS) Create a mediation paymentcard (an escrow payment link) with the specified options.
+     * This allows a payment to be made to persons belonging or not to the TropiPay platform with the
+     * particularity that the payment will be held in custody or retained until it is released with
+     * the approval of the payer.
+     * @param payload PaymentLinkPayload Object.
+     * @returns Promise<PaymentLink> or throws an Exception.
+     * @see https://tpp.stoplight.io/docs/tropipay-api-doc/12a128ff971e4-creating-a-mediation-payment-card
+     */
+    create(payload: MediationPaymentCardConfig): Promise<PaymentLink>;
+}
+
 interface DepositAccountConfig {
     searchValue?: string;
     alias: string;
@@ -303,6 +318,7 @@ declare class Tropipay {
     hooks: TropipayHooks;
     paymentCards: PaymentCard;
     depositAccounts: DepositAccounts;
+    mediationPaymentCard: MediationPaymentCard;
     /**
      * Initializes a new instance of the Tropipay class.
      *
@@ -364,7 +380,7 @@ declare class Tropipay {
      * @see https://tpp.stoplight.io/docs/tropipay-api-doc/12a128ff971e4-creating-a-mediation-payment-card
      * @param config Payload with the payment details
      */
-    createMediationPaymentCard(config: mediationPaymentCardConfig): Promise<PaymentLink>;
+    createMediationPaymentCard(config: MediationPaymentCardConfig): Promise<PaymentLink>;
 }
 declare class ClientSideUtils {
     constructor(tropipayInstance: Tropipay);
@@ -417,4 +433,4 @@ declare class ServerSideUtils {
 
 declare const SERVER_MODE: ServerMode$1;
 
-export { AccountBalance, AccountDeposits, ClientSideUtils, Country, Deposit, DepositAccounts, HookEventType, HookTargetType, LoginError, LoginResponse, MAX_IMAGE_SIZE_MB, PaymentCard, PaymentLink, PaymentLinkPayload, SERVER_MODE, ServerMode$1 as ServerMode, ServerSideUtils, Tropipay, TropipayConfig, TropipayCredentials, TropipayHooks, UserHook, UserHookSubscribed, mediationPaymentCardConfig };
+export { AccountBalance, AccountDeposits, ClientSideUtils, Country, Deposit, HookEventType, HookTargetType, LoginError, LoginResponse, MAX_IMAGE_SIZE_MB, MediationPaymentCardConfig, PaymentLink, PaymentLinkPayload, SERVER_MODE, ServerMode$1 as ServerMode, ServerSideUtils, Tropipay, TropipayConfig, TropipayCredentials, UserHook, UserHookSubscribed };

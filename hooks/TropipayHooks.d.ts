@@ -1,6 +1,6 @@
 import { HookEventType, UserHookSubscribed } from "../interfaces";
 import { Tropipay } from "../api/TropipayAPI";
-export declare class TropipayHooks {
+export default class TropipayHooks {
     private tropipay;
     constructor(tropipayInstance: Tropipay);
     /**

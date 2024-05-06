@@ -1,6 +1,6 @@
 import { Tropipay } from "../api/TropipayAPI";
 import { DepositAccountConfig } from "../interfaces/depositaccounts";
-export declare class DepositAccounts {
+export default class DepositAccounts {
     private tropipay;
     constructor(tropipayInstance: Tropipay);
     /**

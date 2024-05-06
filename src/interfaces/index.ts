@@ -100,7 +100,7 @@ export interface PaymentLink extends PaymentLinkPayload {
   paymentUrl: string;
 }
 
-export interface mediationPaymentCardConfig {
+export interface MediationPaymentCardConfig {
   amount: number;
   currency: "EUR" | "USD";
   concept: string;

@@ -2,7 +2,7 @@ import { Tropipay } from "../api/TropipayAPI";
 import { PaymentLink } from "../interfaces";
 import { PaymentLinkPayload } from "../interfaces";
 import { handleExceptions } from "../utils/errors";
-export class PaymentCard {
+export default class PaymentCard {
   private tropipay: Tropipay;
   constructor(tropipayInstance: Tropipay) {
     this.tropipay = tropipayInstance;

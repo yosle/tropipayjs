@@ -5,11 +5,12 @@
  *
  */
 import { Axios } from "axios";
-import { TropipayConfig, AccountBalance, Country, PaymentLink, mediationPaymentCardConfig, LoginResponse } from "../interfaces";
+import { TropipayConfig, AccountBalance, Country, PaymentLink, MediationPaymentCardConfig, LoginResponse } from "../interfaces";
 type ServerMode = "Development" | "Production";
-import { TropipayHooks } from "../hooks/TropipayHooks";
-import { PaymentCard } from "../paymentcard/PaymentCard";
-import { DepositAccounts } from "../depositAccount/depositAccounts";
+import TropipayHooks from "../hooks/TropipayHooks";
+import PaymentCard from "../paymentcard/PaymentCard";
+import MediationPaymentCard from "../mediationPaymentCard/MediationPaymentCard";
+import DepositAccounts from "../depositAccount/depositAccounts";
 export declare class Tropipay {
     readonly clientId: string;
     readonly clientSecret: string;
@@ -21,6 +22,7 @@ export declare class Tropipay {
     hooks: TropipayHooks;
     paymentCards: PaymentCard;
     depositAccounts: DepositAccounts;
+    mediationPaymentCard: MediationPaymentCard;
     /**
      * Initializes a new instance of the Tropipay class.
      *
@@ -82,7 +84,7 @@ export declare class Tropipay {
      * @see https://tpp.stoplight.io/docs/tropipay-api-doc/12a128ff971e4-creating-a-mediation-payment-card
      * @param config Payload with the payment details
      */
-    createMediationPaymentCard(config: mediationPaymentCardConfig): Promise<PaymentLink>;
+    createMediationPaymentCard(config: MediationPaymentCardConfig): Promise<PaymentLink>;
 }
 export declare class ClientSideUtils {
     constructor(tropipayInstance: Tropipay);

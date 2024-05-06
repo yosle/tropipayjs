@@ -1,7 +1,7 @@
 import { Tropipay } from "../api/TropipayAPI";
 import { PaymentLink } from "../interfaces";
 import { PaymentLinkPayload } from "../interfaces";
-export declare class PaymentCard {
+export default class PaymentCard {
     private tropipay;
     constructor(tropipayInstance: Tropipay);
     /**

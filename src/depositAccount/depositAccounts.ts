@@ -2,7 +2,7 @@ import { AxiosError } from "axios";
 import { Tropipay } from "../api/TropipayAPI";
 import { DepositAccountConfig } from "../interfaces/depositaccounts";
 import { handleExceptions } from "../utils/errors";
-export class DepositAccounts {
+export default class DepositAccounts {
   private tropipay: Tropipay;
   constructor(tropipayInstance: Tropipay) {
     this.tropipay = tropipayInstance;
