@@ -55,12 +55,14 @@ export interface PaymentLinkPayload {
         address: string;
         phone: string;
         email: string;
-        countryId: number;
+        countryId?: number;
+        countryIso?: string;
         termsAndConditions: boolean;
-    };
+    } | null;
     directPayment: boolean;
     paymentMethods?: string[];
     imageBase?: string;
+    saveToken?: boolean;
 }
 export interface PaymentLink extends PaymentLinkPayload {
     expirationDate: string;

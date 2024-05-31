@@ -17,5 +17,21 @@ export default class PaymentCard {
      * @returns Array of paymentlinks
      */
     list(): Promise<any>;
+    /**
+     * Retrieves a payment card with the specified ID.
+     *
+     * @param {string} id - The ID of the payment card to retrieve.
+     * @return {Promise<any>} A Promise that resolves to the payment card data.
+     * @throws {Error} If an error occurs while retrieving the payment card.
+     */
     get(id: string): Promise<any>;
+    /**
+     * Deletes a payment card with the specified ID. Its a LOGIC delete
+     * so this will delete the paymentcard from paymentcard list and
+     * disable shortUrl but not paymentUrl
+     * @param {string} id - The ID of the payment card to delete.
+     * @return {Promise<any>} A Promise that resolves to the deleted payment card data.
+     * @throws {Error} If an error occurs while deleting the payment card.
+     */
+    delete(id: string): Promise<any>;
 }

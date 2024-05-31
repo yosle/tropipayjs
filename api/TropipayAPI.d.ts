@@ -89,4 +89,14 @@ export declare class Tropipay {
 export declare class ClientSideUtils {
     constructor(tropipayInstance: Tropipay);
 }
+export declare const Scopes: {
+    ALLOW_PAYMENT_IN: string;
+    ALLOW_EXTERNAL_CHARGE: string;
+    KYC3_FULL_ALLOW: string;
+    ALLOW_PAYMENT_OUT: string;
+    ALLOW_MARKET_PURCHASES: string;
+    ALLOW_GET_BALANCE: string;
+    ALLOW_GET_MOVEMENT_LIST: string;
+    ALLOW_GET_CREDENTIAL: string;
+};
 export {};

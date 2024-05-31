@@ -84,7 +84,7 @@ export default class TropipayHooks {
     }
   }
   public async update(
-    eventType: string,
+    eventType: HookEventType,
     target: "web" | "email",
     value: string
   ) {

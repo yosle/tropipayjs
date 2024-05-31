@@ -32,7 +32,7 @@ export default class TropipayHooks {
      * @returns All subscribed hooks or empty Array if none exist.
      */
     list(eventType?: HookEventType): Promise<UserHookSubscribed[]>;
-    update(eventType: string, target: "web" | "email", value: string): Promise<any>;
+    update(eventType: HookEventType, target: "web" | "email", value: string): Promise<any>;
     delete(eventType: HookEventType, target: string): Promise<any>;
     events(): Promise<any>;
 }

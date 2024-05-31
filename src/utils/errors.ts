@@ -39,18 +39,9 @@ export function handleExceptions(
         axiosResponse.data?.error?.message || "An error occurred";
 
       switch (axiosResponse.status) {
+        case 400:
         case 401:
-          return new TropipayJSException(
-            errorMessage,
-            axiosResponse.status,
-            axiosResponse.data.error
-          );
         case 403:
-          return new TropipayJSException(
-            errorMessage,
-            axiosResponse.status,
-            axiosResponse.data.error
-          );
         case 404:
           return new TropipayJSException(
             errorMessage,

@@ -36,10 +36,9 @@ function handleExceptions(error) {
             const axiosResponse = error.response;
             const errorMessage = axiosResponse.data?.error?.message || "An error occurred";
             switch (axiosResponse.status) {
+                case 400:
                 case 401:
-                    return new TropipayJSException(errorMessage, axiosResponse.status, axiosResponse.data.error);
                 case 403:
-                    return new TropipayJSException(errorMessage, axiosResponse.status, axiosResponse.data.error);
                 case 404:
                     return new TropipayJSException(errorMessage, axiosResponse.status, axiosResponse.data.error);
                 case 429:
@@ -257,6 +256,13 @@ class PaymentCard {
             throw new Error(`Could not retrieve PaymenCards list`);
         }
     }
+    /**
+     * Retrieves a payment card with the specified ID.
+     *
+     * @param {string} id - The ID of the payment card to retrieve.
+     * @return {Promise<any>} A Promise that resolves to the payment card data.
+     * @throws {Error} If an error occurs while retrieving the payment card.
+     */
     async get(id) {
         if (!Tropipay.accessToken) {
             await this.tropipay.login();
@@ -267,6 +273,35 @@ class PaymentCard {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
                     Accept: "application/json",
+                },
+            });
+            return paymentcard.data;
+        }
+        catch (error) {
+            throw handleExceptions(error);
+        }
+    }
+    /**
+     * Deletes a payment card with the specified ID. Its a LOGIC delete
+     * so this will delete the paymentcard from paymentcard list and
+     * disable shortUrl but not paymentUrl
+     * @param {string} id - The ID of the payment card to delete.
+     * @return {Promise<any>} A Promise that resolves to the deleted payment card data.
+     * @throws {Error} If an error occurs while deleting the payment card.
+     */
+    async delete(id) {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const paymentcard = await this.tropipay.request.delete(`/api/v2/paymentcards/`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+                data: {
+                    cardId: id,
                 },
             });
             return paymentcard.data;
