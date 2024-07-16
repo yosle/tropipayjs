@@ -483,7 +483,6 @@ class Tropipay {
     static accessToken;
     static refreshToken;
     static expiresIn;
-    static expiresIn;
     serverMode;
     hooks;
     paymentCards;
@@ -523,11 +522,6 @@ class Tropipay {
             : "https://tropipay-dev.herokuapp.com";
         this.request = axios__default["default"].create({
             baseURL: config.customTropipayUrl || tpp_env,
-        const tpp_env = this.serverMode === "Production"
-            ? "https://www.tropipay.com"
-            : "https://tropipay-dev.herokuapp.com";
-        this.request = axios__default["default"].create({
-            baseURL: config.customTropipayUrl || tpp_env,
             headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json",
@@ -536,7 +530,7 @@ class Tropipay {
         });
         // Create a separate instance for login requests
         this.loginRequest = axios__default["default"].create({
-            baseURL: tpp_env,
+            baseURL: config.customTropipayUrl || tpp_env,
             headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json",

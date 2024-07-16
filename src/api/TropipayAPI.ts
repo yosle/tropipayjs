@@ -87,7 +87,7 @@ export class Tropipay {
 
       // Create a separate instance for login requests
       this.loginRequest = axios.create({
-        baseURL: tpp_env,
+        baseURL: config.customTropipayUrl || tpp_env,
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
