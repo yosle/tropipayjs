@@ -5,7 +5,7 @@
  *
  */
 
-import axios, { Axios } from "axios";
+import axios, { Axios, AxiosError, AxiosRequestConfig } from "axios";
 import {
   TropipayConfig,
   AccountBalance,
@@ -29,6 +29,7 @@ export class Tropipay {
   public request: Axios;
   public static accessToken: string | null;
   public static refreshToken: string | null;
+  public static expiresIn: number | null;
   public serverMode: ServerMode;
   public hooks: TropipayHooks;
   public paymentCards: PaymentCard;
@@ -70,22 +71,51 @@ export class Tropipay {
     this.clientId = config.clientId;
     this.clientSecret = config.clientSecret;
     this.serverMode = config.serverMode || "Development";
+
+    const tpp_env = this.serverMode === "Production"
+    ? "https://www.tropipay.com"
+    : "https://tropipay-dev.herokuapp.com";
     this.request = axios.create({
-      baseURL:
-        this.serverMode === "Production"
-          ? "https://www.tropipay.com"
-          : "https://tropipay-dev.herokuapp.com",
+      baseURL: config.customTropipayUrl || tpp_env,        
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
         Authorization: `Bearer ${Tropipay.accessToken}`,
       },
     });
+
+
+     // Add request interceptor for Token expired
+     this.request.interceptors.request.use(
+      async (config: any) => {
+        const currentTimestamp = Math.floor(Date.now() / 1000); // Current time in seconds
+
+        if (Tropipay.expiresIn && Tropipay.expiresIn < currentTimestamp) {
+          // Token has expired, attempt to refresh it
+          try {
+             await this.login();
+          } catch (error) {
+            // Handle token refresh error
+            Tropipay.accessToken = null;
+            Tropipay.refreshToken = null;
+            throw handleExceptions(error as any);
+          }
+        }
+
+        return config;
+      },
+      (error: AxiosError) => {
+        return Promise.reject(error);
+      }
+    );
+
     this.hooks = new TropipayHooks(this);
     this.paymentCards = new PaymentCard(this);
     this.mediationPaymentCard = new MediationPaymentCard(this);
 
     this.depositAccounts = new DepositAccounts(this);
+
+    
   }
 
   public async login() {
@@ -128,10 +158,12 @@ export class Tropipay {
 
       Tropipay.accessToken = data.access_token;
       Tropipay.refreshToken = data.refresh_token;
+      Tropipay.expiresIn = data.expires_in;
       return data;
     } catch (error) {
       Tropipay.accessToken = null;
       Tropipay.refreshToken = null;
+      Tropipay.expiresIn = null;
       throw handleExceptions(error as any);
     }
   }

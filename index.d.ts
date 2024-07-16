@@ -13,6 +13,7 @@ interface TropipayConfig {
     clientSecret: string;
     scopes?: string[];
     serverMode?: ServerMode$1;
+    customTropipayUrl?: string;
 }
 type TropipayCredentials = {
     clientId: string;
@@ -53,14 +54,16 @@ interface PaymentLinkPayload {
     urlFailed: string;
     urlNotification: string;
     serviceDate: string;
-    client: {
-        name: string;
-        lastName: string;
-        address: string;
-        phone: string;
-        email: string;
+    client?: {
+        name?: string;
+        lastName?: string;
+        address?: string;
+        phone?: string;
+        email?: string;
         countryId?: number;
         countryIso?: string;
+        city: string;
+        postCode: string;
         termsAndConditions: boolean;
     } | null;
     directPayment: boolean;
@@ -332,6 +335,7 @@ declare class Tropipay {
     request: Axios;
     static accessToken: string | null;
     static refreshToken: string | null;
+    static expiresIn: number | null;
     serverMode: ServerMode;
     hooks: TropipayHooks;
     paymentCards: PaymentCard;
