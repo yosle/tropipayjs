@@ -18,6 +18,7 @@ export declare class Tropipay {
     request: Axios;
     static accessToken: string | null;
     static refreshToken: string | null;
+    static expiresIn: number | null;
     serverMode: ServerMode;
     hooks: TropipayHooks;
     paymentCards: PaymentCard;

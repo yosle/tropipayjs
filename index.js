@@ -481,6 +481,7 @@ class Tropipay {
     request;
     static accessToken;
     static refreshToken;
+    static expiresIn;
     serverMode;
     hooks;
     paymentCards;
@@ -515,15 +516,35 @@ class Tropipay {
         this.clientId = config.clientId;
         this.clientSecret = config.clientSecret;
         this.serverMode = config.serverMode || "Development";
+        const tpp_env = this.serverMode === "Production"
+            ? "https://www.tropipay.com"
+            : "https://tropipay-dev.herokuapp.com";
         this.request = axios__default["default"].create({
-            baseURL: this.serverMode === "Production"
-                ? "https://www.tropipay.com"
-                : "https://tropipay-dev.herokuapp.com",
+            baseURL: config.customTropipayUrl || tpp_env,
             headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json",
                 Authorization: `Bearer ${Tropipay.accessToken}`,
             },
+        });
+        // Add request interceptor for Token expired
+        this.request.interceptors.request.use(async (config) => {
+            const currentTimestamp = Math.floor(Date.now() / 1000); // Current time in seconds
+            if (Tropipay.expiresIn && Tropipay.expiresIn < currentTimestamp) {
+                // Token has expired, attempt to refresh it
+                try {
+                    await this.login();
+                }
+                catch (error) {
+                    // Handle token refresh error
+                    Tropipay.accessToken = null;
+                    Tropipay.refreshToken = null;
+                    throw handleExceptions(error);
+                }
+            }
+            return config;
+        }, (error) => {
+            return Promise.reject(error);
         });
         this.hooks = new TropipayHooks(this);
         this.paymentCards = new PaymentCard(this);
@@ -560,11 +581,13 @@ class Tropipay {
             });
             Tropipay.accessToken = data.access_token;
             Tropipay.refreshToken = data.refresh_token;
+            Tropipay.expiresIn = data.expires_in;
             return data;
         }
         catch (error) {
             Tropipay.accessToken = null;
             Tropipay.refreshToken = null;
+            Tropipay.expiresIn = null;
             throw handleExceptions(error);
         }
     }

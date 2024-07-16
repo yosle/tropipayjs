@@ -9,6 +9,7 @@ export interface TropipayConfig {
     clientSecret: string;
     scopes?: string[];
     serverMode?: ServerMode;
+    customTropipayUrl?: string;
 }
 export type TropipayCredentials = {
     clientId: string;
@@ -49,14 +50,16 @@ export interface PaymentLinkPayload {
     urlFailed: string;
     urlNotification: string;
     serviceDate: string;
-    client: {
-        name: string;
-        lastName: string;
-        address: string;
-        phone: string;
-        email: string;
+    client?: {
+        name?: string;
+        lastName?: string;
+        address?: string;
+        phone?: string;
+        email?: string;
         countryId?: number;
         countryIso?: string;
+        city: string;
+        postCode: string;
         termsAndConditions: boolean;
     } | null;
     directPayment: boolean;

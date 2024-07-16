@@ -1,6 +1,6 @@
 {
   "name": "@yosle/tropipayjs",
-  "version": "0.1.22",
+  "version": "0.1.23",
   "description": "Javascript / Typescript SDK for the Tropipay API",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "_clear": "rimraf src/dist/*",
     "_tsc": "tsc",
     "_make-bundle": "rollup --config",
-    "build": "yarn _clear && yarn _tsc && yarn _make-bundle"
+    "build": "npm run _clear && npm run _tsc && npm run _make-bundle"
   },
   "repository": {
     "type": "git",
