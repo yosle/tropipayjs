@@ -91,6 +91,7 @@ export class Tropipay {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+          Authorization: `Bearer ${Tropipay.accessToken}`,
         },
       });
 
