@@ -6,6 +6,7 @@
  */
 
 import axios, { Axios, AxiosError, AxiosRequestConfig } from "axios";
+import axios, { Axios, AxiosError, AxiosRequestConfig } from "axios";
 import {
   TropipayConfig,
   AccountBalance,
@@ -30,6 +31,7 @@ export class Tropipay {
   public loginRequest: Axios; 
   public static accessToken: string | null;
   public static refreshToken: string | null;
+  public static expiresIn: number | null;
   public static expiresIn: number | null;
   public serverMode: ServerMode;
   public hooks: TropipayHooks;
@@ -76,7 +78,12 @@ export class Tropipay {
     const tpp_env = this.serverMode === "Production"
     ? "https://www.tropipay.com"
     : "https://tropipay-dev.herokuapp.com";
+
+    const tpp_env = this.serverMode === "Production"
+    ? "https://www.tropipay.com"
+    : "https://tropipay-dev.herokuapp.com";
     this.request = axios.create({
+      baseURL: config.customTropipayUrl || tpp_env,        
       baseURL: config.customTropipayUrl || tpp_env,        
       headers: {
         "Content-Type": "application/json",
@@ -125,6 +132,8 @@ export class Tropipay {
     this.depositAccounts = new DepositAccounts(this);
 
     
+
+    
   }
 
   public async login() {
@@ -168,10 +177,12 @@ export class Tropipay {
       Tropipay.accessToken = data.access_token;
       Tropipay.refreshToken = data.refresh_token;
       Tropipay.expiresIn = data.expires_in;
+      Tropipay.expiresIn = data.expires_in;
       return data;
     } catch (error) {
       Tropipay.accessToken = null;
       Tropipay.refreshToken = null;
+      Tropipay.expiresIn = null;
       Tropipay.expiresIn = null;
       throw handleExceptions(error as any);
     }

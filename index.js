@@ -483,6 +483,7 @@ class Tropipay {
     static accessToken;
     static refreshToken;
     static expiresIn;
+    static expiresIn;
     serverMode;
     hooks;
     paymentCards;
@@ -517,6 +518,11 @@ class Tropipay {
         this.clientId = config.clientId;
         this.clientSecret = config.clientSecret;
         this.serverMode = config.serverMode || "Development";
+        const tpp_env = this.serverMode === "Production"
+            ? "https://www.tropipay.com"
+            : "https://tropipay-dev.herokuapp.com";
+        this.request = axios__default["default"].create({
+            baseURL: config.customTropipayUrl || tpp_env,
         const tpp_env = this.serverMode === "Production"
             ? "https://www.tropipay.com"
             : "https://tropipay-dev.herokuapp.com";
@@ -591,11 +597,13 @@ class Tropipay {
             Tropipay.accessToken = data.access_token;
             Tropipay.refreshToken = data.refresh_token;
             Tropipay.expiresIn = data.expires_in;
+            Tropipay.expiresIn = data.expires_in;
             return data;
         }
         catch (error) {
             Tropipay.accessToken = null;
             Tropipay.refreshToken = null;
+            Tropipay.expiresIn = null;
             Tropipay.expiresIn = null;
             throw handleExceptions(error);
         }
