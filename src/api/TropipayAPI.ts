@@ -32,7 +32,6 @@ export class Tropipay {
   public static accessToken: string | null;
   public static refreshToken: string | null;
   public static expiresIn: number | null;
-  public static expiresIn: number | null;
   public serverMode: ServerMode;
   public hooks: TropipayHooks;
   public paymentCards: PaymentCard;
