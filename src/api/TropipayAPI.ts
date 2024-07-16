@@ -27,6 +27,7 @@ export class Tropipay {
   readonly clientSecret: string;
   readonly scopes: String[];
   public request: Axios;
+  public loginRequest: Axios; 
   public static accessToken: string | null;
   public static refreshToken: string | null;
   public static expiresIn: number | null;
@@ -84,6 +85,14 @@ export class Tropipay {
       },
     });
 
+      // Create a separate instance for login requests
+      this.loginRequest = axios.create({
+        baseURL: tpp_env,
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      });
 
      // Add request interceptor for Token expired
      this.request.interceptors.request.use(
@@ -121,7 +130,7 @@ export class Tropipay {
   public async login() {
     try {
       if (Tropipay.refreshToken) {
-        const { data } = await this.request.post<LoginResponse>(
+        const { data } = await this.loginRequest.post<LoginResponse>(
           "/api/v2/access/token",
           {
             client_id: this.clientId,
@@ -140,7 +149,7 @@ export class Tropipay {
       }
 
       // normal credetials login
-      const { data } = await this.request.post<LoginResponse>(
+      const { data } = await this.loginRequest.post<LoginResponse>(
         "/api/v2/access/token",
         {
           client_id: this.clientId,

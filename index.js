@@ -479,6 +479,7 @@ class Tropipay {
     clientSecret;
     scopes;
     request;
+    loginRequest;
     static accessToken;
     static refreshToken;
     static expiresIn;
@@ -527,6 +528,14 @@ class Tropipay {
                 Authorization: `Bearer ${Tropipay.accessToken}`,
             },
         });
+        // Create a separate instance for login requests
+        this.loginRequest = axios__default["default"].create({
+            baseURL: tpp_env,
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+        });
         // Add request interceptor for Token expired
         this.request.interceptors.request.use(async (config) => {
             const currentTimestamp = Math.floor(Date.now() / 1000); // Current time in seconds
@@ -554,7 +563,7 @@ class Tropipay {
     async login() {
         try {
             if (Tropipay.refreshToken) {
-                const { data } = await this.request.post("/api/v2/access/token", {
+                const { data } = await this.loginRequest.post("/api/v2/access/token", {
                     client_id: this.clientId,
                     client_secret: this.clientSecret,
                     grant_type: "refresh_token",
@@ -568,7 +577,7 @@ class Tropipay {
                 return data;
             }
             // normal credetials login
-            const { data } = await this.request.post("/api/v2/access/token", {
+            const { data } = await this.loginRequest.post("/api/v2/access/token", {
                 client_id: this.clientId,
                 client_secret: this.clientSecret,
                 grant_type: "client_credentials",
