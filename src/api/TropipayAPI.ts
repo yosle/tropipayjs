@@ -132,24 +132,24 @@ export class Tropipay {
 
   public async login() {
     try {
-      if (Tropipay.refreshToken) {
-        const { data } = await this.loginRequest.post<LoginResponse>(
-          "/api/v2/access/token",
-          {
-            client_id: this.clientId,
-            client_secret: this.clientSecret,
-            grant_type: "refresh_token",
-            refresh_token: Tropipay.refreshToken,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-        return data;
-      }
+      // if (Tropipay.refreshToken) {
+      //   const { data } = await this.loginRequest.post<LoginResponse>(
+      //     "/api/v2/access/token",
+      //     {
+      //       client_id: this.clientId,
+      //       client_secret: this.clientSecret,
+      //       grant_type: "refresh_token",
+      //       refresh_token: Tropipay.refreshToken,
+      //     },
+      //     {
+      //       headers: {
+      //         "Content-Type": "application/json",
+      //         Accept: "application/json",
+      //       },
+      //     }
+      //   );
+      //   return data;
+      // }
 
       // normal credetials login
       const { data } = await this.loginRequest.post<LoginResponse>(
