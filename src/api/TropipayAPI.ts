@@ -78,13 +78,8 @@ export class Tropipay {
     const tpp_env = this.serverMode === "Production"
     ? "https://www.tropipay.com"
     : "https://tropipay-dev.herokuapp.com";
-
-    const tpp_env = this.serverMode === "Production"
-    ? "https://www.tropipay.com"
-    : "https://tropipay-dev.herokuapp.com";
     this.request = axios.create({
-      baseURL: config.customTropipayUrl || tpp_env,        
-      baseURL: config.customTropipayUrl || tpp_env,        
+      baseURL: config.customTropipayUrl || tpp_env,                
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
