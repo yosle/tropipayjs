@@ -154,8 +154,6 @@ export class Tropipay {
       Tropipay.expiresIn = data.expires_in;
       return data;
     } catch (error) {
-
-      console.log("RAW login error ", error)
       Tropipay.accessToken = null;
       Tropipay.refreshToken = null;
       Tropipay.expiresIn = null;
