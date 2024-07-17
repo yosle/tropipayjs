@@ -479,6 +479,7 @@ class Tropipay {
     clientSecret;
     scopes;
     request;
+    loginRequest;
     static accessToken;
     static refreshToken;
     static expiresIn;
@@ -527,21 +528,29 @@ class Tropipay {
                 Authorization: `Bearer ${Tropipay.accessToken}`,
             },
         });
+        // Create a separate instance for login requests
+        this.loginRequest = axios__default["default"].create({
+            baseURL: config.customTropipayUrl || tpp_env,
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json"
+            },
+        });
         // Add request interceptor for Token expired
         this.request.interceptors.request.use(async (config) => {
-            const currentTimestamp = Math.floor(Date.now() / 1000); // Current time in seconds
+            console.log("Executing interceptor!!");
+            const currentTimestamp = Math.floor(Date.now() / 1000);
             if (Tropipay.expiresIn && Tropipay.expiresIn < currentTimestamp) {
-                // Token has expired, attempt to refresh it
+                console.debug("Token expired, attempting to log in");
                 try {
                     await this.login();
                 }
                 catch (error) {
-                    // Handle token refresh error
-                    Tropipay.accessToken = null;
-                    Tropipay.refreshToken = null;
                     throw handleExceptions(error);
                 }
             }
+            // Update the Authorization header in the config
+            config.headers.Authorization = `Bearer ${Tropipay.accessToken}`;
             return config;
         }, (error) => {
             return Promise.reject(error);
@@ -553,22 +562,8 @@ class Tropipay {
     }
     async login() {
         try {
-            if (Tropipay.refreshToken) {
-                const { data } = await this.request.post("/api/v2/access/token", {
-                    client_id: this.clientId,
-                    client_secret: this.clientSecret,
-                    grant_type: "refresh_token",
-                    refresh_token: Tropipay.refreshToken,
-                }, {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Accept: "application/json",
-                    },
-                });
-                return data;
-            }
             // normal credetials login
-            const { data } = await this.request.post("/api/v2/access/token", {
+            const { data } = await this.loginRequest.post("/api/v2/access/token", {
                 client_id: this.clientId,
                 client_secret: this.clientSecret,
                 grant_type: "client_credentials",
@@ -580,13 +575,14 @@ class Tropipay {
                 },
             });
             Tropipay.accessToken = data.access_token;
-            Tropipay.refreshToken = data.refresh_token;
             Tropipay.expiresIn = data.expires_in;
             return data;
         }
         catch (error) {
+            console.log("RAW login error ", error);
             Tropipay.accessToken = null;
             Tropipay.refreshToken = null;
+            Tropipay.expiresIn = null;
             Tropipay.expiresIn = null;
             throw handleExceptions(error);
         }

@@ -333,6 +333,7 @@ declare class Tropipay {
     readonly clientSecret: string;
     readonly scopes: String[];
     request: Axios;
+    loginRequest: Axios;
     static accessToken: string | null;
     static refreshToken: string | null;
     static expiresIn: number | null;
