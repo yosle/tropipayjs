@@ -579,7 +579,6 @@ class Tropipay {
             return data;
         }
         catch (error) {
-            console.log("RAW login error ", error);
             Tropipay.accessToken = null;
             Tropipay.refreshToken = null;
             Tropipay.expiresIn = null;
