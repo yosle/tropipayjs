@@ -50,6 +50,7 @@ enum Reasons {
 }
 
 export interface PaymentLinkPayload {
+  accountId: number;
   reference: string;
   concept: string;
   favorite: boolean;
@@ -64,9 +65,6 @@ export interface PaymentLinkPayload {
   urlFailed: string;
   urlNotification: string;
   serviceDate: string;
-  /**
-   * fgfsgdfgdfgd
-   */
   client?: {
     name: string;
     lastName: string;

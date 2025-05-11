@@ -562,7 +562,7 @@ class Tropipay {
     async login() {
         try {
             // normal credetials login
-            const { data } = await this.loginRequest.post("/api/v2/access/token", {
+            const { data } = await this.loginRequest.post("/api/v3/access/token", {
                 client_id: this.clientId,
                 client_secret: this.clientSecret,
                 grant_type: "client_credentials",

@@ -128,7 +128,7 @@ export class Tropipay {
     try {
       // normal credetials login
       const { data } = await this.loginRequest.post<LoginResponse>(
-        "/api/v2/access/token",
+        "/api/v3/access/token",
         {
           client_id: this.clientId,
           client_secret: this.clientSecret,
