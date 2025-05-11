@@ -18,7 +18,7 @@ export default class DepositAccounts {
     }
     try {
       const deposit = await this.tropipay.request.get(
-        `/api/v2/deposit_accounts`,
+        `/api/v3/deposit_accounts`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -43,7 +43,7 @@ export default class DepositAccounts {
     }
     try {
       const deposit = await this.tropipay.request.post(
-        "/api/v2/deposit_accounts",
+        "/api/v3/deposit_accounts",
         depositAccountObj,
         {
           headers: {
@@ -70,7 +70,7 @@ export default class DepositAccounts {
     }
     try {
       const deposit = await this.tropipay.request.get(
-        `/api/v2/deposit_accounts/${id}`,
+        `/api/v3/deposit_accounts/${id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -96,7 +96,7 @@ export default class DepositAccounts {
     }
     try {
       const deposit = await this.tropipay.request.put(
-        `/api/v2/deposit_accounts/`,
+        `/api/v3/deposit_accounts/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -122,7 +122,7 @@ export default class DepositAccounts {
     }
     try {
       const deposit = await this.tropipay.request.delete(
-        `/api/v2/deposit_accounts/${id}`,
+        `/api/v3/deposit_accounts/${id}`,
         {
           headers: {
             "Content-Type": "application/json",

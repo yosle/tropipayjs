@@ -20,7 +20,7 @@ export default class PaymentCard {
     }
     try {
       const paylink = await this.tropipay.request.post(
-        "/api/v2/paymentcards",
+        "/api/v3/paymentcards",
         payload,
         {
           headers: {
@@ -46,7 +46,7 @@ export default class PaymentCard {
     }
     try {
       const paymentcards = await this.tropipay.request.get(
-        `/api/v2/paymentcards`,
+        `/api/v3/paymentcards`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -74,7 +74,7 @@ export default class PaymentCard {
     }
     try {
       const paymentcard = await this.tropipay.request.get(
-        `/api/v2/paymentcards/${id}`,
+        `/api/v3/paymentcards/${id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -103,7 +103,7 @@ export default class PaymentCard {
     }
     try {
       const paymentcard = await this.tropipay.request.delete(
-        `/api/v2/paymentcards/`,
+        `/api/v3/paymentcards/`,
         {
           headers: {
             "Content-Type": "application/json",

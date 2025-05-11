@@ -64,6 +64,7 @@ export interface UserHookSubscribed extends UserHook {
 }
 
 export interface PaymentLinkPayload {
+  accountId: number;
   reference: string;
   concept: string;
   favorite: boolean;

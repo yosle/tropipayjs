@@ -220,7 +220,7 @@ class PaymentCard {
             await this.tropipay.login();
         }
         try {
-            const paylink = await this.tropipay.request.post("/api/v2/paymentcards", payload, {
+            const paylink = await this.tropipay.request.post("/api/v3/paymentcards", payload, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
@@ -243,7 +243,7 @@ class PaymentCard {
             await this.tropipay.login();
         }
         try {
-            const paymentcards = await this.tropipay.request.get(`/api/v2/paymentcards`, {
+            const paymentcards = await this.tropipay.request.get(`/api/v3/paymentcards`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
@@ -268,7 +268,7 @@ class PaymentCard {
             await this.tropipay.login();
         }
         try {
-            const paymentcard = await this.tropipay.request.get(`/api/v2/paymentcards/${id}`, {
+            const paymentcard = await this.tropipay.request.get(`/api/v3/paymentcards/${id}`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
@@ -294,7 +294,7 @@ class PaymentCard {
             await this.tropipay.login();
         }
         try {
-            const paymentcard = await this.tropipay.request.delete(`/api/v2/paymentcards/`, {
+            const paymentcard = await this.tropipay.request.delete(`/api/v3/paymentcards/`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
@@ -360,7 +360,7 @@ class DepositAccounts {
             await this.tropipay.login();
         }
         try {
-            const deposit = await this.tropipay.request.get(`/api/v2/deposit_accounts`, {
+            const deposit = await this.tropipay.request.get(`/api/v3/deposit_accounts`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
@@ -383,7 +383,7 @@ class DepositAccounts {
             await this.tropipay.login();
         }
         try {
-            const deposit = await this.tropipay.request.post("/api/v2/deposit_accounts", depositAccountObj, {
+            const deposit = await this.tropipay.request.post("/api/v3/deposit_accounts", depositAccountObj, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
@@ -407,7 +407,7 @@ class DepositAccounts {
             await this.tropipay.login();
         }
         try {
-            const deposit = await this.tropipay.request.get(`/api/v2/deposit_accounts/${id}`, {
+            const deposit = await this.tropipay.request.get(`/api/v3/deposit_accounts/${id}`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
@@ -430,7 +430,7 @@ class DepositAccounts {
             await this.tropipay.login();
         }
         try {
-            const deposit = await this.tropipay.request.put(`/api/v2/deposit_accounts/`, {
+            const deposit = await this.tropipay.request.put(`/api/v3/deposit_accounts/`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
@@ -453,7 +453,7 @@ class DepositAccounts {
             await this.tropipay.login();
         }
         try {
-            const deposit = await this.tropipay.request.delete(`/api/v2/deposit_accounts/${id}`, {
+            const deposit = await this.tropipay.request.delete(`/api/v3/deposit_accounts/${id}`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
@@ -519,7 +519,7 @@ class Tropipay {
         this.serverMode = config.serverMode || "Development";
         const tpp_env = this.serverMode === "Production"
             ? "https://www.tropipay.com"
-            : "https://tropipay-dev.herokuapp.com";
+            : "https://sandbox.tropipay.me";
         this.request = axios__default["default"].create({
             baseURL: config.customTropipayUrl || tpp_env,
             headers: {
@@ -533,12 +533,11 @@ class Tropipay {
             baseURL: config.customTropipayUrl || tpp_env,
             headers: {
                 "Content-Type": "application/json",
-                Accept: "application/json"
+                Accept: "application/json",
             },
         });
         // Add request interceptor for Token expired
         this.request.interceptors.request.use(async (config) => {
-            console.log("Executing interceptor!!");
             const currentTimestamp = Math.floor(Date.now() / 1000);
             if (Tropipay.expiresIn && Tropipay.expiresIn < currentTimestamp) {
                 console.debug("Token expired, attempting to log in");

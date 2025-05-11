@@ -40,6 +40,7 @@ interface UserHookSubscribed extends UserHook {
     updatedAt: string;
 }
 interface PaymentLinkPayload {
+    accountId: number;
     reference: string;
     concept: string;
     favorite: boolean;
