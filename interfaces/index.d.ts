@@ -35,37 +35,71 @@ export interface UserHookSubscribed extends UserHook {
     createdAt: string;
     updatedAt: string;
 }
+/**
+ * Interface for creating payment links/cards
+ * @see https://tpp.stoplight.io/docs/tropipay-api-doc/b3A6ODgyNTM3OQ-create-a-new-pay-link-charge
+ */
 export interface PaymentLinkPayload {
-    accountId: number;
+    /** Account ID where the funds will be received if compatible */
+    accountId?: number;
+    /** Reference code for the payment, preferred to be unique */
     reference: string;
+    /** Short description of the payment */
     concept: string;
+    /** Whether to mark this payment link as favorite */
     favorite: boolean;
+    /** Amount to charge in the specified currency */
     amount: number;
+    /** Currency code (EUR, USD, etc.) */
     currency: string;
+    /** Detailed description of the payment */
     description: string;
+    /** If true, the payment link can only be used once */
     singleUse: boolean;
+    /** Reason ID for the payment */
     reasonId: number;
+    /** Number of days until the payment link expires */
     expirationDays: number;
+    /** Language code for the payment page (en, es, etc.) */
     lang: string;
+    /** URL to redirect after successful payment */
     urlSuccess: string;
+    /** URL to redirect after failed payment */
     urlFailed: string;
+    /** Webhook URL for payment notifications */
     urlNotification: string;
+    /** Date when the service will be provided (ISO format) */
     serviceDate: string;
+    /** Client information for the payment */
     client?: {
+        /** Client's first name */
         name?: string;
+        /** Client's last name */
         lastName?: string;
+        /** Client's address */
         address?: string;
+        /** Client's phone number */
         phone?: string;
+        /** Client's email address */
         email?: string;
+        /** Client's country ID */
         countryId?: number;
+        /** Client's country ISO code */
         countryIso?: string;
+        /** Client's city */
         city: string;
+        /** Client's postal code */
         postCode: string;
+        /** Whether client accepted terms and conditions */
         termsAndConditions: boolean;
     } | null;
+    /** @deprecated If true, redirects directly to payment page */
     directPayment: boolean;
+    /** List of allowed payment methods */
     paymentMethods?: string[];
+    /** Base64 encoded image for the payment page */
     imageBase?: string;
+    /** Whether to save the payment token for future use */
     saveToken?: boolean;
 }
 export interface PaymentLink extends PaymentLinkPayload {

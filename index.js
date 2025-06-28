@@ -468,6 +468,35 @@ class DepositAccounts {
     }
 }
 
+class Accounts {
+    tropipay;
+    constructor(tropipayInstance) {
+        this.tropipay = tropipayInstance;
+    }
+    /**
+     * List all accounts of the authenticated user
+     * @returns Array of Account objects
+     */
+    async list() {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const accounts = await this.tropipay.request.get(`/api/v3/accounts/`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return accounts.data;
+        }
+        catch (error) {
+            throw handleExceptions(error);
+        }
+    }
+}
+
 /**
  * Tropipayjs is a Typescript/Javascript library for the Tropipay API.
  *
@@ -488,6 +517,7 @@ class Tropipay {
     paymentCards;
     depositAccounts;
     mediationPaymentCard;
+    accounts;
     /**
      * Initializes a new instance of the Tropipay class.
      *
@@ -558,6 +588,7 @@ class Tropipay {
         this.paymentCards = new PaymentCard(this);
         this.mediationPaymentCard = new MediationPaymentCard(this);
         this.depositAccounts = new DepositAccounts(this);
+        this.accounts = new Accounts(this);
     }
     async login() {
         try {

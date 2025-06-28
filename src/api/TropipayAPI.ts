@@ -22,6 +22,7 @@ import PaymentCard from "../paymentcard/PaymentCard";
 import MediationPaymentCard from "../mediationPaymentCard/MediationPaymentCard";
 import DepositAccounts from "../depositAccount/depositAccounts";
 import { TropipayJSException, handleExceptions } from "../utils/errors";
+import Accounts from "../accounts/accounts";
 export class Tropipay {
   readonly clientId: string;
   readonly clientSecret: string;
@@ -36,6 +37,7 @@ export class Tropipay {
   public paymentCards: PaymentCard;
   public depositAccounts: DepositAccounts;
   public mediationPaymentCard: MediationPaymentCard;
+  public accounts: Accounts;
 
   /**
    * Initializes a new instance of the Tropipay class.
@@ -122,6 +124,7 @@ export class Tropipay {
     this.mediationPaymentCard = new MediationPaymentCard(this);
 
     this.depositAccounts = new DepositAccounts(this);
+    this.accounts = new Accounts(this)
   }
 
   public async login() {
