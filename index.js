@@ -220,7 +220,7 @@ class PaymentCard {
             await this.tropipay.login();
         }
         try {
-            const paylink = await this.tropipay.request.post("/api/v2/paymentcards", payload, {
+            const paylink = await this.tropipay.request.post("/api/v3/paymentcards", payload, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
@@ -243,7 +243,7 @@ class PaymentCard {
             await this.tropipay.login();
         }
         try {
-            const paymentcards = await this.tropipay.request.get(`/api/v2/paymentcards`, {
+            const paymentcards = await this.tropipay.request.get(`/api/v3/paymentcards`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
@@ -268,7 +268,7 @@ class PaymentCard {
             await this.tropipay.login();
         }
         try {
-            const paymentcard = await this.tropipay.request.get(`/api/v2/paymentcards/${id}`, {
+            const paymentcard = await this.tropipay.request.get(`/api/v3/paymentcards/${id}`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
@@ -294,7 +294,7 @@ class PaymentCard {
             await this.tropipay.login();
         }
         try {
-            const paymentcard = await this.tropipay.request.delete(`/api/v2/paymentcards/`, {
+            const paymentcard = await this.tropipay.request.delete(`/api/v3/paymentcards/`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
@@ -360,7 +360,7 @@ class DepositAccounts {
             await this.tropipay.login();
         }
         try {
-            const deposit = await this.tropipay.request.get(`/api/v2/deposit_accounts`, {
+            const deposit = await this.tropipay.request.get(`/api/v3/deposit_accounts`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
@@ -383,7 +383,7 @@ class DepositAccounts {
             await this.tropipay.login();
         }
         try {
-            const deposit = await this.tropipay.request.post("/api/v2/deposit_accounts", depositAccountObj, {
+            const deposit = await this.tropipay.request.post("/api/v3/deposit_accounts", depositAccountObj, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
@@ -407,7 +407,7 @@ class DepositAccounts {
             await this.tropipay.login();
         }
         try {
-            const deposit = await this.tropipay.request.get(`/api/v2/deposit_accounts/${id}`, {
+            const deposit = await this.tropipay.request.get(`/api/v3/deposit_accounts/${id}`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
@@ -430,7 +430,7 @@ class DepositAccounts {
             await this.tropipay.login();
         }
         try {
-            const deposit = await this.tropipay.request.put(`/api/v2/deposit_accounts/`, {
+            const deposit = await this.tropipay.request.put(`/api/v3/deposit_accounts/`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
@@ -453,7 +453,7 @@ class DepositAccounts {
             await this.tropipay.login();
         }
         try {
-            const deposit = await this.tropipay.request.delete(`/api/v2/deposit_accounts/${id}`, {
+            const deposit = await this.tropipay.request.delete(`/api/v3/deposit_accounts/${id}`, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${Tropipay.accessToken}`,
@@ -464,6 +464,35 @@ class DepositAccounts {
         }
         catch (error) {
             return handleExceptions(error);
+        }
+    }
+}
+
+class Accounts {
+    tropipay;
+    constructor(tropipayInstance) {
+        this.tropipay = tropipayInstance;
+    }
+    /**
+     * List all accounts of the authenticated user
+     * @returns Array of Account objects
+     */
+    async list() {
+        if (!Tropipay.accessToken) {
+            await this.tropipay.login();
+        }
+        try {
+            const accounts = await this.tropipay.request.get(`/api/v3/accounts/`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${Tropipay.accessToken}`,
+                    Accept: "application/json",
+                },
+            });
+            return accounts.data;
+        }
+        catch (error) {
+            throw handleExceptions(error);
         }
     }
 }
@@ -479,6 +508,7 @@ class Tropipay {
     clientSecret;
     scopes;
     request;
+    loginRequest;
     static accessToken;
     static refreshToken;
     static expiresIn;
@@ -487,6 +517,7 @@ class Tropipay {
     paymentCards;
     depositAccounts;
     mediationPaymentCard;
+    accounts;
     /**
      * Initializes a new instance of the Tropipay class.
      *
@@ -518,7 +549,7 @@ class Tropipay {
         this.serverMode = config.serverMode || "Development";
         const tpp_env = this.serverMode === "Production"
             ? "https://www.tropipay.com"
-            : "https://tropipay-dev.herokuapp.com";
+            : "https://sandbox.tropipay.me";
         this.request = axios__default["default"].create({
             baseURL: config.customTropipayUrl || tpp_env,
             headers: {
@@ -527,21 +558,28 @@ class Tropipay {
                 Authorization: `Bearer ${Tropipay.accessToken}`,
             },
         });
+        // Create a separate instance for login requests
+        this.loginRequest = axios__default["default"].create({
+            baseURL: config.customTropipayUrl || tpp_env,
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+        });
         // Add request interceptor for Token expired
         this.request.interceptors.request.use(async (config) => {
-            const currentTimestamp = Math.floor(Date.now() / 1000); // Current time in seconds
+            const currentTimestamp = Math.floor(Date.now() / 1000);
             if (Tropipay.expiresIn && Tropipay.expiresIn < currentTimestamp) {
-                // Token has expired, attempt to refresh it
+                console.debug("Token expired, attempting to log in");
                 try {
                     await this.login();
                 }
                 catch (error) {
-                    // Handle token refresh error
-                    Tropipay.accessToken = null;
-                    Tropipay.refreshToken = null;
                     throw handleExceptions(error);
                 }
             }
+            // Update the Authorization header in the config
+            config.headers.Authorization = `Bearer ${Tropipay.accessToken}`;
             return config;
         }, (error) => {
             return Promise.reject(error);
@@ -550,25 +588,12 @@ class Tropipay {
         this.paymentCards = new PaymentCard(this);
         this.mediationPaymentCard = new MediationPaymentCard(this);
         this.depositAccounts = new DepositAccounts(this);
+        this.accounts = new Accounts(this);
     }
     async login() {
         try {
-            if (Tropipay.refreshToken) {
-                const { data } = await this.request.post("/api/v2/access/token", {
-                    client_id: this.clientId,
-                    client_secret: this.clientSecret,
-                    grant_type: "refresh_token",
-                    refresh_token: Tropipay.refreshToken,
-                }, {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Accept: "application/json",
-                    },
-                });
-                return data;
-            }
             // normal credetials login
-            const { data } = await this.request.post("/api/v2/access/token", {
+            const { data } = await this.loginRequest.post("/api/v3/access/token", {
                 client_id: this.clientId,
                 client_secret: this.clientSecret,
                 grant_type: "client_credentials",
@@ -580,13 +605,13 @@ class Tropipay {
                 },
             });
             Tropipay.accessToken = data.access_token;
-            Tropipay.refreshToken = data.refresh_token;
             Tropipay.expiresIn = data.expires_in;
             return data;
         }
         catch (error) {
             Tropipay.accessToken = null;
             Tropipay.refreshToken = null;
+            Tropipay.expiresIn = null;
             Tropipay.expiresIn = null;
             throw handleExceptions(error);
         }
@@ -774,7 +799,9 @@ class ServerSideUtils {
         this.tropipay = tropipayInstance;
     }
     /**
-     * Verify Topipay's signature on webhooks.
+     * DEPRECATED Verify Topipay's signature on API V2 webhooks.
+     * @deprecated This method is deprecated and will be removed in future versions.
+     * Use the `verifySignatureV3` method from the `ServerSideUtils` class instead.
      * @param credentials Credential object or Tropipay instance
      * @param {String} originalCurrencyAmount
      * @param bankOrderCode
@@ -863,6 +890,28 @@ class ServerSideUtils {
             console.error("Error checking base64 image:", error);
             throw new Error(`Error checking base64 image`);
         }
+    }
+    /**
+     * Verify Topipay's signature on API V3 webhooks.
+     * @param {string} originalCurrencyAmount
+     * @param {string} bankOrderCode
+     * @param {string} signature signaturev3 field to be verified
+     * @returns {boolean}
+     */
+    static verifySignatureV3(credentials, originalCurrencyAmount, bankOrderCode, signature) {
+        const sha1Secret = crypto__namespace
+            .createHash("sha1")
+            .update(credentials.clientSecret)
+            .digest("hex");
+        const dataToHash = bankOrderCode +
+            credentials.clientId +
+            sha1Secret +
+            originalCurrencyAmount;
+        const localSignature = crypto__namespace
+            .createHash("sha256")
+            .update(dataToHash)
+            .digest("hex");
+        return localSignature === signature;
     }
 }
 

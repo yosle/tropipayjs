@@ -11,11 +11,13 @@ import TropipayHooks from "../hooks/TropipayHooks";
 import PaymentCard from "../paymentcard/PaymentCard";
 import MediationPaymentCard from "../mediationPaymentCard/MediationPaymentCard";
 import DepositAccounts from "../depositAccount/depositAccounts";
+import Accounts from "../accounts/accounts";
 export declare class Tropipay {
     readonly clientId: string;
     readonly clientSecret: string;
     readonly scopes: String[];
     request: Axios;
+    loginRequest: Axios;
     static accessToken: string | null;
     static refreshToken: string | null;
     static expiresIn: number | null;
@@ -24,6 +26,7 @@ export declare class Tropipay {
     paymentCards: PaymentCard;
     depositAccounts: DepositAccounts;
     mediationPaymentCard: MediationPaymentCard;
+    accounts: Accounts;
     /**
      * Initializes a new instance of the Tropipay class.
      *

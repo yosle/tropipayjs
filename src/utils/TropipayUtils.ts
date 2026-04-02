@@ -11,7 +11,9 @@ export class ServerSideUtils {
   }
 
   /**
-   * Verify Topipay's signature on webhooks.
+   * DEPRECATED Verify Topipay's signature on API V2 webhooks.
+   * @deprecated This method is deprecated and will be removed in future versions.
+   * Use the `verifySignatureV3` method from the `ServerSideUtils` class instead.
    * @param credentials Credential object or Tropipay instance
    * @param {String} originalCurrencyAmount
    * @param bankOrderCode
@@ -122,5 +124,42 @@ export class ServerSideUtils {
       console.error("Error checking base64 image:", error);
       throw new Error(`Error checking base64 image`);
     }
+  }
+
+  /**
+   * Verify Topipay's signature on API V3 webhooks.
+   * @param {string} originalCurrencyAmount
+   * @param {string} bankOrderCode
+   * @param {string} signature signaturev3 field to be verified
+   * @returns {boolean}
+   */
+  public static verifySignatureV3(
+    credentials:
+      | {
+          clientId: string;
+          clientSecret: string;
+        }
+      | Tropipay,
+    originalCurrencyAmount: string,
+    bankOrderCode: string,
+    signature: string
+  ): boolean {
+    const sha1Secret = crypto
+      .createHash("sha1")
+      .update(credentials.clientSecret)
+      .digest("hex");
+
+    const dataToHash =
+      bankOrderCode +
+      credentials.clientId +
+      sha1Secret +
+      originalCurrencyAmount;
+
+    const localSignature = crypto
+      .createHash("sha256")
+      .update(dataToHash)
+      .digest("hex");
+
+    return localSignature === signature;
   }
 }

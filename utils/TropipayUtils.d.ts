@@ -3,7 +3,9 @@ export declare class ServerSideUtils {
     private tropipay;
     constructor(tropipayInstance: Tropipay);
     /**
-     * Verify Topipay's signature on webhooks.
+     * DEPRECATED Verify Topipay's signature on API V2 webhooks.
+     * @deprecated This method is deprecated and will be removed in future versions.
+     * Use the `verifySignatureV3` method from the `ServerSideUtils` class instead.
      * @param credentials Credential object or Tropipay instance
      * @param {String} originalCurrencyAmount
      * @param bankOrderCode
@@ -42,4 +44,15 @@ export declare class ServerSideUtils {
      * @return {Promise<string>} the valid base64 image
      */
     static isValidImage(base64Image: string): boolean;
+    /**
+     * Verify Topipay's signature on API V3 webhooks.
+     * @param {string} originalCurrencyAmount
+     * @param {string} bankOrderCode
+     * @param {string} signature signaturev3 field to be verified
+     * @returns {boolean}
+     */
+    static verifySignatureV3(credentials: {
+        clientId: string;
+        clientSecret: string;
+    } | Tropipay, originalCurrencyAmount: string, bankOrderCode: string, signature: string): boolean;
 }

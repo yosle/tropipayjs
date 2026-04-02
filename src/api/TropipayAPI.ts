@@ -22,11 +22,13 @@ import PaymentCard from "../paymentcard/PaymentCard";
 import MediationPaymentCard from "../mediationPaymentCard/MediationPaymentCard";
 import DepositAccounts from "../depositAccount/depositAccounts";
 import { TropipayJSException, handleExceptions } from "../utils/errors";
+import Accounts from "../accounts/accounts";
 export class Tropipay {
   readonly clientId: string;
   readonly clientSecret: string;
   readonly scopes: String[];
   public request: Axios;
+  public loginRequest: Axios;
   public static accessToken: string | null;
   public static refreshToken: string | null;
   public static expiresIn: number | null;
@@ -35,6 +37,7 @@ export class Tropipay {
   public paymentCards: PaymentCard;
   public depositAccounts: DepositAccounts;
   public mediationPaymentCard: MediationPaymentCard;
+  public accounts: Accounts;
 
   /**
    * Initializes a new instance of the Tropipay class.
@@ -72,11 +75,12 @@ export class Tropipay {
     this.clientSecret = config.clientSecret;
     this.serverMode = config.serverMode || "Development";
 
-    const tpp_env = this.serverMode === "Production"
-    ? "https://www.tropipay.com"
-    : "https://tropipay-dev.herokuapp.com";
+    const tpp_env =
+      this.serverMode === "Production"
+        ? "https://www.tropipay.com"
+        : "https://sandbox.tropipay.me";
     this.request = axios.create({
-      baseURL: config.customTropipayUrl || tpp_env,        
+      baseURL: config.customTropipayUrl || tpp_env,
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -84,27 +88,33 @@ export class Tropipay {
       },
     });
 
+    // Create a separate instance for login requests
+    this.loginRequest = axios.create({
+      baseURL: config.customTropipayUrl || tpp_env,
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
 
-     // Add request interceptor for Token expired
-     this.request.interceptors.request.use(
-      async (config: any) => {
-        const currentTimestamp = Math.floor(Date.now() / 1000); // Current time in seconds
+    // Add request interceptor for Token expired
+    this.request.interceptors.request.use(
+      async (config) => {
+        const currentTimestamp = Math.floor(Date.now() / 1000);
 
         if (Tropipay.expiresIn && Tropipay.expiresIn < currentTimestamp) {
-          // Token has expired, attempt to refresh it
+          console.debug("Token expired, attempting to log in");
           try {
-             await this.login();
+            await this.login();
           } catch (error) {
-            // Handle token refresh error
-            Tropipay.accessToken = null;
-            Tropipay.refreshToken = null;
-            throw handleExceptions(error as any);
+            throw handleExceptions(error as Error);
           }
         }
-
+        // Update the Authorization header in the config
+        config.headers.Authorization = `Bearer ${Tropipay.accessToken}`;
         return config;
       },
-      (error: AxiosError) => {
+      (error) => {
         return Promise.reject(error);
       }
     );
@@ -114,34 +124,14 @@ export class Tropipay {
     this.mediationPaymentCard = new MediationPaymentCard(this);
 
     this.depositAccounts = new DepositAccounts(this);
-
-    
+    this.accounts = new Accounts(this)
   }
 
   public async login() {
     try {
-      if (Tropipay.refreshToken) {
-        const { data } = await this.request.post<LoginResponse>(
-          "/api/v2/access/token",
-          {
-            client_id: this.clientId,
-            client_secret: this.clientSecret,
-            grant_type: "refresh_token",
-            refresh_token: Tropipay.refreshToken,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
-        return data;
-      }
-
       // normal credetials login
-      const { data } = await this.request.post<LoginResponse>(
-        "/api/v2/access/token",
+      const { data } = await this.loginRequest.post<LoginResponse>(
+        "/api/v3/access/token",
         {
           client_id: this.clientId,
           client_secret: this.clientSecret,
@@ -157,12 +147,12 @@ export class Tropipay {
       );
 
       Tropipay.accessToken = data.access_token;
-      Tropipay.refreshToken = data.refresh_token;
       Tropipay.expiresIn = data.expires_in;
       return data;
     } catch (error) {
       Tropipay.accessToken = null;
       Tropipay.refreshToken = null;
+      Tropipay.expiresIn = null;
       Tropipay.expiresIn = null;
       throw handleExceptions(error as any);
     }
