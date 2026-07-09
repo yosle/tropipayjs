@@ -164,3 +164,13 @@ export type AccountDeposits = {
     count: number;
     rows: Deposit[];
 };
+export type RefundResponse = {
+    id: number;
+    orderCode: string;
+    amount: number;
+    currency: string;
+    state: string;
+    type: string;
+    createdAt: string;
+    completedAt: string;
+};
