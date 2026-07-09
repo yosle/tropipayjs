@@ -168,6 +168,16 @@ type AccountDeposits = {
     count: number;
     rows: Deposit[];
 };
+type RefundResponse = {
+    id: number;
+    orderCode: string;
+    amount: number;
+    currency: string;
+    state: string;
+    type: string;
+    createdAt: string;
+    completedAt: string;
+};
 
 declare class TropipayHooks {
     private tropipay;
@@ -399,10 +409,39 @@ declare class Tropipay {
      * belonging or not to the TropiPay platform with the particularity
      * that the payment will be held in custody or retained until it is
      * released with the approval of the payer.
+     * @deprecated This method is no longer supported and may be removed in a future release.
      * @see https://tpp.stoplight.io/docs/tropipay-api-doc/12a128ff971e4-creating-a-mediation-payment-card
      * @param config Payload with the payment details
      */
     createMediationPaymentCard(config: MediationPaymentCardConfig): Promise<PaymentLink>;
+    /**
+     * Refund a completed transaction.
+     * Requires 2FA enabled and ALLOW_REFUND permission on the Tropipay account.
+     *
+     * In Development mode, `securityCode` defaults to `"123456"` when omitted.
+     * In Production mode, you must first call `requestSecurityCode()` to receive
+     * the 2FA code via SMS, then pass it as the `securityCode` parameter.
+     *
+     * @see https://doc.tropipay.com/docs/api-reference/movements#refund-a-transaction
+     * @param orderCode Code of the order/transaction to refund (e.g. "ORD-123456")
+     * @param amount Amount to refund in cents (e.g. 5000 = 50.00 USD/EUR)
+     * @param securityCode 2FA confirmation code. Use "123456" in Development or
+     * the code received via SMS in Production (obtained via requestSecurityCode()).
+     */
+    refundMovement(orderCode: string, amount: number, securityCode: string): Promise<RefundResponse>;
+    /**
+     * Request a 2FA security code to be sent via SMS for confirming sensitive
+     * operations like refunds.
+     *
+     * In Production mode, you must call this method first to trigger an SMS with
+     * the code, then use the received code when calling `refundMovement()`.
+     * In Development mode this is not required as the default code "123456"
+     * is used automatically.
+     *
+     * @see https://doc.tropipay.com/docs/api-reference/movements#refund-a-transaction
+     * @returns The API response confirming the code was sent
+     */
+    requestSecurityCode(type?: "sms" | "email"): Promise<any>;
 }
 declare class ClientSideUtils {
     constructor(tropipayInstance: Tropipay);
@@ -455,4 +494,4 @@ declare class ServerSideUtils {
 
 declare const SERVER_MODE: ServerMode$1;
 
-export { AccountBalance, AccountDeposits, ClientSideUtils, Country, Deposit, HookEventType, HookTargetType, LoginError, LoginResponse, MAX_IMAGE_SIZE_MB, MediationPaymentCardConfig, PaymentLink, PaymentLinkPayload, SERVER_MODE, ServerMode$1 as ServerMode, ServerSideUtils, Tropipay, TropipayConfig, TropipayCredentials, UserHook, UserHookSubscribed };
+export { AccountBalance, AccountDeposits, ClientSideUtils, Country, Deposit, HookEventType, HookTargetType, LoginError, LoginResponse, MAX_IMAGE_SIZE_MB, MediationPaymentCardConfig, PaymentLink, PaymentLinkPayload, RefundResponse, SERVER_MODE, ServerMode$1 as ServerMode, ServerSideUtils, Tropipay, TropipayConfig, TropipayCredentials, UserHook, UserHookSubscribed };

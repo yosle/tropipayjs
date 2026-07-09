@@ -15,6 +15,7 @@ import {
   MediationPaymentCardConfig,
   LoginResponse,
   AccountDeposits,
+  RefundResponse,
 } from "../interfaces";
 type ServerMode = "Development" | "Production";
 import TropipayHooks from "../hooks/TropipayHooks";
@@ -55,6 +56,7 @@ export class Tropipay {
         "ALLOW_GET_BALANCE",
         "ALLOW_GET_MOVEMENT_LIST",
         "ALLOW_GET_CREDENTIAL",
+        "ALLOW_REFUND",
       ];
     } else {
       this.scopes = config.scopes;
@@ -326,6 +328,7 @@ export class Tropipay {
    * belonging or not to the TropiPay platform with the particularity
    * that the payment will be held in custody or retained until it is
    * released with the approval of the payer.
+   * @deprecated This method is no longer supported and may be removed in a future release.
    * @see https://tpp.stoplight.io/docs/tropipay-api-doc/12a128ff971e4-creating-a-mediation-payment-card
    * @param config Payload with the payment details
    */
@@ -350,6 +353,91 @@ export class Tropipay {
       throw handleExceptions(error as any);
     }
   }
+
+  /**
+   * Refund a completed transaction.
+   * Requires 2FA enabled and ALLOW_REFUND permission on the Tropipay account.
+   *
+   * In Development mode, `securityCode` defaults to `"123456"` when omitted.
+   * In Production mode, you must first call `requestSecurityCode()` to receive
+   * the 2FA code via SMS, then pass it as the `securityCode` parameter.
+   *
+   * @see https://doc.tropipay.com/docs/api-reference/movements#refund-a-transaction
+   * @param orderCode Code of the order/transaction to refund (e.g. "ORD-123456")
+   * @param amount Amount to refund in cents (e.g. 5000 = 50.00 USD/EUR)
+   * @param securityCode 2FA confirmation code. Use "123456" in Development or
+   * the code received via SMS in Production (obtained via requestSecurityCode()).
+   */
+  async refundMovement(
+    orderCode: string,
+    amount: number,
+    securityCode: string
+  ): Promise<RefundResponse> {
+    if (!Tropipay.accessToken) {
+      await this.login();
+    }
+
+    if (!this.scopes.includes("ALLOW_REFUND")) {
+      throw new TropipayJSException(
+        "The credential does not have the ALLOW_REFUND scope required to perform refunds. If you believe your account should have this permission, please contact Tropipay support.",
+        403,
+        null
+      );
+    }
+
+    try {
+      const response = await this.request.post(
+        "/api/v3/movements/in/refund",
+        { orderCode, amount, securityCode },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${Tropipay.accessToken}`,
+          },
+        }
+      );
+      return response.data as RefundResponse;
+    } catch (error) {
+      throw handleExceptions(error as any);
+    }
+  }
+
+  /**
+   * Request a 2FA security code to be sent via SMS for confirming sensitive
+   * operations like refunds.
+   *
+   * In Production mode, you must call this method first to trigger an SMS with
+   * the code, then use the received code when calling `refundMovement()`.
+   * In Development mode this is not required as the default code "123456"
+   * is used automatically.
+   *
+   * @see https://doc.tropipay.com/docs/api-reference/movements#refund-a-transaction
+   * @returns The API response confirming the code was sent
+   */
+  async requestSecurityCode(type: "sms" | "email" = "sms"): Promise<any> {
+    if (!Tropipay.accessToken) {
+      await this.login();
+    }
+
+    try {
+      const response = await this.request.post(
+        "/api/v3/users/sendSecurityCode",
+        { type },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${Tropipay.accessToken}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw handleExceptions(error as any);
+    }
+  }
+
 }
 
 export class ClientSideUtils {
@@ -367,4 +455,5 @@ export const Scopes = {
   ALLOW_GET_BALANCE: "ALLOW_GET_BALANCE",
   ALLOW_GET_MOVEMENT_LIST: "ALLOW_GET_MOVEMENT_LIST",
   ALLOW_GET_CREDENTIAL: "ALLOW_GET_CREDENTIAL",
+  ALLOW_REFUND: "ALLOW_REFUND",
 };

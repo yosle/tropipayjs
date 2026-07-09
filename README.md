@@ -133,6 +133,33 @@ console.log(paylink.shortUrl);
 
 For more examples, please refer to the [Documentation](https://github.com/yosle/tropipayjs/blob/master/docs/)
 
+### Refunding a Transaction
+
+The library provides two methods for handling refunds with 2FA confirmation:
+
+#### Request a Security Code (Production only)
+
+In **Production** mode, you must first request a 2FA code via SMS:
+
+```javascript
+await tpp.requestSecurityCode();
+// An SMS with the code will be sent to your phone
+```
+
+#### Refund a Movement
+
+Once you have the security code (or in Development mode), you can refund a transaction:
+
+```javascript
+// Development mode — use the default test code
+const result = await tpp.refundMovement("ORD-123456", 5000, "123456");
+
+// Production mode — pass the code received via SMS
+const result = await tpp.refundMovement("ORD-123456", 5000, "847291");
+```
+
+**Note:** The refund endpoint requires the `ALLOW_REFUND` scope and 2FA to be enabled on your Tropipay account. In Development mode the default 2FA code is `123456` unless you have configured the Authenticator app.
+
 # Contributing
 
 If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement". Don't forget to give the project a star! Thanks again!

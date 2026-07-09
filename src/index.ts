@@ -26,3 +26,4 @@ export * from "./depositAccount/depositAccounts";
 export * from "./interfaces/index";
 export { SERVER_MODE } from "./config/TropipayConfig";
 export * from "./constants/TropipayConstants";
+export type { RefundResponse } from "./interfaces/index";
