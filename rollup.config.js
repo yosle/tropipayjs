@@ -1,6 +1,5 @@
-// Contents of the file /rollup.config.js
-import typescript from "@rollup/plugin-typescript";
-import dts from "rollup-plugin-dts";
+import { dts } from "rollup-plugin-dts";
+
 const config = [
   {
     input: "dist/index.js",
@@ -10,7 +9,6 @@ const config = [
       sourcemap: true,
     },
     external: ["axios", "crypto", "fs/promises"],
-    plugins: [typescript()],
   },
   {
     input: "dist/index.d.ts",
@@ -21,4 +19,5 @@ const config = [
     plugins: [dts()],
   },
 ];
+
 export default config;

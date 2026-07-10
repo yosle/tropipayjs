@@ -1,15 +1,10 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', { value: true });
-
 var axios = require('axios');
 var crypto = require('crypto');
 var fs = require('fs/promises');
 
-function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-function _interopNamespace(e) {
-    if (e && e.__esModule) return e;
+function _interopNamespaceDefault(e) {
     var n = Object.create(null);
     if (e) {
         Object.keys(e).forEach(function (k) {
@@ -22,13 +17,11 @@ function _interopNamespace(e) {
             }
         });
     }
-    n["default"] = e;
+    n.default = e;
     return Object.freeze(n);
 }
 
-var axios__default = /*#__PURE__*/_interopDefaultLegacy(axios);
-var crypto__namespace = /*#__PURE__*/_interopNamespace(crypto);
-var fs__default = /*#__PURE__*/_interopDefaultLegacy(fs);
+var crypto__namespace = /*#__PURE__*/_interopNamespaceDefault(crypto);
 
 function handleExceptions(error) {
     if (error instanceof axios.AxiosError) {
@@ -520,7 +513,7 @@ class Tropipay {
         const tpp_env = this.serverMode === "Production"
             ? "https://www.tropipay.com"
             : "https://tropipay-dev.herokuapp.com";
-        this.request = axios__default["default"].create({
+        this.request = axios.create({
             baseURL: config.customTropipayUrl || tpp_env,
             headers: {
                 "Content-Type": "application/json",
@@ -885,7 +878,7 @@ class ServerSideUtils {
      * @return {Promise<string>} a Promise that resolves to the base64 representation of the file content
      */
     static async fileToBase64(filepath) {
-        const contents = await fs__default["default"].readFile(filepath);
+        const contents = await fs.readFile(filepath);
         let base64content = contents.toString("base64");
         const ext = filepath.split(".").pop();
         return `data:image/${ext};base64,` + base64content;
@@ -897,7 +890,7 @@ class ServerSideUtils {
      * @return {Promise<string>} the base64 representation of the file
      */
     static async getBase64FromFileUrl(url) {
-        const response = await axios__default["default"].get(url, {
+        const response = await axios.get(url, {
             responseType: "arraybuffer",
             maxRedirects: 5,
         });
