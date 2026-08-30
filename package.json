@@ -1,10 +1,17 @@
 {
   "name": "@yosle/tropipayjs",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Javascript / Typescript SDK for the Tropipay API",
   "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.js.map",
+    "index.d.ts"
+  ],
   "scripts": {
     "test": "jest --passWithNoTests --updateSnapshot --coverage",
+    "smoke": "npm run build && node scripts/smoke-test.js",
     "_clear": "rimraf src/dist",
     "_tsc": "tsc",
     "_make-bundle": "rollup --config",
