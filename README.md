@@ -29,6 +29,10 @@ TropiPay is an electronic wallet that allows you to execute the most common fina
 
 ## About the project
 
+> **Version 0.3.0**: the SDK now targets Tropipay **API v3** (API v2 is
+> deprecated). All endpoints were migrated; see the
+> [CHANGELOG](CHANGELOG.md) for the full route mapping and breaking changes.
+
 This library is a community effort. Tropipay may make some changes on the API specification. Use the [test environment](https://tropipay-dev.herokuapp.com) to make sure everything is working as expected.
 
 **Note:** This library is provided as-is and serves as a client for the Tropipay API. While every effort has been made to ensure the accuracy and reliability of the library, Tropipay is solely responsible for maintaining and updating the API documentation.
@@ -103,11 +107,11 @@ const tpp = new Tropipay(config);
 const payload = {
   reference: "my-paylink-1",
   concept: "Bicycle",
-  favorite: "true",
+  favorite: true,
   amount: 3000,
-  currency: "EUR",
+  currency: "EUR", // USD, EUR, USDC or USDT
   description: "Two wheels",
-  singleUse: "true",
+  singleUse: true,
   reasonId: 4,
   expirationDays: 1,
   lang: "es",
@@ -122,13 +126,69 @@ const payload = {
     phone: "+34645553333",
     email: "client@email.com",
     countryId: 1,
-    termsAndConditions: "true",
+    city: "Barcelona",
+    postCode: "08013",
+    termsAndConditions: true,
   },
-  directPayment: "true",
+  directPayment: true,
+  // Optional: payment methods offered on the payment page.
+  // "TPP" (Tropipay balance), "EXT" (external card), "CRYPTO",
+  // "WIRE_TRANSFER", "APPLE_PAY", "GOOGLE_PAY", "TPP_GIFTCARD", "TROPICARD".
+  // If omitted the server defaults to ["EXT", "TPP", "WIRE_TRANSFER"].
+  // APPLE_PAY/GOOGLE_PAY are added automatically when EXT is present.
+  // The list is intersected with the methods enabled on your account.
+  paymentMethods: ["EXT", "TPP", "CRYPTO"],
+  // Optional: account that receives the payment (multi-account).
+  // Get valid ids from tpp.accounts.list(). Defaults to your default account.
+  accountId: 12345,
 };
 // Use inside an async function
 const paylink = await tpp.paymentCards.create(payload);
 console.log(paylink.shortUrl);
+```
+
+### Multi-account support
+
+A Tropipay user can hold several accounts (one per currency). Use the
+`accounts` module to discover them and pass the `id` as `accountId`
+when creating payment links or transfers:
+
+```javascript
+const accounts = await tpp.accounts.list();
+// [{ id: 12345, accountNumber: "...", currency: "EUR", balance: 1000, ... }]
+
+const balances = await tpp.accounts.allBalances();
+const movements = await tpp.accounts.movements(12345, { limit: 20 });
+```
+
+### Transfers (payouts)
+
+Send money to a beneficiary (requires 2FA and the `ALLOW_EXTERNAL_TRANSFER`
+permission):
+
+```javascript
+// 1. simulate to preview fees and amounts
+const preview = await tpp.transfers.simulate({
+  amount: 5000,
+  currency: "EUR",
+  destinationCurrency: "EUR",
+  depositaccountId: 678,
+  reasonId: 3,
+});
+
+// 2. request the 2FA code (SMS/email). In Development use "123456".
+await tpp.transfers.requestSecurityCode();
+
+// 3. execute
+const transfer = await tpp.transfers.payout({
+  amount: 5000,
+  currency: "EUR",
+  destinationCurrency: "EUR",
+  depositaccountId: 678,
+  reasonId: 3,
+  securityCode: "123456",
+  accountId: 12345, // optional, multi-account
+});
 ```
 
 For more examples, please refer to the [Documentation](https://github.com/yosle/tropipayjs/blob/master/docs/)
