@@ -5,23 +5,22 @@
  *
  */
 
-import axios, { Axios, AxiosError, AxiosRequestConfig } from "axios";
+import axios, { Axios, AxiosError } from "axios";
 import {
   TropipayConfig,
   AccountBalance,
   Country,
-  PaymentLinkPayload,
-  PaymentLink,
-  MediationPaymentCardConfig,
   LoginResponse,
-  AccountDeposits,
   RefundResponse,
 } from "../interfaces";
 type ServerMode = "Development" | "Production";
+import { API_BASE } from "../constants/TropipayConstants";
 import TropipayHooks from "../hooks/TropipayHooks";
 import PaymentCard from "../paymentcard/PaymentCard";
 import MediationPaymentCard from "../mediationPaymentCard/MediationPaymentCard";
 import DepositAccounts from "../depositAccount/depositAccounts";
+import Accounts from "../accounts/Accounts";
+import Transfers from "../transfers/Transfers";
 import { TropipayJSException, handleExceptions } from "../utils/errors";
 export class Tropipay {
   readonly clientId: string;
@@ -36,6 +35,8 @@ export class Tropipay {
   public paymentCards: PaymentCard;
   public depositAccounts: DepositAccounts;
   public mediationPaymentCard: MediationPaymentCard;
+  public accounts: Accounts;
+  public transfers: Transfers;
 
   /**
    * Initializes a new instance of the Tropipay class.
@@ -78,11 +79,10 @@ export class Tropipay {
     ? "https://www.tropipay.com"
     : "https://tropipay-dev.herokuapp.com";
     this.request = axios.create({
-      baseURL: config.customTropipayUrl || tpp_env,        
+      baseURL: config.customTropipayUrl || tpp_env,
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: `Bearer ${Tropipay.accessToken}`,
       },
     });
 
@@ -114,17 +114,16 @@ export class Tropipay {
     this.hooks = new TropipayHooks(this);
     this.paymentCards = new PaymentCard(this);
     this.mediationPaymentCard = new MediationPaymentCard(this);
-
     this.depositAccounts = new DepositAccounts(this);
-
-    
+    this.accounts = new Accounts(this);
+    this.transfers = new Transfers(this);
   }
 
   public async login() {
     try {
       if (Tropipay.refreshToken) {
         const { data } = await this.request.post<LoginResponse>(
-          "/api/v2/access/token",
+          `${API_BASE}/access/token`,
           {
             client_id: this.clientId,
             client_secret: this.clientSecret,
@@ -138,12 +137,16 @@ export class Tropipay {
             },
           }
         );
+
+        Tropipay.accessToken = data.access_token;
+        Tropipay.refreshToken = data.refresh_token;
+        Tropipay.expiresIn = data.expires_in;
         return data;
       }
 
       // normal credetials login
       const { data } = await this.request.post<LoginResponse>(
-        "/api/v2/access/token",
+        `${API_BASE}/access/token`,
         {
           client_id: this.clientId,
           client_secret: this.clientSecret,
@@ -173,18 +176,20 @@ export class Tropipay {
   /**
    * Get the list of all supported countries by Tropipay.
    * @returns Array of Countries Data
-   * @see https://tpp.stoplight.io/docs/tropipay-api-doc/bfac21259e2ff-getting-users-countries-list
+   * @see https://doc.tropipay.com/docs/api-reference/countries
    */
   async countries(): Promise<Country[]> {
     try {
-      const countries = await this.request.get("/api/v2/countries");
+      const countries = await this.request.get(`${API_BASE}/countries`);
       return countries.data;
     } catch (error) {
       throw handleExceptions(error as any);
     }
   }
   /**
-   * Get user balance
+   * Get balance of the user's default account.
+   * For per-account balances use `accounts.balance()` or
+   * `accounts.allBalances()`.
    * @returns balance Object { balance: number, pendingIn: number, pendingOut: number }
    */
   async getBalance(): Promise<AccountBalance> {
@@ -192,7 +197,7 @@ export class Tropipay {
       await this.login();
     }
     try {
-      const balance = await this.request.get("/api/v2/users/balance", {
+      const balance = await this.request.get(`${API_BASE}/users/balance`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${Tropipay.accessToken}`,
@@ -211,16 +216,16 @@ export class Tropipay {
    * when adding new beneficiaries to some user.
    *
    * @returns Array of Country Objects
-   * @see https://tpp.stoplight.io/docs/tropipay-api-doc/3cfe5504f0524-getting-list-of-beneficiary-countries
+   * @see https://doc.tropipay.com/docs/api-reference/countries
    */
   async destinations(): Promise<Country[]> {
     try {
       const countries = await this.request.get(
-        "/api/v2/countries/destinations"
+        `${API_BASE}/countries/destinations`
       );
       return countries.data;
     } catch (error) {
-      throw new Error(`Could not retrieve the destination countries list`);
+      throw handleExceptions(error as any);
     }
   }
 
@@ -234,8 +239,9 @@ export class Tropipay {
     }
     try {
       const favoritesList = await this.request.get(
-        "/api/v2/paymentcards/favorites",
+        `${API_BASE}/paymentcards/filters`,
         {
+          params: { favorite: true },
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${Tropipay.accessToken}`,
@@ -251,14 +257,17 @@ export class Tropipay {
 
   /**
    * List all account movements. You can optionaly specify
-   * offset and limit params for pagination.
+   * offset and limit params for pagination (limit is capped
+   * to 50 by the API).
+   * For the movements of one specific account use
+   * `accounts.movements(accountId)`.
    * @returns
    */
   async movements(offset = 0, limit = 10) {
     if (!Tropipay.accessToken) await this.login();
 
     try {
-      const movements = await this.request.get("/api/v2/movements", {
+      const movements = await this.request.get(`${API_BASE}/movements`, {
         params: { limit: limit, offset: offset },
         headers: {
           "Content-Type": "application/json",
@@ -279,7 +288,13 @@ export class Tropipay {
   async profile() {
     if (!Tropipay.accessToken) await this.login();
     try {
-      const profile = await this.request.get("/api/users/profile");
+      const profile = await this.request.get(`${API_BASE}/users/profile`, {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${Tropipay.accessToken}`,
+        },
+      });
       return profile.data;
     } catch (error) {
       throw handleExceptions(error as any);
@@ -292,7 +307,7 @@ export class Tropipay {
    * @param originCurrency Target currency code supported by Tropipay.
    * @param targetCurrency Must be 'EUR'? (not documented by Tropipay)
    * @returns Conversion rate (number)
-   * @see https://tpp.stoplight.io/docs/tropipay-api-doc/85163f6f28b23-get-rate
+   * @see https://doc.tropipay.com/docs/api-reference/movements
    */
   async rates(
     originCurrency: string,
@@ -303,7 +318,7 @@ export class Tropipay {
     }
     try {
       const rates = await this.request.post(
-        "/api/v2/movements/get_rate",
+        `${API_BASE}/movements/get_rate`,
         {
           currencyFrom: originCurrency,
           currencyTo: targetCurrency,
@@ -317,38 +332,6 @@ export class Tropipay {
         }
       );
       return rates.data.rate;
-    } catch (error) {
-      throw handleExceptions(error as any);
-    }
-  }
-
-  /**
-   * (ONLY in Bussiness Accounts)
-   * An escrow payment link. This allows a payment to be made to persons
-   * belonging or not to the TropiPay platform with the particularity
-   * that the payment will be held in custody or retained until it is
-   * released with the approval of the payer.
-   * @deprecated This method is no longer supported and may be removed in a future release.
-   * @see https://tpp.stoplight.io/docs/tropipay-api-doc/12a128ff971e4-creating-a-mediation-payment-card
-   * @param config Payload with the payment details
-   */
-  async createMediationPaymentCard(
-    config: MediationPaymentCardConfig
-  ): Promise<PaymentLink> {
-    if (!Tropipay.accessToken) await this.login();
-    try {
-      const mediation = await this.request.post(
-        "/api/v2/paymentcards/mediation",
-        config,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
-      );
-      return mediation.data as PaymentLink;
     } catch (error) {
       throw handleExceptions(error as any);
     }
@@ -387,7 +370,7 @@ export class Tropipay {
 
     try {
       const response = await this.request.post(
-        "/api/v3/movements/in/refund",
+        `${API_BASE}/movements/in/refund`,
         { orderCode, amount, securityCode },
         {
           headers: {
@@ -422,7 +405,7 @@ export class Tropipay {
 
     try {
       const response = await this.request.post(
-        "/api/v3/users/sendSecurityCode",
+        `${API_BASE}/users/sendSecurityCode`,
         { type },
         {
           headers: {
@@ -438,12 +421,6 @@ export class Tropipay {
     }
   }
 
-}
-
-export class ClientSideUtils {
-  constructor(tropipayInstance: Tropipay) {
-    throw Error(`Not implemented yet`);
-  }
 }
 
 export const Scopes = {

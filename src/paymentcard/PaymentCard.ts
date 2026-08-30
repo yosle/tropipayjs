@@ -1,4 +1,5 @@
 import { Tropipay } from "../api/TropipayAPI";
+import { API_BASE } from "../constants/TropipayConstants";
 import { PaymentLink } from "../interfaces";
 import { PaymentLinkPayload } from "../interfaces";
 import { handleExceptions } from "../utils/errors";
@@ -10,9 +11,11 @@ export default class PaymentCard {
 
   /**
    * Create a paymentLink with the specified options.
+   * Supports multi-account via the optional `accountId` field of the
+   * payload (defaults to the user's default account).
    * @param payload PaymentLinkPayload Object.
    * @returns Promise<PaymentLink> or throws an Exception.
-   * @see https://tpp.stoplight.io/docs/tropipay-api-doc/b3A6ODgyNTM3OQ-create-a-new-pay-link-charge
+   * @see https://doc.tropipay.com/docs/api-reference/payment-cards
    */
   async create(payload: PaymentLinkPayload): Promise<PaymentLink> {
     if (!Tropipay.accessToken) {
@@ -20,7 +23,7 @@ export default class PaymentCard {
     }
     try {
       const paylink = await this.tropipay.request.post(
-        "/api/v2/paymentcards",
+        `${API_BASE}/paymentcards`,
         payload,
         {
           headers: {
@@ -46,7 +49,7 @@ export default class PaymentCard {
     }
     try {
       const paymentcards = await this.tropipay.request.get(
-        `/api/v2/paymentcards`,
+        `${API_BASE}/paymentcards`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -57,7 +60,7 @@ export default class PaymentCard {
       );
       return paymentcards.data;
     } catch (error) {
-      throw new Error(`Could not retrieve PaymenCards list`);
+      throw handleExceptions(error as unknown as any);
     }
   }
 
@@ -74,7 +77,39 @@ export default class PaymentCard {
     }
     try {
       const paymentcard = await this.tropipay.request.get(
-        `/api/v2/paymentcards/${id}`,
+        `${API_BASE}/paymentcards/${id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Tropipay.accessToken}`,
+            Accept: "application/json",
+          },
+        }
+      );
+      return paymentcard.data;
+    } catch (error) {
+      throw handleExceptions(error as unknown as any);
+    }
+  }
+
+  /**
+   * Updates a payment card. Send the card id in `cardId` plus the
+   * fields to modify.
+   *
+   * @param payload Object with `cardId` and the fields to update.
+   * @return {Promise<any>} A Promise that resolves to the updated payment card data.
+   * @throws {Error} If an error occurs while updating the payment card.
+   */
+  public async update(
+    payload: { cardId: string } & Partial<PaymentLinkPayload>
+  ) {
+    if (!Tropipay.accessToken) {
+      await this.tropipay.login();
+    }
+    try {
+      const paymentcard = await this.tropipay.request.put(
+        `${API_BASE}/paymentcards/`,
+        payload,
         {
           headers: {
             "Content-Type": "application/json",
@@ -103,7 +138,7 @@ export default class PaymentCard {
     }
     try {
       const paymentcard = await this.tropipay.request.delete(
-        `/api/v2/paymentcards/`,
+        `${API_BASE}/paymentcards/`,
         {
           headers: {
             "Content-Type": "application/json",

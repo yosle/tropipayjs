@@ -1,4 +1,5 @@
 import { Tropipay } from "../api/TropipayAPI";
+import { API_BASE } from "../constants/TropipayConstants";
 import { PaymentLink } from "../interfaces";
 import { MediationPaymentCardConfig } from "../interfaces";
 import { handleExceptions } from "../utils/errors";
@@ -24,7 +25,7 @@ export default class MediationPaymentCard {
     }
     try {
       const paylink = await this.tropipay.request.post(
-        "/api/v2/paymentcards/mediation",
+        `${API_BASE}/paymentcards/mediation`,
         payload,
         {
           headers: {

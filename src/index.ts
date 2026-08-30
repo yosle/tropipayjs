@@ -6,7 +6,6 @@
  * Developed by Yosleivy Baez Acosta
  * GitHub: https://github.com/yosle/tropipayjs
  *
- * @version 0.1.11
  * @license MIT
  */
 
@@ -17,13 +16,15 @@ if (typeof window !== "undefined") {
 }
 
 export { Tropipay } from "./api/TropipayAPI";
-export { ClientSideUtils } from "./api/TropipayAPI";
 export { ServerSideUtils } from "./utils/TropipayUtils";
 export * from "./hooks/TropipayHooks";
 export * from "./paymentcard/PaymentCard";
 export * from "./mediationPaymentCard/MediationPaymentCard";
 export * from "./depositAccount/depositAccounts";
+export * from "./accounts/Accounts";
+export * from "./transfers/Transfers";
 export * from "./interfaces/index";
+export * from "./interfaces/depositaccounts/index";
 export { SERVER_MODE } from "./config/TropipayConfig";
 export * from "./constants/TropipayConstants";
 export type { RefundResponse } from "./interfaces/index";

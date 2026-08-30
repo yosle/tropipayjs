@@ -1,9 +1,11 @@
 export interface DepositAccountConfig {
+  id?: number;
   searchValue?: string;
   alias: string;
   userRelationTypeId: number;
   beneficiaryType: BeneficiaryType;
   searchBy?: number;
+  /** Bank account number, card number or crypto wallet address (beneficiaryType 3). */
   accountNumber?: string;
   swift?: string;
   type: DepositAccountType;
@@ -20,11 +22,44 @@ export interface DepositAccountConfig {
   paymentType?: string;
   documentTypeId?: number;
   documentExpirationDate: string;
+  /**
+   * Blockchain network of the wallet. Required when beneficiaryType is
+   * CRYPTO (3). The API matches it case-insensitively against its
+   * supported network list.
+   */
+  network?: CryptoNetwork;
+  currency?: string;
 }
 type INTERNAL = 1;
 type EXTERNAL = 2;
+type CRYPTO = 3;
 
-export type BeneficiaryType = INTERNAL | EXTERNAL;
+/**
+ * 1 = INTERNAL (another Tropipay user), 2 = EXTERNAL (bank account/card),
+ * 3 = CRYPTO (crypto wallet).
+ */
+export type BeneficiaryType = INTERNAL | EXTERNAL | CRYPTO;
+
+/**
+ * Crypto networks supported for wallet beneficiaries.
+ */
+export type CryptoNetwork =
+  | "SOLANA"
+  | "ETHEREUM"
+  | "POLYGON"
+  | "BSC"
+  | "BINANCE_SMART_CHAIN"
+  | "BEP20"
+  | "BINANCE_CHAIN"
+  | "BEP2"
+  | "ARBITRUM"
+  | "OPTIMISM"
+  | "AVALANCHE"
+  | "BASE"
+  | "TRON"
+  | "BITCOIN"
+  | "BTC"
+  | "ETH";
 
 export const DepositAccountTypesList = {
   /**
