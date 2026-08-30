@@ -1,5 +1,6 @@
 import { HookEventType, UserHookSubscribed } from "../interfaces";
 import { Tropipay } from "../api/TropipayAPI";
+import { API_BASE } from "../constants/TropipayConstants";
 import { handleExceptions } from "../utils/errors";
 export default class TropipayHooks {
   private tropipay: Tropipay;
@@ -13,7 +14,7 @@ export default class TropipayHooks {
    * you must select from the list of available events, otherwise
    * it will not produce an error but it will not be executed.
    * For get full list of available events see endpoint
-   * GET /api/v2/hook/events.
+   * GET /api/v3/user/hooks/events.
    * @param target String representing the type of event supported.
    * It is currently available: 'web' (allows to receive information in a url),
    * 'email' (allows to receive information in an email address).
@@ -37,7 +38,7 @@ export default class TropipayHooks {
     }
     try {
       const hooks = await this.tropipay.request.post(
-        `/api/v2/hooks`,
+        `${API_BASE}/user/hooks`,
         {
           event: eventType,
           target: target,
@@ -69,7 +70,7 @@ export default class TropipayHooks {
     }
     try {
       const hooks = await this.tropipay.request.get(
-        `/api/v2/hooks/${eventType || ""}`,
+        `${API_BASE}/user/hooks/${eventType || ""}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -93,7 +94,7 @@ export default class TropipayHooks {
     }
     try {
       const hooks = await this.tropipay.request.put(
-        `/api/v2/hooks`,
+        `${API_BASE}/user/hooks`,
         {
           event: eventType,
           target: target,
@@ -118,7 +119,7 @@ export default class TropipayHooks {
     }
     try {
       const hooks = await this.tropipay.request.delete(
-        `/api/v2/hooks/${eventType}/${target}`,
+        `${API_BASE}/user/hooks/${eventType}/${target}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -129,7 +130,6 @@ export default class TropipayHooks {
       );
       return hooks.data;
     } catch (error) {
-      console.trace(error);
       throw handleExceptions(error as unknown as any);
     }
   }
@@ -139,7 +139,7 @@ export default class TropipayHooks {
       await this.tropipay.login();
     }
     try {
-      const hooks = await this.tropipay.request.get(`/api/v2/hooks/events`, {
+      const hooks = await this.tropipay.request.get(`${API_BASE}/user/hooks/events`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${Tropipay.accessToken}`,
