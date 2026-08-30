@@ -1,5 +1,5 @@
-import { AxiosError } from "axios";
 import { Tropipay } from "../api/TropipayAPI";
+import { API_BASE } from "../constants/TropipayConstants";
 import { DepositAccountConfig } from "../interfaces/depositaccounts";
 import { handleExceptions } from "../utils/errors";
 export default class DepositAccounts {
@@ -18,7 +18,7 @@ export default class DepositAccounts {
     }
     try {
       const deposit = await this.tropipay.request.get(
-        `/api/v2/deposit_accounts`,
+        `${API_BASE}/deposit_accounts`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -29,11 +29,13 @@ export default class DepositAccounts {
       );
       return deposit.data;
     } catch (error) {
-      return handleExceptions(error as unknown as any);
+      throw handleExceptions(error as unknown as any);
     }
   }
   /**
    * Adds a new beneficiary to the user account.
+   * For crypto wallet beneficiaries use `beneficiaryType: 3`, put the
+   * wallet address in `accountNumber` and set the `network`.
    * @param payload
    * @returns
    */
@@ -43,7 +45,7 @@ export default class DepositAccounts {
     }
     try {
       const deposit = await this.tropipay.request.post(
-        "/api/v2/deposit_accounts",
+        `${API_BASE}/deposit_accounts`,
         depositAccountObj,
         {
           headers: {
@@ -55,7 +57,7 @@ export default class DepositAccounts {
       );
       return deposit.data;
     } catch (error) {
-      return handleExceptions(error as unknown as any);
+      throw handleExceptions(error as unknown as any);
     }
   }
   /**
@@ -70,7 +72,7 @@ export default class DepositAccounts {
     }
     try {
       const deposit = await this.tropipay.request.get(
-        `/api/v2/deposit_accounts/${id}`,
+        `${API_BASE}/deposit_accounts/${id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -81,13 +83,13 @@ export default class DepositAccounts {
       );
       return deposit.data;
     } catch (error) {
-      return handleExceptions(error as unknown as any);
+      throw handleExceptions(error as unknown as any);
     }
   }
 
   /**
    * Updates certain beneficiary data.
-   * @param depositAccountObj
+   * @param depositAccountObj Object with the beneficiary id and the fields to update.
    * @returns
    */
   public async update(depositAccountObj: Partial<DepositAccountConfig>) {
@@ -96,7 +98,8 @@ export default class DepositAccounts {
     }
     try {
       const deposit = await this.tropipay.request.put(
-        `/api/v2/deposit_accounts/`,
+        `${API_BASE}/deposit_accounts`,
+        depositAccountObj,
         {
           headers: {
             "Content-Type": "application/json",
@@ -107,12 +110,12 @@ export default class DepositAccounts {
       );
       return deposit.data;
     } catch (error) {
-      return handleExceptions(error as unknown as any);
+      throw handleExceptions(error as unknown as any);
     }
   }
 
   /**
-   * (UNTESTED) Deletes the beneficiary indicated by id
+   * Deletes the beneficiary indicated by id
    * @param id
    * @returns
    */
@@ -122,7 +125,7 @@ export default class DepositAccounts {
     }
     try {
       const deposit = await this.tropipay.request.delete(
-        `/api/v2/deposit_accounts/${id}`,
+        `${API_BASE}/deposit_accounts/${id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -133,7 +136,35 @@ export default class DepositAccounts {
       );
       return deposit.data;
     } catch (error) {
-      return handleExceptions(error as unknown as any);
+      throw handleExceptions(error as unknown as any);
+    }
+  }
+
+  /**
+   * Validates a beneficiary account number (bank account, card or
+   * crypto wallet address) before creating it.
+   * @param payload Account number data to validate (e.g. { accountNumber, paymentType, network, currency })
+   * @returns
+   */
+  public async validateAccountNumber(payload: Record<string, unknown>) {
+    if (!Tropipay.accessToken) {
+      await this.tropipay.login();
+    }
+    try {
+      const validation = await this.tropipay.request.post(
+        `${API_BASE}/deposit_accounts/validate_account_number`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Tropipay.accessToken}`,
+            Accept: "application/json",
+          },
+        }
+      );
+      return validation.data;
+    } catch (error) {
+      throw handleExceptions(error as unknown as any);
     }
   }
 }
