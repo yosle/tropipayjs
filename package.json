@@ -15,7 +15,8 @@
     "_clear": "rimraf src/dist",
     "_tsc": "tsc",
     "_make-bundle": "rollup --config",
-    "build": "npm run _clear && npm run _tsc && npm run _make-bundle"
+    "build": "npm run _clear && npm run _tsc && npm run _make-bundle",
+    "start": "astro preview --host 127.0.0.1 --port $PORT"
   },
   "repository": {
     "type": "git",
