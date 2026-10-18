@@ -12,7 +12,7 @@
  *   TROPIPAY_CLIENT_ID=... TROPIPAY_CLIENT_SECRET=... npm run smoke
  *
  * Optional env vars:
- *   TROPIPAY_SERVER_MODE  "Development" (default, tropipay-dev.herokuapp.com)
+ *   TROPIPAY_SERVER_MODE  "Development" (default, sandbox.tropipay.me)
  *                         or "Production" (www.tropipay.com)
  *   TROPIPAY_CUSTOM_URL   override the base URL entirely
  *   SMOKE_ALLOW_WRITE     set to "1" to run write steps (create/update/delete
@@ -33,7 +33,7 @@ if (!clientId || !clientSecret) {
   console.error(
     "\n✖ Missing credentials. Set TROPIPAY_CLIENT_ID and TROPIPAY_CLIENT_SECRET env vars.\n" +
       "  Get them at App Menu -> Applications and credentials (use the dev\n" +
-      "  environment https://tropipay-dev.herokuapp.com for Development mode).\n"
+      "  environment https://sandbox.tropipay.me for Development mode).\n"
   );
   process.exit(2);
 }

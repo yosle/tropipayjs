@@ -41,6 +41,8 @@ API v2 is deprecated; every SDK endpoint now targets `/api/v3`:
 
 ### Fixed
 
+- `Development` mode now targets the current sandbox,
+  `https://sandbox.tropipay.me`, instead of `tropipay-dev.herokuapp.com`.
 - `login()` now persists the token when refreshing via `refresh_token`
   (previously the refreshed token was returned but never stored, so the
   expiry interceptor kept working with stale values).
