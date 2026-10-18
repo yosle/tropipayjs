@@ -33,25 +33,12 @@ export default class TropipayHooks {
     target: "email" | "web";
     value: string;
   }) {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
-      const hooks = await this.tropipay.request.post(
-        `${API_BASE}/user/hooks`,
-        {
-          event: eventType,
-          target: target,
-          value: value,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
-      );
+      const hooks = await this.tropipay.request.post(`${API_BASE}/user/hooks`, {
+        event: eventType,
+        target: target,
+        value: value,
+      });
       return hooks.data;
     } catch (error) {
       throw handleExceptions(error as unknown as any);
@@ -65,19 +52,9 @@ export default class TropipayHooks {
    * @returns All subscribed hooks or empty Array if none exist.
    */
   public async list(eventType?: HookEventType): Promise<UserHookSubscribed[]> {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const hooks = await this.tropipay.request.get(
-        `${API_BASE}/user/hooks/${eventType || ""}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
+        `${API_BASE}/user/hooks/${eventType || ""}`
       );
       return hooks.data;
     } catch (error) {
@@ -89,44 +66,21 @@ export default class TropipayHooks {
     target: "web" | "email",
     value: string
   ) {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
-      const hooks = await this.tropipay.request.put(
-        `${API_BASE}/user/hooks`,
-        {
-          event: eventType,
-          target: target,
-          value: value,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
-      );
+      const hooks = await this.tropipay.request.put(`${API_BASE}/user/hooks`, {
+        event: eventType,
+        target: target,
+        value: value,
+      });
       return hooks.data;
     } catch (error) {
       throw handleExceptions(error as unknown as any);
     }
   }
   async delete(eventType: HookEventType, target: string) {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const hooks = await this.tropipay.request.delete(
-        `${API_BASE}/user/hooks/${eventType}/${target}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
+        `${API_BASE}/user/hooks/${eventType}/${target}`
       );
       return hooks.data;
     } catch (error) {
@@ -135,17 +89,10 @@ export default class TropipayHooks {
   }
 
   async events() {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
-      const hooks = await this.tropipay.request.get(`${API_BASE}/user/hooks/events`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Tropipay.accessToken}`,
-          Accept: "application/json",
-        },
-      });
+      const hooks = await this.tropipay.request.get(
+        `${API_BASE}/user/hooks/events`
+      );
       return hooks.data;
     } catch (error) {
       throw handleExceptions(error as unknown as any);

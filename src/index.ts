@@ -17,12 +17,12 @@ if (typeof window !== "undefined") {
 
 export { Tropipay } from "./api/TropipayAPI";
 export { ServerSideUtils } from "./utils/TropipayUtils";
-export * from "./hooks/TropipayHooks";
-export * from "./paymentcard/PaymentCard";
-export * from "./mediationPaymentCard/MediationPaymentCard";
-export * from "./depositAccount/depositAccounts";
-export * from "./accounts/Accounts";
-export * from "./transfers/Transfers";
+export { default as TropipayHooks } from "./hooks/TropipayHooks";
+export { default as PaymentCard } from "./paymentcard/PaymentCard";
+export { default as MediationPaymentCard } from "./mediationPaymentCard/MediationPaymentCard";
+export { default as DepositAccounts } from "./depositAccount/depositAccounts";
+export { default as Accounts } from "./accounts/Accounts";
+export { default as Transfers } from "./transfers/Transfers";
 export * from "./interfaces/index";
 export * from "./interfaces/depositaccounts/index";
 export { SERVER_MODE } from "./config/TropipayConfig";

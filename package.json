@@ -12,7 +12,8 @@
   "scripts": {
     "test": "jest --passWithNoTests --updateSnapshot --coverage",
     "smoke": "npm run build && node scripts/smoke-test.js",
-    "_clear": "rimraf src/dist",
+    "prepublishOnly": "npm run build",
+    "_clear": "rimraf dist",
     "_tsc": "tsc",
     "_make-bundle": "rollup --config",
     "build": "npm run _clear && npm run _tsc && npm run _make-bundle"
