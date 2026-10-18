@@ -13,9 +13,12 @@
   GHSA-x97p-jq2g-jp4f, GHSA-j8rh-479h-cp32), and HTTP/2 and fetch adapter
   issues. Projects whose lockfile pins an older axios will now resolve the
   patched version.
-- Dev dependencies refreshed in the lockfile (`handlebars`, `js-yaml`,
-  `browserslist`, `brace-expansion`, `baseline-browser-mapping`); they are not
-  shipped in the package.
+- Test tooling moved to Jest 30 (`jest`, `babel-jest`, `@types/jest`;
+  `ts-jest` 29.4.15) and the lockfile refreshed (`handlebars`, `browserslist`,
+  `brace-expansion`, `baseline-browser-mapping`). An `overrides` entry pins
+  `js-yaml` 4 under `@istanbuljs/load-nyc-config`, dropping `sprintf-js`, which
+  has no patched release. None of these are shipped in the package; `npm audit`
+  now reports 0 vulnerabilities.
 
 ## 0.3.0 (2026-08-30)
 
