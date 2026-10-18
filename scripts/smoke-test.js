@@ -4,6 +4,10 @@
  * Runs against the real Tropipay API using the BUILT bundle (index.js),
  * so run `npm run build` first (npm run smoke does it for you).
  *
+ * Credentials can live in a .env file at the repo root (gitignored):
+ *   TROPIPAY_CLIENT_ID=...
+ *   TROPIPAY_CLIENT_SECRET=...
+ *
  * Usage (PowerShell):
  *   $env:TROPIPAY_CLIENT_ID = "..."; $env:TROPIPAY_CLIENT_SECRET = "..."
  *   npm run smoke
@@ -22,6 +26,14 @@
  */
 
 /* eslint-disable no-console */
+// Load a .env at the repo root when present (Node >= 20.12); variables
+// already set in the shell take precedence.
+try {
+  process.loadEnvFile?.(require("path").join(__dirname, "..", ".env"));
+} catch {
+  // no .env file: rely on the shell environment
+}
+
 const { Tropipay } = require("../index.js");
 
 const clientId = process.env.TROPIPAY_CLIENT_ID;
