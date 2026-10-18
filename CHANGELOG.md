@@ -16,7 +16,6 @@ API v2 is deprecated; every SDK endpoint now targets `/api/v3`:
 | `movements()` | `GET /api/v2/movements` | `GET /api/v3/movements` (limit capped to 50) |
 | `rates()` | `POST /api/v2/movements/get_rate` | `POST /api/v3/movements/get_rate` |
 | `paymentCards.*` | `/api/v2/paymentcards` | `/api/v3/paymentcards` |
-| `mediationPaymentCard.create()` | `POST /api/v2/paymentcards/mediation` | `POST /api/v3/paymentcards/mediation` |
 | `hooks.*` | `/api/v2/hooks` | `/api/v3/user/hooks` |
 | `depositAccounts.*` | `/api/v2/deposit_accounts` | `/api/v3/deposit_accounts` |
 
@@ -55,8 +54,10 @@ API v2 is deprecated; every SDK endpoint now targets `/api/v3`:
 
 ### Removed
 
-- `Tropipay.createMediationPaymentCard()` (deprecated since 0.1.x) — use
-  `tpp.mediationPaymentCard.create()`.
+- Mediation payment cards (deprecated by Tropipay): the `mediationPaymentCard`
+  module (`tpp.mediationPaymentCard.create()`, `POST /paymentcards/mediation`),
+  the `MediationPaymentCard` export and the `MediationPaymentCardConfig` type.
+- `Tropipay.createMediationPaymentCard()` (deprecated since 0.1.x).
 - `ClientSideUtils` (unimplemented stub).
 - Dead code: orphan `src/interfaces/paymentlink` and `src/interfaces/mediation`
   trees, duplicated `UserHook` declarations, empty mocks, `globals.d.ts`.

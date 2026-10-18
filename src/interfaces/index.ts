@@ -200,26 +200,6 @@ export interface PaymentLink extends PaymentLinkPayload {
   paymentUrl: string;
 }
 
-export interface MediationPaymentCardConfig {
-  amount: number;
-  currency: "EUR" | "USD";
-  concept: string;
-  description: string;
-  reference: string;
-  singleUse: boolean;
-  lang: string;
-  productUrl?: string;
-  buyer: null | any;
-  seller: {
-    sellerId?: number;
-    type?: number;
-    email?: string;
-  };
-  feePercent?: number;
-  feeFixed?: number;
-  sendMail: boolean;
-}
-
 export type LoginResponse = {
   access_token: string;
   refresh_token: string;
