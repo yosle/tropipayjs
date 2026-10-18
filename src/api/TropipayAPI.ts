@@ -17,7 +17,6 @@ type ServerMode = "Development" | "Production";
 import { API_BASE } from "../constants/TropipayConstants";
 import TropipayHooks from "../hooks/TropipayHooks";
 import PaymentCard from "../paymentcard/PaymentCard";
-import MediationPaymentCard from "../mediationPaymentCard/MediationPaymentCard";
 import DepositAccounts from "../depositAccount/depositAccounts";
 import Accounts from "../accounts/Accounts";
 import Transfers from "../transfers/Transfers";
@@ -38,7 +37,6 @@ export class Tropipay {
   public hooks: TropipayHooks;
   public paymentCards: PaymentCard;
   public depositAccounts: DepositAccounts;
-  public mediationPaymentCard: MediationPaymentCard;
   public accounts: Accounts;
   public transfers: Transfers;
 
@@ -115,7 +113,6 @@ export class Tropipay {
 
     this.hooks = new TropipayHooks(this);
     this.paymentCards = new PaymentCard(this);
-    this.mediationPaymentCard = new MediationPaymentCard(this);
     this.depositAccounts = new DepositAccounts(this);
     this.accounts = new Accounts(this);
     this.transfers = new Transfers(this);

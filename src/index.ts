@@ -19,7 +19,6 @@ export { Tropipay } from "./api/TropipayAPI";
 export { ServerSideUtils } from "./utils/TropipayUtils";
 export { default as TropipayHooks } from "./hooks/TropipayHooks";
 export { default as PaymentCard } from "./paymentcard/PaymentCard";
-export { default as MediationPaymentCard } from "./mediationPaymentCard/MediationPaymentCard";
 export { default as DepositAccounts } from "./depositAccount/depositAccounts";
 export { default as Accounts } from "./accounts/Accounts";
 export { default as Transfers } from "./transfers/Transfers";
