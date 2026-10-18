@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.3.1 (2026-10-18)
+
+### Security
+
+- `axios` raised to `^1.20.0` (from `^1.18.1`), fixing the advisories
+  published for 1.13–1.19: ReDoS when parsing malformed `data:` URLs
+  (GHSA-c29m-xwm3-cm6r), ReDoS in `NO_PROXY` handling reachable through
+  redirects (GHSA-mghh-pgcx-3jjj), prototype-pollution gadgets in the Node
+  HTTP adapter and default instance that could redirect requests or leak the
+  `Authorization` header (GHSA-m8m8-qj5v-23w3, GHSA-9fr6-4gfg-395g,
+  GHSA-x97p-jq2g-jp4f, GHSA-j8rh-479h-cp32), and HTTP/2 and fetch adapter
+  issues. Projects whose lockfile pins an older axios will now resolve the
+  patched version.
+- Dev dependencies refreshed in the lockfile (`handlebars`, `js-yaml`,
+  `browserslist`, `brace-expansion`, `baseline-browser-mapping`); they are not
+  shipped in the package.
+
 ## 0.3.0 (2026-08-30)
 
 ### Breaking: migration to Tropipay API v3

@@ -21,7 +21,7 @@
 ```json
 {
   "overrides": {
-    "axios": "1.18.1",
+    "axios": "1.20.0",
     "semver": "^7.6.0"
   }
 }
