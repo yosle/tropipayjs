@@ -33,7 +33,7 @@ TropiPay is an electronic wallet that allows you to execute the most common fina
 > deprecated). All endpoints were migrated; see the
 > [CHANGELOG](CHANGELOG.md) for the full route mapping and breaking changes.
 
-This library is a community effort. Tropipay may make some changes on the API specification. Use the [test environment](https://tropipay-dev.herokuapp.com) to make sure everything is working as expected.
+This library is a community effort. Tropipay may make some changes on the API specification. Use the [test environment](https://sandbox.tropipay.me) to make sure everything is working as expected.
 
 **Note:** This library is provided as-is and serves as a client for the Tropipay API. While every effort has been made to ensure the accuracy and reliability of the library, Tropipay is solely responsible for maintaining and updating the API documentation.
 
@@ -54,7 +54,7 @@ or
 ![alt](https://yosle.github.io/tropipayjs-docs/images/cred2.png)
 ![alt](https://yosle.github.io/tropipayjs-docs/images/cred3.png)
 
-In order to use the Tropipay API you'll need a client ID and a client secret. Sign up with your [Tropipay](www.tropipay.com) account, go to the App Menu->Applications and credentials. You'll be asked to enter a confirmation code (use 123456 in the test enviroment). _Make sure you test everything in the [test environment](https://tropipay-dev.herokuapp.com) first before using your real account._ Create an app and configure the client id an client secret for the app.
+In order to use the Tropipay API you'll need a client ID and a client secret. Sign up with your [Tropipay](www.tropipay.com) account, go to the App Menu->Applications and credentials. You'll be asked to enter a confirmation code (use 123456 in the test enviroment). _Make sure you test everything in the [test environment](https://sandbox.tropipay.me) first before using your real account._ Create an app and configure the client id an client secret for the app.
 
 ## Usage
 
@@ -74,10 +74,10 @@ import { Tropipay } from "@yosle/tropipayjs";
 
 ### Initialize the Tropipay class
 
-You can instantiate the Tropipay class passing the client Id ,client secret and optionally the serverMode parameter, if no serverMode is provided, `Development` will be used as default. Make sure you use the [test environment](https://tropipay-dev.herokuapp.com) credentials when serverMode is on `Development`.
+You can instantiate the Tropipay class passing the client Id ,client secret and optionally the serverMode parameter, if no serverMode is provided, `Development` will be used as default. Make sure you use the [test environment](https://sandbox.tropipay.me) credentials when serverMode is on `Development`.
 
 ```javascript
-// test environment server tropipay-dev.herokuapp.com
+// test environment server sandbox.tropipay.me
 const config = {
     clientId: process.env.TROPIPAY_CLIENT_ID,
     clientSecret: process.env.TROPIPAY_CLIENT_SECRET
