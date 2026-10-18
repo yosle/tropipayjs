@@ -20,20 +20,10 @@ export default class MediationPaymentCard {
    * @see https://tpp.stoplight.io/docs/tropipay-api-doc/12a128ff971e4-creating-a-mediation-payment-card
    */
   async create(payload: MediationPaymentCardConfig): Promise<PaymentLink> {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const paylink = await this.tropipay.request.post(
         `${API_BASE}/paymentcards/mediation`,
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
+        payload
       );
       return paylink.data as PaymentLink;
     } catch (error) {

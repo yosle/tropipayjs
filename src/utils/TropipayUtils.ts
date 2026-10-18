@@ -92,6 +92,16 @@ export class ServerSideUtils {
           continue;
         }
         const marker = buffer[offset + 1];
+        // 0xFF fill bytes may pad the stream before a marker
+        if (marker === 0xff) {
+          offset++;
+          continue;
+        }
+        // standalone markers (TEM, RST0-RST7) carry no length field
+        if (marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) {
+          offset += 2;
+          continue;
+        }
         // SOF0-SOF15 markers except DHT (C4), JPG (C8) and DAC (CC)
         if (
           marker >= 0xc0 &&

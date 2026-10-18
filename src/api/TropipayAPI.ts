@@ -5,7 +5,7 @@
  *
  */
 
-import axios, { Axios, AxiosError } from "axios";
+import axios, { Axios, AxiosError, InternalAxiosRequestConfig } from "axios";
 import {
   TropipayConfig,
   AccountBalance,
@@ -22,14 +22,18 @@ import DepositAccounts from "../depositAccount/depositAccounts";
 import Accounts from "../accounts/Accounts";
 import Transfers from "../transfers/Transfers";
 import { TropipayJSException, handleExceptions } from "../utils/errors";
+
+const TOKEN_URL = `${API_BASE}/access/token`;
+
 export class Tropipay {
   readonly clientId: string;
   readonly clientSecret: string;
   readonly scopes: String[];
   public request: Axios;
-  public static accessToken: string | null;
-  public static refreshToken: string | null;
-  public static expiresIn: number | null;
+  // Per instance, so several credentials (or environments) never share a token
+  public accessToken: string | null = null;
+  public refreshToken: string | null = null;
+  public expiresIn: number | null = null;
   public serverMode: ServerMode;
   public hooks: TropipayHooks;
   public paymentCards: PaymentCard;
@@ -87,23 +91,21 @@ export class Tropipay {
     });
 
 
-     // Add request interceptor for Token expired
+     // Log in (or refresh an expired token) and attach the current token to
+     // every request. The token endpoint itself is skipped, otherwise login()
+     // would re-enter this interceptor forever.
      this.request.interceptors.request.use(
-      async (config: any) => {
-        const currentTimestamp = Math.floor(Date.now() / 1000); // Current time in seconds
+      async (config: InternalAxiosRequestConfig) => {
+        if (config.url === TOKEN_URL) return config;
 
-        if (Tropipay.expiresIn && Tropipay.expiresIn < currentTimestamp) {
-          // Token has expired, attempt to refresh it
-          try {
-             await this.login();
-          } catch (error) {
-            // Handle token refresh error
-            Tropipay.accessToken = null;
-            Tropipay.refreshToken = null;
-            throw handleExceptions(error as any);
-          }
+        const currentTimestamp = Math.floor(Date.now() / 1000); // Current time in seconds
+        const expired =
+          this.expiresIn !== null && this.expiresIn < currentTimestamp;
+        if (!this.accessToken || expired) {
+          await this.login();
         }
 
+        config.headers.Authorization = `Bearer ${this.accessToken}`;
         return config;
       },
       (error: AxiosError) => {
@@ -121,54 +123,36 @@ export class Tropipay {
 
   public async login() {
     try {
-      if (Tropipay.refreshToken) {
-        const { data } = await this.request.post<LoginResponse>(
-          `${API_BASE}/access/token`,
-          {
-            client_id: this.clientId,
-            client_secret: this.clientSecret,
-            grant_type: "refresh_token",
-            refresh_token: Tropipay.refreshToken,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-          }
-        );
+      if (this.refreshToken) {
+        const { data } = await this.request.post<LoginResponse>(TOKEN_URL, {
+          client_id: this.clientId,
+          client_secret: this.clientSecret,
+          grant_type: "refresh_token",
+          refresh_token: this.refreshToken,
+        });
 
-        Tropipay.accessToken = data.access_token;
-        Tropipay.refreshToken = data.refresh_token;
-        Tropipay.expiresIn = data.expires_in;
+        this.accessToken = data.access_token;
+        this.refreshToken = data.refresh_token;
+        this.expiresIn = data.expires_in;
         return data;
       }
 
       // normal credetials login
-      const { data } = await this.request.post<LoginResponse>(
-        `${API_BASE}/access/token`,
-        {
-          client_id: this.clientId,
-          client_secret: this.clientSecret,
-          grant_type: "client_credentials",
-          scope: this.scopes.join(" "), // "ALLOW_GET_PROFILE_DATA ALLOW_PAYMENT_IN ALLOW_EXTERNAL_CHARGE KYC3_FULL_ALLOW ALLOW_PAYMENT_OUT ALLOW_MARKET_PURCHASES ALLOW_GET_BALANCE ALLOW_GET_MOVEMENT_LIST ALLOW_GET_CREDENTIAL",
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        }
-      );
+      const { data } = await this.request.post<LoginResponse>(TOKEN_URL, {
+        client_id: this.clientId,
+        client_secret: this.clientSecret,
+        grant_type: "client_credentials",
+        scope: this.scopes.join(" "), // "ALLOW_GET_PROFILE_DATA ALLOW_PAYMENT_IN ALLOW_EXTERNAL_CHARGE KYC3_FULL_ALLOW ALLOW_PAYMENT_OUT ALLOW_MARKET_PURCHASES ALLOW_GET_BALANCE ALLOW_GET_MOVEMENT_LIST ALLOW_GET_CREDENTIAL",
+      });
 
-      Tropipay.accessToken = data.access_token;
-      Tropipay.refreshToken = data.refresh_token;
-      Tropipay.expiresIn = data.expires_in;
+      this.accessToken = data.access_token;
+      this.refreshToken = data.refresh_token;
+      this.expiresIn = data.expires_in;
       return data;
     } catch (error) {
-      Tropipay.accessToken = null;
-      Tropipay.refreshToken = null;
-      Tropipay.expiresIn = null;
+      this.accessToken = null;
+      this.refreshToken = null;
+      this.expiresIn = null;
       throw handleExceptions(error as any);
     }
   }
@@ -193,17 +177,8 @@ export class Tropipay {
    * @returns balance Object { balance: number, pendingIn: number, pendingOut: number }
    */
   async getBalance(): Promise<AccountBalance> {
-    if (!Tropipay.accessToken) {
-      await this.login();
-    }
     try {
-      const balance = await this.request.get(`${API_BASE}/users/balance`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Tropipay.accessToken}`,
-          Accept: "application/json",
-        },
-      });
+      const balance = await this.request.get(`${API_BASE}/users/balance`);
       return balance.data;
     } catch (error) {
       throw handleExceptions(error as any);
@@ -234,19 +209,11 @@ export class Tropipay {
    * @returns Array of account Object or throws an error
    */
   async favorites() {
-    if (!Tropipay.accessToken) {
-      await this.login();
-    }
     try {
       const favoritesList = await this.request.get(
         `${API_BASE}/paymentcards/filters`,
         {
           params: { favorite: true },
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
         }
       );
       return favoritesList?.data?.rows;
@@ -264,16 +231,9 @@ export class Tropipay {
    * @returns
    */
   async movements(offset = 0, limit = 10) {
-    if (!Tropipay.accessToken) await this.login();
-
     try {
       const movements = await this.request.get(`${API_BASE}/movements`, {
         params: { limit: limit, offset: offset },
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${Tropipay.accessToken}`,
-        },
       });
       return movements.data;
     } catch (error) {
@@ -286,15 +246,8 @@ export class Tropipay {
    * @returns account object
    */
   async profile() {
-    if (!Tropipay.accessToken) await this.login();
     try {
-      const profile = await this.request.get(`${API_BASE}/users/profile`, {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${Tropipay.accessToken}`,
-        },
-      });
+      const profile = await this.request.get(`${API_BASE}/users/profile`);
       return profile.data;
     } catch (error) {
       throw handleExceptions(error as any);
@@ -313,25 +266,13 @@ export class Tropipay {
     originCurrency: string,
     targetCurrency: string = "EUR"
   ): Promise<number | Error> {
-    if (!Tropipay.accessToken) {
-      await this.login();
-    }
     try {
-      const rates = await this.request.post(
-        `${API_BASE}/movements/get_rate`,
-        {
-          currencyFrom: originCurrency,
-          currencyTo: targetCurrency,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-          },
-        }
-      );
-      return rates.data.rate;
+      const rates = await this.request.post(`${API_BASE}/movements/get_rate`, {
+        currencyFrom: originCurrency,
+        currencyTo: targetCurrency,
+      });
+      // the v3 API returns the rate as a numeric string
+      return Number(rates.data.rate);
     } catch (error) {
       throw handleExceptions(error as any);
     }
@@ -356,10 +297,6 @@ export class Tropipay {
     amount: number,
     securityCode: string
   ): Promise<RefundResponse> {
-    if (!Tropipay.accessToken) {
-      await this.login();
-    }
-
     if (!this.scopes.includes("ALLOW_REFUND")) {
       throw new TropipayJSException(
         "The credential does not have the ALLOW_REFUND scope required to perform refunds. If you believe your account should have this permission, please contact Tropipay support.",
@@ -371,14 +308,7 @@ export class Tropipay {
     try {
       const response = await this.request.post(
         `${API_BASE}/movements/in/refund`,
-        { orderCode, amount, securityCode },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-          },
-        }
+        { orderCode, amount, securityCode }
       );
       return response.data as RefundResponse;
     } catch (error) {
@@ -399,21 +329,10 @@ export class Tropipay {
    * @returns The API response confirming the code was sent
    */
   async requestSecurityCode(type: "sms" | "email" = "sms"): Promise<any> {
-    if (!Tropipay.accessToken) {
-      await this.login();
-    }
-
     try {
       const response = await this.request.post(
         `${API_BASE}/users/sendSecurityCode`,
-        { type },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-          },
-        }
+        { type }
       );
       return response.data;
     } catch (error) {

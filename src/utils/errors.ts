@@ -32,6 +32,8 @@ export interface ErrorDetail {
 export function handleExceptions(
   error: AxiosError | Error
 ): TropipayJSException {
+  // already mapped (e.g. thrown by login() inside the request interceptor)
+  if (error instanceof TropipayJSException) return error;
   if (error instanceof AxiosError) {
     if (error.response) {
       const axiosResponse: AxiosResponse = error.response;

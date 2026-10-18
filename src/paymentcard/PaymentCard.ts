@@ -18,20 +18,10 @@ export default class PaymentCard {
    * @see https://doc.tropipay.com/docs/api-reference/payment-cards
    */
   async create(payload: PaymentLinkPayload): Promise<PaymentLink> {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const paylink = await this.tropipay.request.post(
         `${API_BASE}/paymentcards`,
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
+        payload
       );
       return paylink.data as PaymentLink;
     } catch (error) {
@@ -44,19 +34,9 @@ export default class PaymentCard {
    * @returns Array of paymentlinks
    */
   public async list() {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const paymentcards = await this.tropipay.request.get(
-        `${API_BASE}/paymentcards`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
+        `${API_BASE}/paymentcards`
       );
       return paymentcards.data;
     } catch (error) {
@@ -72,19 +52,9 @@ export default class PaymentCard {
    * @throws {Error} If an error occurs while retrieving the payment card.
    */
   public async get(id: string) {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const paymentcard = await this.tropipay.request.get(
-        `${API_BASE}/paymentcards/${id}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
+        `${API_BASE}/paymentcards/${id}`
       );
       return paymentcard.data;
     } catch (error) {
@@ -103,20 +73,10 @@ export default class PaymentCard {
   public async update(
     payload: { cardId: string } & Partial<PaymentLinkPayload>
   ) {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const paymentcard = await this.tropipay.request.put(
         `${API_BASE}/paymentcards/`,
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
+        payload
       );
       return paymentcard.data;
     } catch (error) {
@@ -133,18 +93,10 @@ export default class PaymentCard {
    * @throws {Error} If an error occurs while deleting the payment card.
    */
   public async delete(id: string) {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const paymentcard = await this.tropipay.request.delete(
         `${API_BASE}/paymentcards/`,
         {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
           data: {
             cardId: id,
           },

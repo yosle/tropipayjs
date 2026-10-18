@@ -13,19 +13,9 @@ export default class DepositAccounts {
    * @returns Array of DepositAccounts
    */
   public async list() {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const deposit = await this.tropipay.request.get(
-        `${API_BASE}/deposit_accounts`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
+        `${API_BASE}/deposit_accounts`
       );
       return deposit.data;
     } catch (error) {
@@ -40,20 +30,10 @@ export default class DepositAccounts {
    * @returns
    */
   public async create(depositAccountObj: DepositAccountConfig) {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const deposit = await this.tropipay.request.post(
         `${API_BASE}/deposit_accounts`,
-        depositAccountObj,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
+        depositAccountObj
       );
       return deposit.data;
     } catch (error) {
@@ -67,19 +47,9 @@ export default class DepositAccounts {
    * @returns
    */
   public async get(id: string) {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const deposit = await this.tropipay.request.get(
-        `${API_BASE}/deposit_accounts/${id}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
+        `${API_BASE}/deposit_accounts/${id}`
       );
       return deposit.data;
     } catch (error) {
@@ -93,20 +63,10 @@ export default class DepositAccounts {
    * @returns
    */
   public async update(depositAccountObj: Partial<DepositAccountConfig>) {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const deposit = await this.tropipay.request.put(
         `${API_BASE}/deposit_accounts`,
-        depositAccountObj,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
+        depositAccountObj
       );
       return deposit.data;
     } catch (error) {
@@ -120,19 +80,9 @@ export default class DepositAccounts {
    * @returns
    */
   public async delete(id: number) {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const deposit = await this.tropipay.request.delete(
-        `${API_BASE}/deposit_accounts/${id}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
+        `${API_BASE}/deposit_accounts/${id}`
       );
       return deposit.data;
     } catch (error) {
@@ -147,20 +97,10 @@ export default class DepositAccounts {
    * @returns
    */
   public async validateAccountNumber(payload: Record<string, unknown>) {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const validation = await this.tropipay.request.post(
         `${API_BASE}/deposit_accounts/validate_account_number`,
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
+        payload
       );
       return validation.data;
     } catch (error) {

@@ -275,7 +275,7 @@ export type Account = {
 
 /**
  * Payload for an external payout (transfer to a beneficiary).
- * Used by `tpp.transfers.payout()` and `tpp.transfers.simulate()`.
+ * Used by `tpp.transfers.payout()` (`simulate()` takes `PayoutSimulatePayload`).
  */
 export interface PayoutPayload {
   /** Amount in cents to be debited. */
@@ -294,7 +294,7 @@ export interface PayoutPayload {
   /** 2FA delivery type used to validate the securityCode. */
   twoFaType?: number;
   /** 2FA code obtained via transfers.requestSecurityCode(). */
-  securityCode?: string;
+  securityCode: string;
   /** Source account id (multi-account). Defaults to the default account. */
   accountId?: number;
 }

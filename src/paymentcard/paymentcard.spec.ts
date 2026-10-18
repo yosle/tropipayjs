@@ -37,6 +37,7 @@ describe("PaymentCard", () => {
   };
 
   beforeEach(() => {
+    // auth lives in the request interceptor, which this mock never runs
     requestMock = {
       post: jest.fn().mockResolvedValue({ data: {} }),
       get: jest.fn().mockResolvedValue({ data: {} }),
@@ -45,10 +46,6 @@ describe("PaymentCard", () => {
       interceptors: { request: { use: jest.fn() } },
     };
     mockedAxios.create.mockReturnValue(requestMock as any);
-    // skip login()
-    Tropipay.accessToken = "fake-token";
-    Tropipay.refreshToken = null;
-    Tropipay.expiresIn = null;
   });
 
   it("creates a payment link against the v3 endpoint with accountId and CRYPTO", async () => {
@@ -70,8 +67,7 @@ describe("PaymentCard", () => {
       expect.objectContaining({
         accountId: 12345,
         paymentMethods: ["EXT", "TPP", "CRYPTO"],
-      }),
-      expect.anything()
+      })
     );
     expect(result).toEqual(expectedPaymentLink);
   });
@@ -83,22 +79,17 @@ describe("PaymentCard", () => {
     });
 
     await tropipay.paymentCards.list();
-    expect(requestMock.get).toHaveBeenCalledWith(
-      "/api/v3/paymentcards",
-      expect.anything()
-    );
+    expect(requestMock.get).toHaveBeenCalledWith("/api/v3/paymentcards");
 
     await tropipay.paymentCards.get("some-id");
     expect(requestMock.get).toHaveBeenCalledWith(
-      "/api/v3/paymentcards/some-id",
-      expect.anything()
+      "/api/v3/paymentcards/some-id"
     );
 
     await tropipay.paymentCards.update({ cardId: "some-id", favorite: true });
     expect(requestMock.put).toHaveBeenCalledWith(
       "/api/v3/paymentcards/",
-      expect.objectContaining({ cardId: "some-id", favorite: true }),
-      expect.anything()
+      expect.objectContaining({ cardId: "some-id", favorite: true })
     );
 
     await tropipay.paymentCards.delete("some-id");

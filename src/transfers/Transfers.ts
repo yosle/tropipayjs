@@ -27,20 +27,10 @@ export default class Transfers {
    * @param payload Simulation data (no securityCode needed).
    */
   public async simulate(payload: PayoutSimulatePayload) {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const simulation = await this.tropipay.request.post(
         `${API_BASE}/booking/payout/simulate`,
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
+        payload
       );
       return simulation.data;
     } catch (error) {
@@ -56,20 +46,10 @@ export default class Transfers {
    * @param payload Payout data including securityCode.
    */
   public async payout(payload: PayoutPayload) {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const booking = await this.tropipay.request.post(
         `${API_BASE}/booking/payout`,
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
+        payload
       );
       return booking.data;
     } catch (error) {
@@ -83,20 +63,10 @@ export default class Transfers {
    * 2FA settings.
    */
   public async requestSecurityCode() {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const response = await this.tropipay.request.post(
         `${API_BASE}/booking/sendSecurityCode`,
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
+        {}
       );
       return response.data;
     } catch (error) {

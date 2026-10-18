@@ -21,19 +21,13 @@ export default class Accounts {
    * @returns Array of Account objects.
    */
   public async list(type?: string): Promise<Account[]> {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const accounts = await this.tropipay.request.get(`${API_BASE}/accounts`, {
         params: type ? { type } : undefined,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Tropipay.accessToken}`,
-          Accept: "application/json",
-        },
       });
-      return accounts.data;
+      // accept both a plain array and a paginated { count, rows } body
+      const data = accounts.data;
+      return Array.isArray(data) ? data : data?.rows ?? [];
     } catch (error) {
       throw handleExceptions(error as unknown as any);
     }
@@ -44,19 +38,9 @@ export default class Accounts {
    * @returns Balances for all accounts.
    */
   public async allBalances() {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const balances = await this.tropipay.request.get(
-        `${API_BASE}/accounts/allBalance`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
+        `${API_BASE}/accounts/allBalance`
       );
       return balances.data;
     } catch (error) {
@@ -70,19 +54,9 @@ export default class Accounts {
    * @param accountNumber The account number.
    */
   public async balance(accountNumber: string) {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const balance = await this.tropipay.request.get(
-        `${API_BASE}/accounts/balance/${accountNumber}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
-        }
+        `${API_BASE}/accounts/balance/${accountNumber}`
       );
       return balance.data;
     } catch (error) {
@@ -99,19 +73,11 @@ export default class Accounts {
     accountId: number,
     options: { limit?: number; offset?: number } = {}
   ) {
-    if (!Tropipay.accessToken) {
-      await this.tropipay.login();
-    }
     try {
       const movements = await this.tropipay.request.get(
         `${API_BASE}/accounts/${accountId}/movements`,
         {
           params: { limit: options.limit ?? 20, offset: options.offset ?? 0 },
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Tropipay.accessToken}`,
-            Accept: "application/json",
-          },
         }
       );
       return movements.data;
