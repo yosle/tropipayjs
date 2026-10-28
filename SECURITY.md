@@ -22,6 +22,7 @@
 {
   "overrides": {
     "axios": "1.20.0",
+    "follow-redirects": "^1.16.1",
     "semver": "^7.6.0"
   }
 }

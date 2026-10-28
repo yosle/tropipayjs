@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.2 (2026-10-28)
+
+### Security
+
+- `follow-redirects` (pulled in by `axios`) refreshed to 1.16.2 in the
+  lockfile, fixing two advisories for 1.16.0 that could leak the
+  `Authorization` header on cross-origin redirects: array-form headers
+  bypassing credential stripping (GHSA-q3jh-wrc6-jgq8) and unescaped
+  `sensitiveHeaders` regex patterns (GHSA-8r9p-f939-6h3c). `axios` still
+  declares `^1.16.0`, so fresh installs already resolve the patched release;
+  projects whose lockfile pins 1.16.0 should run `npm update follow-redirects`
+  or add an `overrides` entry (see `SECURITY.md`).
+
 ## 0.3.1 (2026-10-18)
 
 ### Security
